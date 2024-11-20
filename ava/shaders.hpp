@@ -2,6 +2,8 @@
 #define AVA_SHADERS_HPP
 
 #include <vector>
+
+#include "commandBuffer.hpp"
 #include "detail/vulkan.hpp"
 #include "vao.hpp"
 #include "renderPass.hpp"
@@ -47,7 +49,7 @@ namespace ava
     GraphicsPipeline createGraphicsPipeline(const GraphicsPipelineCreationInfo& pipelineCreationInfo);
     void destroyGraphicsPipeline(GraphicsPipeline& pipeline);
 
-    void bindGraphicsPipeline(const vk::CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline);
+    void bindGraphicsPipeline(const CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline);
 }
 
 #endif

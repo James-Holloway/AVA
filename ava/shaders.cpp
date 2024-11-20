@@ -1,6 +1,8 @@
 #include "shaders.hpp"
 
 #include "detail/shaders.hpp"
+
+#include "detail/commandBuffer.hpp"
 #include "detail/detail.hpp"
 #include "detail/reflection.hpp"
 #include "detail/renderPass.hpp"
@@ -228,21 +230,21 @@ namespace ava
         pipeline = nullptr;
     }
 
-    static void setupDefaultDynamicState(const vk::CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline, const vk::DynamicState dynamicState)
+    static void setupDefaultDynamicState(const CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline, const vk::DynamicState dynamicState)
     {
-        const auto extent = detail::State.currentRenderPassExtent;
+        const auto extent = commandBuffer->currentRenderPassExtent;
         AVA_CHECK(extent.width != 0 && extent.height != 0, "Cannot setup default dynamic state as a render pass has not been started properly")
 
         switch (dynamicState)
         {
         case vk::DynamicState::eScissor:
             {
-                commandBuffer.setScissor(0, vk::Rect2D{{0, 0}, extent});
+                commandBuffer->commandBuffer.setScissor(0, vk::Rect2D{{0, 0}, extent});
                 return;
             }
         case vk::DynamicState::eViewport:
             {
-                commandBuffer.setViewport(0, vk::Viewport{0.0f, 0.0f, static_cast<float>(extent.width), static_cast<float>(extent.height), pipeline->minDepth, pipeline->maxDepth});
+                commandBuffer->commandBuffer.setViewport(0, vk::Viewport{0.0f, 0.0f, static_cast<float>(extent.width), static_cast<float>(extent.height), pipeline->minDepth, pipeline->maxDepth});
                 return;
             }
         default:
@@ -250,20 +252,20 @@ namespace ava
         }
     }
 
-    void bindGraphicsPipeline(const vk::CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline)
+    void bindGraphicsPipeline(const CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline)
     {
         AVA_CHECK(pipeline != nullptr && pipeline->pipeline && pipeline->layout, "Cannot bind invalid graphics pipeline");
-        AVA_CHECK(commandBuffer, "Cannot bind a pipeline to an invalid command buffer");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot bind a pipeline to an invalid command buffer");
 
-        commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->pipeline);
+        commandBuffer->commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->pipeline);
 
         for (const auto dynamicState : pipeline->dynamicStates)
         {
             setupDefaultDynamicState(commandBuffer, pipeline, dynamicState);
         }
 
-        detail::State.currentPipelineLayout = pipeline->layout;
-        detail::State.currentPipelineBindPoint = vk::PipelineBindPoint::eGraphics;
-        detail::State.pipelineCurrentlyBound = true;
+        commandBuffer->currentPipelineLayout = pipeline->layout;
+        commandBuffer->currentPipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+        commandBuffer->pipelineCurrentlyBound = true;
     }
 }

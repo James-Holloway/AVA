@@ -111,7 +111,7 @@ int main()
                 continue;
             }
 
-            uboData.offset = glm::vec2(std::sin(glfwGetTime()) * 0.5f, 0.0f);
+            uboData.offset = glm::vec2(std::sin(glfwGetTime()) * 0.5f, std::cos(glfwGetTime()) * 0.5f);
             ava::updateBuffer(uboBuffer, uboData);
 
             auto commandBuffer = cbRet.value();
@@ -123,7 +123,7 @@ int main()
             {
                 ava::bindGraphicsPipeline(commandBuffer, pipeline);
                 ava::bindDescriptorSet(commandBuffer, uboSet);
-                commandBuffer.draw(3, 1, 0, 0);
+                ava::draw(commandBuffer, 3);
                 // TODO: attachments, images
             }
             ava::endRenderPass(commandBuffer);

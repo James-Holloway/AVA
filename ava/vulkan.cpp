@@ -39,14 +39,4 @@ namespace ava
             throw std::runtime_error("Unhandled queue type");
         }
     }
-
-    vk::CommandBuffer getCurrentVulkanCommandBuffer()
-    {
-        return State.frameGraphicsCommandBuffers[State.currentFrame];
-    }
-
-    std::vector<vk::CommandBuffer> getFrameGraphicsCommandBuffers()
-    {
-        return State.frameGraphicsCommandBuffers;
-    }
 }

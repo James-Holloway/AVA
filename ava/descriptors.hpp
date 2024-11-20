@@ -27,7 +27,7 @@ namespace ava
     void freeDescriptorSet(const DescriptorPool& descriptorPool, DescriptorSet& descriptorSet);
     void freeDescriptorSets(const DescriptorPool& descriptorPool, const std::vector<DescriptorSet>& descriptorSet);
 
-    void bindDescriptorSet(const vk::CommandBuffer& commandBuffer, const DescriptorSet& set);
+    void bindDescriptorSet(const CommandBuffer& commandBuffer, const DescriptorSet& set);
 
     void bindBuffer(const DescriptorSet& descriptorSet, uint32_t binding, const Buffer& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0);
 }

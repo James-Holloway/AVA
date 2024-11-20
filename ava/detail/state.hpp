@@ -4,9 +4,12 @@
 #include "./vulkan.hpp"
 #include "../version.hpp"
 #include <atomic>
+#include <memory>
 
 namespace ava::detail
 {
+    struct CommandBuffer;
+
     struct State
     {
         bool stateConfigured = false;
@@ -54,19 +57,13 @@ namespace ava::detail
         vk::CommandPool graphicsCommandPool;
         vk::CommandPool computeCommandPool;
 
-        std::vector<vk::CommandBuffer> frameGraphicsCommandBuffers;
+        std::vector<std::shared_ptr<CommandBuffer>> frameGraphicsCommandBuffers;
 
         std::vector<vk::Semaphore> imageAvailableSemaphores;
         std::vector<vk::Semaphore> renderFinishedSemaphores;
         std::vector<vk::Fence> inFlightGraphicsFences;
 
-        vk::Extent2D currentRenderPassExtent;
-
         std::atomic<uint32_t> descriptorPoolIndexCounter = 0;
-
-        vk::PipelineLayout currentPipelineLayout;
-        vk::PipelineBindPoint currentPipelineBindPoint;
-        bool pipelineCurrentlyBound = false;
     };
 
     inline State State;

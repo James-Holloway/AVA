@@ -12,8 +12,6 @@ namespace ava
     vk::Device getVulkanDevice();
     vk::SwapchainKHR getVulkanSwapchain();
     vk::Queue getVulkanQueue(vk::QueueFlagBits queueType);
-    vk::CommandBuffer getCurrentVulkanCommandBuffer();
-    std::vector<vk::CommandBuffer> getFrameGraphicsCommandBuffers();
 }
 
 #endif

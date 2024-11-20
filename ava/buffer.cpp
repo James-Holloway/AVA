@@ -3,6 +3,7 @@
 #include "detail/buffer.hpp"
 
 #include "commandBuffer.hpp"
+#include "detail/commandBuffer.hpp"
 #include "detail/detail.hpp"
 #include "detail/state.hpp"
 
@@ -138,20 +139,20 @@ namespace ava
         // Update via single time command-buffer buffer-copy
         auto commandBuffer = beginSingleTimeCommands(vk::QueueFlagBits::eTransfer);
         updateBuffer(buffer, commandBuffer, stagingBuffer, offset);
-        endSingleTimeCommands(commandBuffer, vk::QueueFlagBits::eTransfer);
+        endSingleTimeCommands(commandBuffer);
 
         // Destroy staging buffer
         destroyBuffer(stagingBuffer);
     }
 
-    void updateBuffer(const Buffer& buffer, const vk::CommandBuffer commandBuffer, const Buffer& stagingBuffer, const vk::DeviceSize offset)
+    void updateBuffer(const Buffer& buffer, const CommandBuffer commandBuffer, const Buffer& stagingBuffer, const vk::DeviceSize offset)
     {
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot update an invalid buffer");
         AVA_CHECK(stagingBuffer != nullptr && stagingBuffer->buffer, "Cannot update a buffer with an invalid staging buffer");
         AVA_CHECK((stagingBuffer->allocationInfo.size + offset) <= buffer->allocationInfo.size, "Cannot update buffer where size + offset (" + std::to_string(stagingBuffer->allocationInfo.size) + ") exceeds buffer size (" + std::to_string(buffer->allocationInfo.size) + ")");
-        AVA_CHECK(commandBuffer, "Cannot update buffer with an invalid command buffer");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot update buffer with an invalid command buffer");
 
         const vk::BufferCopy copyRegion{0, offset, stagingBuffer->allocationInfo.size};
-        commandBuffer.copyBuffer(stagingBuffer->buffer, buffer->buffer, copyRegion);
+        commandBuffer->commandBuffer.copyBuffer(stagingBuffer->buffer, buffer->buffer, copyRegion);
     }
 }

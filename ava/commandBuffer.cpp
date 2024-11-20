@@ -10,21 +10,21 @@ namespace ava
 {
     using namespace detail;
 
-    void startCommandBuffer(const vk::CommandBuffer& commandBuffer, vk::CommandBufferUsageFlags usageFlags)
+    void startCommandBuffer(const ava::CommandBuffer& commandBuffer, vk::CommandBufferUsageFlags usageFlags)
     {
-        AVA_CHECK(commandBuffer, "Command buffer is invalid");
-        commandBuffer.reset();
-        commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
-        State.pipelineCurrentlyBound = false;
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
+        commandBuffer->commandBuffer.reset();
+        commandBuffer->commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
+        commandBuffer->pipelineCurrentlyBound = false;
     }
 
-    void endCommandBuffer(const vk::CommandBuffer& commandBuffer)
+    void endCommandBuffer(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer, "Command buffer is invalid");
-        commandBuffer.end();
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
+        commandBuffer->commandBuffer.end();
     }
 
-    vk::CommandBuffer beginSingleTimeCommands(const vk::QueueFlagBits queueType)
+    ava::CommandBuffer beginSingleTimeCommands(const vk::QueueFlagBits queueType)
     {
         AVA_CHECK(State.device != nullptr, "Cannot begin single time commands while State device is invalid");
 
@@ -48,12 +48,12 @@ namespace ava
         }
     }
 
-    void endSingleTimeCommands(vk::CommandBuffer commandBuffer, const vk::QueueFlagBits queueType)
+    void endSingleTimeCommands(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer, "Command buffer is invalid");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
         AVA_CHECK(State.device != nullptr, "Cannot end single time commands while State device is invalid");
 
-        switch (queueType)
+        switch (commandBuffer->queue)
         {
         case vk::QueueFlagBits::eGraphics:
         case vk::QueueFlagBits::eTransfer:
@@ -65,7 +65,7 @@ namespace ava
 
         endCommandBuffer(commandBuffer);
         vk::SubmitInfo submitInfo{};
-        submitInfo.setCommandBuffers(commandBuffer);
+        submitInfo.setCommandBuffers(commandBuffer->commandBuffer);
 
         constexpr vk::FenceCreateInfo fenceCreateInfo{vk::FenceCreateFlagBits::eSignaled};
 
@@ -74,7 +74,7 @@ namespace ava
 
         vk::Queue queue;
         vk::CommandPool pool;
-        switch (queueType)
+        switch (commandBuffer->queue)
         {
         case vk::QueueFlagBits::eGraphics:
         case vk::QueueFlagBits::eTransfer:
@@ -98,14 +98,14 @@ namespace ava
 
         const auto result = State.device.waitForFences(1, &fence, true, std::numeric_limits<uint64_t>::max());
         State.device.destroyFence(fence);
-        State.device.freeCommandBuffers(pool, commandBuffer);
+        State.device.freeCommandBuffers(pool, commandBuffer->commandBuffer);
         vk::detail::resultCheck(result, "endSingleTimeCommands failed waiting on submission fence");
     }
 
-    void beginRenderPass(const vk::CommandBuffer& commandBuffer, const ava::RenderPass& renderPass, const ava::Framebuffer& framebuffer, const std::vector<vk::ClearValue>& clearValues)
+    void beginRenderPass(const ava::CommandBuffer& commandBuffer, const ava::RenderPass& renderPass, const ava::Framebuffer& framebuffer, const std::vector<vk::ClearValue>& clearValues)
     {
         AVA_CHECK(State.device != nullptr, "Cannot begin render pass while State device is invalid");
-        AVA_CHECK(commandBuffer, "Cannot begin render pass while command buffer is invalid");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot begin render pass while command buffer is invalid");
         AVA_CHECK(renderPass != nullptr && renderPass->renderPass, "Cannot begin render pass while RenderPass is invalid");
         AVA_CHECK(framebuffer != nullptr && framebuffer->framebuffers.size() >= State.swapchainImageCount, "Cannot begin render pass while Framebuffer is invalid");
 
@@ -117,25 +117,37 @@ namespace ava
         beginInfo.renderArea = vk::Rect2D{{0, 0}, framebuffer->extent};
         beginInfo.setClearValues(clearValues);
 
-        commandBuffer.beginRenderPass(beginInfo, vk::SubpassContents::eInline);
+        commandBuffer->commandBuffer.beginRenderPass(beginInfo, vk::SubpassContents::eInline);
 
-        State.currentRenderPassExtent = framebuffer->extent;
+        commandBuffer->currentRenderPassExtent = framebuffer->extent;
     }
 
-    void endRenderPass(const vk::CommandBuffer& commandBuffer)
+    void endRenderPass(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer, "Cannot end render pass while CommandBuffer is invalid");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end render pass while CommandBuffer is invalid");
 
-        commandBuffer.endRenderPass();
+        commandBuffer->commandBuffer.endRenderPass();
 
-        State.currentRenderPassExtent = vk::Extent2D{0, 0};
-        State.pipelineCurrentlyBound = false;
+        commandBuffer->currentRenderPassExtent = vk::Extent2D{0, 0};
+        commandBuffer->pipelineCurrentlyBound = false;
     }
 
-    void nextSubpass(const vk::CommandBuffer& commandBuffer)
+    void nextSubpass(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer, "Cannot go to the next subpass while CommandBuffer is invalid");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot go to the next subpass while CommandBuffer is invalid");
 
-        commandBuffer.nextSubpass(vk::SubpassContents::eInline);
+        commandBuffer->commandBuffer.nextSubpass(vk::SubpassContents::eInline);
+    }
+
+    vk::CommandBuffer getCommandBuffer(const ava::CommandBuffer& commandBuffer)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot get invalid command buffer");
+        return commandBuffer->commandBuffer;
+    }
+
+    void draw(const ava::CommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot draw with invalid command buffer");
+        commandBuffer->commandBuffer.draw(vertexCount, instanceCount, firstVertex, firstInstance);
     }
 }

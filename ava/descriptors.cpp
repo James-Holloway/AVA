@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "detail/buffer.hpp"
+#include "detail/commandBuffer.hpp"
 
 namespace ava
 {
@@ -270,15 +271,15 @@ namespace ava
         }
     }
 
-    void bindDescriptorSet(const vk::CommandBuffer& commandBuffer, const DescriptorSet& set)
+    void bindDescriptorSet(const ava::CommandBuffer& commandBuffer, const DescriptorSet& set)
     {
-        AVA_CHECK(commandBuffer, "Cannot bind a descriptor set to an invalid command buffer");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot bind a descriptor set to an invalid command buffer");
         AVA_CHECK(!set.expired(), "Cannot bind an invalid descriptor set");
         const auto ds = set.lock();
         AVA_CHECK(ds->descriptorSet, "Cannot bind an invalid descriptor set");
-        AVA_CHECK(detail::State.pipelineCurrentlyBound, "Cannot bind a descriptor set when no pipeline is currently bound");
+        AVA_CHECK(commandBuffer->pipelineCurrentlyBound, "Cannot bind a descriptor set when no pipeline is currently bound");
 
-        commandBuffer.bindDescriptorSets(detail::State.currentPipelineBindPoint, detail::State.currentPipelineLayout, 0, ds->descriptorSet, nullptr);
+        commandBuffer->commandBuffer.bindDescriptorSets(commandBuffer->currentPipelineBindPoint, commandBuffer->currentPipelineLayout, 0, ds->descriptorSet, nullptr);
     }
 
     static std::optional<vk::DescriptorType> getDescriptorType(const std::shared_ptr<detail::DescriptorSet>& descriptorSet, const uint32_t binding)

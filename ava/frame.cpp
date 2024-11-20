@@ -1,6 +1,7 @@
 #include "frame.hpp"
 
 #include "creation.hpp"
+#include "detail/commandBuffer.hpp"
 #include "detail/detail.hpp"
 #include "detail/state.hpp"
 
@@ -8,7 +9,7 @@ namespace ava
 {
     using namespace detail;
 
-    std::optional<vk::CommandBuffer> startFrame(uint32_t* currentFrame, uint32_t* imageIndex)
+    std::optional<ava::CommandBuffer> startFrame(uint32_t* currentFrame, uint32_t* imageIndex)
     {
         if (currentFrame != nullptr)
         {
@@ -77,7 +78,7 @@ namespace ava
         submitInfo.setWaitSemaphores(waitSemaphores);
         submitInfo.pWaitDstStageMask = waitStages;
         submitInfo.setSignalSemaphores(signalSemaphores);
-        submitInfo.setCommandBuffers(commandBuffer);
+        submitInfo.setCommandBuffers(commandBuffer->commandBuffer);
 
         // Submit to the graphics queue
         State.graphicsQueue.submit(submitInfo, State.inFlightGraphicsFences[State.currentFrame]);
