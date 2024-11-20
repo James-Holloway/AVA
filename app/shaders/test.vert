@@ -14,7 +14,12 @@ vec3(0.0, 1.0, 0.0),
 vec3(0.0, 0.0, 1.0)
 );
 
+layout(binding = 0, set = 0) uniform UBO
+{
+    vec2 offset;
+};
+
 void main() {
-    gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+    gl_Position = vec4(positions[gl_VertexIndex] + offset, 0.0, 1.0);
     fragColor = colors[gl_VertexIndex];
 }

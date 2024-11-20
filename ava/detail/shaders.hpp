@@ -22,6 +22,8 @@ namespace ava::detail
         std::vector<std::vector<vk::DescriptorSetLayoutBinding>> layoutBindings;
         std::vector<vk::PushConstantRange> pushConstants;
 
+        std::vector<vk::DescriptorSetLayout> descriptorSetLayouts;
+
         std::vector<vk::DynamicState> dynamicStates;
         bool depthTest;
         bool depthWrite;

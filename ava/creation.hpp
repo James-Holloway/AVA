@@ -4,16 +4,10 @@
 #include <string>
 #include <vector>
 #include "detail/vulkan.hpp"
+#include "version.hpp"
 
 namespace ava
 {
-    struct Version
-    {
-        int major = 0;
-        int minor = 0;
-        int patch = 0;
-    };
-
     struct CreateInfo
     {
         std::string appName; // App name

@@ -201,6 +201,7 @@ namespace ava
         outGraphicsPipeline->pushConstants = pushConstants;
         outGraphicsPipeline->minDepth = pipelineCreationInfo.depthStencil.minDepthBounds;
         outGraphicsPipeline->maxDepth = pipelineCreationInfo.depthStencil.maxDepthBounds;
+        outGraphicsPipeline->descriptorSetLayouts = descriptorSetLayouts;
         return outGraphicsPipeline;
     }
 
@@ -216,6 +217,11 @@ namespace ava
         if (pipeline->layout)
         {
             detail::State.device.destroyPipelineLayout(pipeline->layout);
+        }
+
+        for (const auto& descriptorSetLayout : pipeline->descriptorSetLayouts)
+        {
+            detail::State.device.destroyDescriptorSetLayout(descriptorSetLayout);
         }
 
         delete pipeline;
@@ -246,7 +252,7 @@ namespace ava
 
     void bindGraphicsPipeline(const vk::CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline)
     {
-        AVA_CHECK(pipeline != nullptr && pipeline->pipeline, "Cannot bind invalid graphics pipeline");
+        AVA_CHECK(pipeline != nullptr && pipeline->pipeline && pipeline->layout, "Cannot bind invalid graphics pipeline");
         AVA_CHECK(commandBuffer, "Cannot bind a pipeline to an invalid command buffer");
 
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->pipeline);
@@ -255,5 +261,9 @@ namespace ava
         {
             setupDefaultDynamicState(commandBuffer, pipeline, dynamicState);
         }
+
+        detail::State.currentPipelineLayout = pipeline->layout;
+        detail::State.currentPipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+        detail::State.pipelineCurrentlyBound = true;
     }
 }

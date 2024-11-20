@@ -37,6 +37,8 @@ namespace ava
             .set_engine_version(AVAVersion.major, AVAVersion.minor, AVAVersion.patch)
             .require_api_version(createInfo.apiVersion.major, createInfo.apiVersion.minor, createInfo.apiVersion.patch);
 
+        State.apiVersion = createInfo.apiVersion;
+
         if (createInfo.debug)
         {
             instanceBuilder.set_debug_callback(&debugCallback);

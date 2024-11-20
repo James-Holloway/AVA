@@ -14,7 +14,7 @@ namespace ava::detail
 
         auto addLayoutBinding = [&info, &stage](uint32_t set, uint32_t binding, vk::DescriptorType descriptorType, uint32_t descriptorCount) -> void
         {
-            if (set > info.layoutBindings.size())
+            if (set >= info.layoutBindings.size())
             {
                 info.layoutBindings.resize(set + 1);
             }
@@ -64,11 +64,16 @@ namespace ava::detail
         return info;
     }
 
-    static void combine(ReflectedShaderInfo& out, ReflectedShaderInfo const& in)
+    static void combine(ReflectedShaderInfo& out, const ReflectedShaderInfo& in)
     {
         // Layout bindings
-        for (uint32_t set = 0; set < std::min(out.layoutBindings.size(), in.layoutBindings.size()); set++)
+        for (uint32_t set = 0; set < in.layoutBindings.size(); set++)
         {
+            if (set >= out.layoutBindings.size())
+            {
+                out.layoutBindings.resize(set + 1);
+            }
+
             auto& outSetBindings = out.layoutBindings[set];
             const auto& inSetBindings = in.layoutBindings[set];
 

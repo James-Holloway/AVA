@@ -15,6 +15,7 @@ namespace ava
         AVA_CHECK(commandBuffer, "Command buffer is invalid");
         commandBuffer.reset();
         commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
+        State.pipelineCurrentlyBound = false;
     }
 
     void endCommandBuffer(const vk::CommandBuffer& commandBuffer)
@@ -128,6 +129,7 @@ namespace ava
         commandBuffer.endRenderPass();
 
         State.currentRenderPassExtent = vk::Extent2D{0, 0};
+        State.pipelineCurrentlyBound = false;
     }
 
     void nextSubpass(const vk::CommandBuffer& commandBuffer)

@@ -4,6 +4,12 @@
 #include <GLFW/glfw3.h>
 
 #include "ava/ava.hpp"
+#include <glm/glm.hpp>
+
+struct UBO
+{
+    glm::vec2 offset;
+};
 
 int main()
 {
@@ -72,6 +78,17 @@ int main()
         }
         shaders.clear();
 
+        // Create descriptor pool
+        auto descriptorPool = ava::createDescriptorPool(pipeline);
+        auto uboSet = ava::allocateDescriptorSet(descriptorPool, 0u);
+
+        auto uboBuffer = ava::createUniformBuffer(sizeof(UBO));
+        UBO uboData{};
+        uboData.offset = glm::vec2(0.25f, 0.25f);
+        ava::updateBuffer(uboBuffer, uboData);
+
+        ava::bindBuffer(uboSet, 0, uboBuffer);
+
         // Main loop
         while (!glfwWindowShouldClose(window))
         {
@@ -93,6 +110,10 @@ int main()
             {
                 continue;
             }
+
+            uboData.offset = glm::vec2(std::sin(glfwGetTime()) * 0.5f, 0.0f);
+            ava::updateBuffer(uboBuffer, uboData);
+
             auto commandBuffer = cbRet.value();
             ava::startCommandBuffer(commandBuffer);
 
@@ -101,15 +122,19 @@ int main()
             ava::beginRenderPass(commandBuffer, renderPass, framebuffer, {clearColor});
             {
                 ava::bindGraphicsPipeline(commandBuffer, pipeline);
+                ava::bindDescriptorSet(commandBuffer, uboSet);
                 commandBuffer.draw(3, 1, 0, 0);
-                // TODO: descriptor (pools), clear colors, attachments, buffers
+                // TODO: attachments, images
             }
             ava::endRenderPass(commandBuffer);
 
             ava::endCommandBuffer(commandBuffer);
             ava::presentFrame();
         }
+
         ava::deviceWaitIdle();
+        ava::destroyBuffer(uboBuffer);
+        ava::destroyDescriptorPool(descriptorPool);
         ava::destroyGraphicsPipeline(pipeline);
         ava::destroyFramebuffer(framebuffer);
         ava::destroyRenderPass(renderPass);

@@ -38,6 +38,14 @@ add_library(ava STATIC
         vertexAttribute.hpp
         detail/reflection.cpp
         detail/reflection.hpp
+        detail/descriptors.hpp
+        descriptors.cpp
+        descriptors.hpp
+        version.hpp
+        detail/buffer.hpp
+        buffer.cpp
+        buffer.hpp
+        bufferLocation.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan glm::glm GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

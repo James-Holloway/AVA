@@ -2,6 +2,8 @@
 #define AVA_DETAIL_STATE_HPP
 
 #include "./vulkan.hpp"
+#include "../version.hpp"
+#include <atomic>
 
 namespace ava::detail
 {
@@ -12,6 +14,8 @@ namespace ava::detail
 
         vkb::Instance vkbInstance;
         vk::Instance instance;
+
+        Version apiVersion;
 
         vkb::PhysicalDevice vkbPhysicalDevice;
         vk::PhysicalDevice physicalDevice;
@@ -57,6 +61,12 @@ namespace ava::detail
         std::vector<vk::Fence> inFlightGraphicsFences;
 
         vk::Extent2D currentRenderPassExtent;
+
+        std::atomic<uint32_t> descriptorPoolIndexCounter = 0;
+
+        vk::PipelineLayout currentPipelineLayout;
+        vk::PipelineBindPoint currentPipelineBindPoint;
+        bool pipelineCurrentlyBound = false;
     };
 
     inline State State;

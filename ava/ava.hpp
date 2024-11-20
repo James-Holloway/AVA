@@ -9,6 +9,7 @@
 #include "commandBuffer.hpp"
 #include "frame.hpp"
 #include "vao.hpp"
+#include "descriptors.hpp"
 
 namespace ava
 {
