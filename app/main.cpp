@@ -80,14 +80,22 @@ int main()
 
         // Create descriptor pool
         auto descriptorPool = ava::createDescriptorPool(pipeline);
-        auto uboSet = ava::allocateDescriptorSet(descriptorPool, 0u);
+        auto set0 = ava::allocateDescriptorSet(descriptorPool, 0u);
 
         auto uboBuffer = ava::createUniformBuffer(sizeof(UBO));
         UBO uboData{};
         uboData.offset = glm::vec2(0.25f, 0.25f);
         ava::updateBuffer(uboBuffer, uboData);
 
-        ava::bindBuffer(uboSet, 0, uboBuffer);
+        ava::bindBuffer(set0, 0, uboBuffer);
+
+        uint32_t imageData[] = {0xFF0000FF, 0xFF0000FF, 0xFF00FF00, 0xFFFF0000};
+        auto image = ava::createImage2D({2, 2}, vk::Format::eR8G8B8A8Unorm);
+        ava::updateImage(image, imageData, sizeof(imageData));
+
+        auto imageView = ava::createImageView(image);
+        auto sampler = ava::createSampler(vk::Filter::eNearest, vk::SamplerMipmapMode::eNearest);
+        ava::bindImage(set0, 1, image, imageView, sampler);
 
         // Main loop
         while (!glfwWindowShouldClose(window))
@@ -122,9 +130,9 @@ int main()
             ava::beginRenderPass(commandBuffer, renderPass, framebuffer, {clearColor});
             {
                 ava::bindGraphicsPipeline(commandBuffer, pipeline);
-                ava::bindDescriptorSet(commandBuffer, uboSet);
+                ava::bindDescriptorSet(commandBuffer, set0);
                 ava::draw(commandBuffer, 3);
-                // TODO: attachments, images
+                // TODO: attachments, VBOs, IBOs
             }
             ava::endRenderPass(commandBuffer);
 
@@ -133,6 +141,9 @@ int main()
         }
 
         ava::deviceWaitIdle();
+        ava::destroySampler(sampler);
+        ava::destroyImageView(imageView);
+        ava::destroyImage(image);
         ava::destroyBuffer(uboBuffer);
         ava::destroyDescriptorPool(descriptorPool);
         ava::destroyGraphicsPipeline(pipeline);

@@ -6,13 +6,6 @@
 
 namespace ava
 {
-    namespace detail
-    {
-        struct RenderPass;
-    }
-
-    using RenderPass = detail::RenderPass*;
-
     enum class SubPassAttachmentTypeFlagBits : uint32_t
     {
         eNone = 0,

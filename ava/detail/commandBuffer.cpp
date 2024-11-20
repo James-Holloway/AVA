@@ -11,6 +11,21 @@ namespace ava::detail
         outCommandBuffer->commandBuffer = commandBuffer;
         outCommandBuffer->allocateInfo = allocateInfo;
         outCommandBuffer->queue = queue;
+
+        switch (queue)
+        {
+        case vk::QueueFlagBits::eTransfer:
+        case vk::QueueFlagBits::eGraphics:
+            outCommandBuffer->familyQueueIndex = State.graphicsQueueFamilyIndex;
+            break;
+        case vk::QueueFlagBits::eCompute:
+            outCommandBuffer->familyQueueIndex = State.computeQueueFamilyIndex;
+            break;
+        // ReSharper disable once CppDFAUnreachableCode
+        default:
+            break;
+        }
+
         return outCommandBuffer;
     }
 

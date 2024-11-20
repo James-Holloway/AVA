@@ -2,18 +2,11 @@
 #define BUFFER_HPP
 
 #include "detail/vulkan.hpp"
-#include "commandBuffer.hpp"
+#include "types.hpp"
 #include "bufferLocation.hpp"
 
 namespace ava
 {
-    namespace detail
-    {
-        struct Buffer;
-    }
-
-    using Buffer = detail::Buffer*;
-
     constexpr vk::BufferUsageFlags DEFAULT_TRANSFER_BUFFER_USAGE = vk::BufferUsageFlagBits::eTransferSrc | vk::BufferUsageFlagBits::eTransferDst;
     constexpr vk::BufferUsageFlags DEFAULT_UNIFORM_BUFFER_USAGE = vk::BufferUsageFlagBits::eUniformBuffer | DEFAULT_TRANSFER_BUFFER_USAGE;
     constexpr vk::BufferUsageFlags DEFAULT_STORAGE_BUFFER_USAGE = vk::BufferUsageFlagBits::eStorageBuffer | DEFAULT_TRANSFER_BUFFER_USAGE;
@@ -35,7 +28,7 @@ namespace ava
     // Updates CpuToGpu buffers using mapped data, otherwise creates a single time command buffer and staging buffer to update GpuOnly data (requires TransferSrc)
     void updateBuffer(const Buffer& buffer, const void* data, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0);
     // Update buffer via a staging buffer
-    void updateBuffer(const Buffer& buffer, CommandBuffer commandBuffer, const Buffer& stagingBuffer, vk::DeviceSize offset = 0);
+    void updateBuffer(const Buffer& buffer, const CommandBuffer& commandBuffer, const Buffer& stagingBuffer, vk::DeviceSize offset = 0);
 
     template <typename T>
     void updateBuffer(const Buffer& buffer, const T& data, const vk::DeviceSize offset = 0)
@@ -48,6 +41,8 @@ namespace ava
     {
         updateBuffer(buffer, reinterpret_cast<void*>(data.data()), data.size() * sizeof(T), offset);
     }
+
+    void insertBufferMemoryBarrier(const CommandBuffer& commandBuffer, const Buffer& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlagBits dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0);
 }
 
 #endif

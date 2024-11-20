@@ -7,18 +7,10 @@
 #include "detail/vulkan.hpp"
 #include "vao.hpp"
 #include "renderPass.hpp"
+#include "types.hpp"
 
 namespace ava
 {
-    namespace detail
-    {
-        struct Shader;
-        struct GraphicsPipeline;
-    }
-
-    using Shader = detail::Shader*;
-    using GraphicsPipeline = detail::GraphicsPipeline*;
-
     struct GraphicsPipelineCreationInfo
     {
         std::vector<Shader> shaders;

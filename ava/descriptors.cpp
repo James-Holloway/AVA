@@ -8,6 +8,8 @@
 
 #include "detail/buffer.hpp"
 #include "detail/commandBuffer.hpp"
+#include "detail/image.hpp"
+#include "detail/sampler.hpp"
 
 namespace ava
 {
@@ -279,7 +281,7 @@ namespace ava
         AVA_CHECK(ds->descriptorSet, "Cannot bind an invalid descriptor set");
         AVA_CHECK(commandBuffer->pipelineCurrentlyBound, "Cannot bind a descriptor set when no pipeline is currently bound");
 
-        commandBuffer->commandBuffer.bindDescriptorSets(commandBuffer->currentPipelineBindPoint, commandBuffer->currentPipelineLayout, 0, ds->descriptorSet, nullptr);
+        commandBuffer->commandBuffer.bindDescriptorSets(commandBuffer->currentPipelineBindPoint, commandBuffer->currentPipelineLayout, ds->setIndex, ds->descriptorSet, nullptr);
     }
 
     static std::optional<vk::DescriptorType> getDescriptorType(const std::shared_ptr<detail::DescriptorSet>& descriptorSet, const uint32_t binding)
@@ -326,6 +328,38 @@ namespace ava
         wds.descriptorCount = 1;
         wds.descriptorType = descriptorType.value();
         wds.setBufferInfo(bufferInfo);
+
+        detail::State.device.updateDescriptorSets(wds, nullptr);
+    }
+
+    void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler, const uint32_t dstArrayElement)
+    {
+        AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
+        AVA_CHECK(!descriptorSet.expired(), "Cannot bind an image to an invalid descriptor set");
+        const auto ds = descriptorSet.lock();
+        AVA_CHECK(ds->descriptorSet, "Cannot bind an image to an invalid descriptor set");
+        AVA_CHECK(image != nullptr, "Cannot bind an invalid image to a descriptor set");
+        AVA_CHECK(imageView != nullptr && imageView->imageView, "Cannot bind an image to a descriptor set when image view is invalid");
+        if (sampler != nullptr)
+        {
+            AVA_CHECK(sampler->sampler, "Cannot bind an image to a descriptor set as the provided sampler was invalid");
+        }
+
+        auto descriptorType = getDescriptorType(ds, binding);
+        AVA_CHECK(descriptorType.has_value(), "Cannot bind a buffer to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+
+        vk::DescriptorImageInfo imageInfo{};
+        imageInfo.sampler = sampler != nullptr ? sampler->sampler : nullptr;
+        imageInfo.imageLayout = image->imageLayout;
+        imageInfo.imageView = imageView->imageView;
+
+        vk::WriteDescriptorSet wds{};
+        wds.dstSet = ds->descriptorSet;
+        wds.dstBinding = binding;
+        wds.dstArrayElement = dstArrayElement;
+        wds.descriptorCount = 1;
+        wds.descriptorType = descriptorType.value();
+        wds.setImageInfo(imageInfo);
 
         detail::State.device.updateDescriptorSets(wds, nullptr);
     }

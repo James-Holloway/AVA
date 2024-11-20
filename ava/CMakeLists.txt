@@ -46,6 +46,10 @@ add_library(ava STATIC
         buffer.cpp
         buffer.hpp
         bufferLocation.hpp
+        detail/sampler.hpp
+        sampler.cpp
+        sampler.hpp
+        types.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan glm::glm GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

@@ -3,19 +3,12 @@
 
 #include "shaders.hpp"
 #include "buffer.hpp"
-#include <memory>
+#include "image.hpp"
+#include "sampler.hpp"
+#include "types.hpp"
 
 namespace ava
 {
-    namespace detail
-    {
-        struct DescriptorPool;
-        struct DescriptorSet;
-    }
-
-    using DescriptorPool = detail::DescriptorPool*;
-    using DescriptorSet = std::weak_ptr<detail::DescriptorSet>;
-
     // Descriptor pools
     DescriptorPool createDescriptorPool(const GraphicsPipeline& graphicsPipeline, uint32_t maxSetsMultiplier = 32);
     void resetDescriptorPool(const DescriptorPool& descriptorPool);
@@ -30,6 +23,7 @@ namespace ava
     void bindDescriptorSet(const CommandBuffer& commandBuffer, const DescriptorSet& set);
 
     void bindBuffer(const DescriptorSet& descriptorSet, uint32_t binding, const Buffer& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0);
+    void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler = nullptr, uint32_t dstArrayElement = 0);
 }
 
 #endif

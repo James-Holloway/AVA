@@ -17,6 +17,7 @@ namespace ava::detail
         vk::PipelineLayout currentPipelineLayout;
         vk::PipelineBindPoint currentPipelineBindPoint;
         bool pipelineCurrentlyBound = false;
+        uint32_t familyQueueIndex = ~0u;
     };
 
     using CommandBufferPtr = std::shared_ptr<CommandBuffer>;

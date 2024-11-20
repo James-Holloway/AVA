@@ -1,20 +1,12 @@
 #ifndef AVA_COMMANDBUFFER_HPP
 #define AVA_COMMANDBUFFER_HPP
 
-#include "frameBuffer.hpp"
-#include "renderPass.hpp"
+#include "types.hpp"
 #include "detail/vulkan.hpp"
 #include <memory>
 
 namespace ava
 {
-    namespace detail
-    {
-        struct CommandBuffer;
-    }
-
-    using CommandBuffer = std::shared_ptr<detail::CommandBuffer>;
-
     void startCommandBuffer(const CommandBuffer& commandBuffer, vk::CommandBufferUsageFlags usageFlags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
     void endCommandBuffer(const CommandBuffer& commandBuffer);
 

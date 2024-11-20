@@ -9,8 +9,8 @@ namespace ava::detail
     {
         vk::Image image;
         vk::ImageLayout imageLayout;
-        std::vector<vk::ImageView> imageViews;
         vma::Allocation allocation;
+        vma::AllocationInfo allocationInfo;
         vk::ImageCreateInfo creationInfo;
 
         bool isSwapchainImage = false;
@@ -19,6 +19,7 @@ namespace ava::detail
     struct ImageView
     {
         vk::ImageView imageView;
+        vk::Format format;
     };
 }
 

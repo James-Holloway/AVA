@@ -145,7 +145,7 @@ namespace ava
         destroyBuffer(stagingBuffer);
     }
 
-    void updateBuffer(const Buffer& buffer, const CommandBuffer commandBuffer, const Buffer& stagingBuffer, const vk::DeviceSize offset)
+    void updateBuffer(const Buffer& buffer, const CommandBuffer& commandBuffer, const Buffer& stagingBuffer, const vk::DeviceSize offset)
     {
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot update an invalid buffer");
         AVA_CHECK(stagingBuffer != nullptr && stagingBuffer->buffer, "Cannot update a buffer with an invalid staging buffer");
@@ -154,5 +154,24 @@ namespace ava
 
         const vk::BufferCopy copyRegion{0, offset, stagingBuffer->allocationInfo.size};
         commandBuffer->commandBuffer.copyBuffer(stagingBuffer->buffer, buffer->buffer, copyRegion);
+    }
+
+    void insertBufferMemoryBarrier(const CommandBuffer& commandBuffer, const Buffer& buffer, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlagBits dstStage, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::DeviceSize size, const vk::DeviceSize offset)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot insert buffer memory barrier when command buffer is invalid")
+        AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot insert buffer memory barrier when buffer is invalid")
+
+        vk::BufferMemoryBarrier barrier{};
+        barrier.buffer = buffer->buffer;
+        barrier.srcAccessMask = srcAccessMask;
+        barrier.dstAccessMask = dstAccessMask;
+        barrier.size = size;
+        barrier.offset = offset;
+        barrier.srcQueueFamilyIndex = commandBuffer->familyQueueIndex;
+        barrier.dstQueueFamilyIndex = commandBuffer->familyQueueIndex;
+
+        constexpr vk::DependencyFlags dependencyFlags{};
+
+        commandBuffer->commandBuffer.pipelineBarrier(srcStage, dstStage, dependencyFlags, nullptr, barrier, nullptr);
     }
 }
