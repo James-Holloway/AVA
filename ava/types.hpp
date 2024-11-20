@@ -19,6 +19,9 @@ namespace ava
         struct DescriptorSet;
         struct Shader;
         struct GraphicsPipeline;
+        struct VAO;
+        struct VBO;
+        struct IBO;
     }
 
     using CommandBuffer = std::shared_ptr<detail::CommandBuffer>;
@@ -32,6 +35,9 @@ namespace ava
     using DescriptorSet = std::weak_ptr<detail::DescriptorSet>;
     using Shader = detail::Shader*;
     using GraphicsPipeline = detail::GraphicsPipeline*;
+    using VAO = detail::VAO*;
+    using VBO = detail::VBO*;
+    using IBO = detail::IBO*;
 }
 
 #endif

@@ -6,9 +6,18 @@
 #include "ava/ava.hpp"
 #include <glm/glm.hpp>
 
+#include "ava/ibo.hpp"
+#include "ava/vbo.hpp"
+
 struct UBO
 {
     glm::vec2 offset;
+};
+
+struct Vertex
+{
+    glm::vec2 position;
+    glm::vec3 color;
 };
 
 int main()
@@ -61,6 +70,9 @@ int main()
         auto renderPass = ava::createRenderPass(renderPassCreateInfo);
         auto framebuffer = ava::createSwapchainFramebuffer(renderPass);
 
+        // Create VAO
+        auto vao = ava::createVAO({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
+
         // Create shaders for pipeline
         std::vector<ava::Shader> shaders{};
         shaders.push_back(ava::createShader("shaders/test.vert.spv", vk::ShaderStageFlagBits::eVertex));
@@ -68,7 +80,7 @@ int main()
 
         // Pipeline creation
         ava::GraphicsPipelineCreationInfo graphicsPipelineCreateInfo{};
-        ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, shaders, renderPass, 0, nullptr, false, false);
+        ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, shaders, renderPass, 0, vao, false, false);
         auto pipeline = ava::createGraphicsPipeline(graphicsPipelineCreateInfo);
 
         // Destroy shaders after pipeline creation
@@ -77,6 +89,19 @@ int main()
             ava::destroyShader(shader);
         }
         shaders.clear();
+
+        // Create VBO & IBO
+        const auto vertices = std::vector<Vertex>{
+            {glm::vec2{-0.5f, -0.5f}, glm::vec3{0.0f, 0.0f, 0.0f}},
+            {glm::vec2{0.5f, -0.5f}, glm::vec3{1.0f, 0.0f, 0.0f}},
+            {glm::vec2{-0.5f, 0.5f}, glm::vec3{0.0f, 1.0f, 0.0f}},
+            {glm::vec2{0.5f, 0.5f}, glm::vec3{1.0f, 1.0f, 0.0f}},
+        };
+        const auto indices = std::vector<uint16_t>{
+            0, 1, 2, 1, 3, 2
+        };
+        ava::VBO vbo = ava::createVBO(vao, vertices);
+        ava::IBO ibo = ava::createIBO(indices);
 
         // Create descriptor pool
         auto descriptorPool = ava::createDescriptorPool(pipeline);
@@ -89,7 +114,7 @@ int main()
 
         ava::bindBuffer(set0, 0, uboBuffer);
 
-        uint32_t imageData[] = {0xFF0000FF, 0xFF0000FF, 0xFF00FF00, 0xFFFF0000};
+        constexpr uint32_t imageData[] = {0xFF0000FF, 0xFF00FF00, 0xFFFF0000, 0xFF00FFFFu};
         auto image = ava::createImage2D({2, 2}, vk::Format::eR8G8B8A8Unorm);
         ava::updateImage(image, imageData, sizeof(imageData));
 
@@ -131,8 +156,10 @@ int main()
             {
                 ava::bindGraphicsPipeline(commandBuffer, pipeline);
                 ava::bindDescriptorSet(commandBuffer, set0);
-                ava::draw(commandBuffer, 3);
-                // TODO: attachments, VBOs, IBOs
+                ava::bindVBO(commandBuffer, vbo);
+                ava::bindIBO(commandBuffer, ibo);
+                ava::drawIndexed(commandBuffer);
+                // TODO: attachments
             }
             ava::endRenderPass(commandBuffer);
 
@@ -141,6 +168,9 @@ int main()
         }
 
         ava::deviceWaitIdle();
+        ava::destroyIBO(ibo);
+        ava::destroyVBO(vbo);
+        ava::destroyVAO(vao);
         ava::destroySampler(sampler);
         ava::destroyImageView(imageView);
         ava::destroyImage(image);

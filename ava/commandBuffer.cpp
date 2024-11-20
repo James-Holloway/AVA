@@ -10,12 +10,13 @@ namespace ava
 {
     using namespace detail;
 
-    void startCommandBuffer(const ava::CommandBuffer& commandBuffer, vk::CommandBufferUsageFlags usageFlags)
+    void startCommandBuffer(const ava::CommandBuffer& commandBuffer, const vk::CommandBufferUsageFlags usageFlags)
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
         commandBuffer->commandBuffer.reset();
         commandBuffer->commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
         commandBuffer->pipelineCurrentlyBound = false;
+        commandBuffer->lastBoundIndexBufferIndexCount = 0;
     }
 
     void endCommandBuffer(const ava::CommandBuffer& commandBuffer)
@@ -130,6 +131,7 @@ namespace ava
 
         commandBuffer->currentRenderPassExtent = vk::Extent2D{0, 0};
         commandBuffer->pipelineCurrentlyBound = false;
+        commandBuffer->lastBoundIndexBufferIndexCount = 0;
     }
 
     void nextSubpass(const ava::CommandBuffer& commandBuffer)
@@ -141,13 +143,25 @@ namespace ava
 
     vk::CommandBuffer getCommandBuffer(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot get invalid command buffer");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot get Vulkan command buffer from an invalid command buffer");
         return commandBuffer->commandBuffer;
     }
 
-    void draw(const ava::CommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+    void draw(const ava::CommandBuffer& commandBuffer, const uint32_t vertexCount, const uint32_t instanceCount, const uint32_t firstVertex, const uint32_t firstInstance)
     {
-        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot draw with invalid command buffer");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot draw with an invalid command buffer");
         commandBuffer->commandBuffer.draw(vertexCount, instanceCount, firstVertex, firstInstance);
+    }
+
+    void drawIndexed(const ava::CommandBuffer& commandBuffer, uint32_t indexCount, const uint32_t instanceCount, const uint32_t firstIndex, const int32_t vertexOffset, const uint32_t firstInstance)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot drawIndexed with an invalid command buffer");
+
+        if (indexCount == 0)
+        {
+            indexCount = commandBuffer->lastBoundIndexBufferIndexCount;
+        }
+
+        commandBuffer->commandBuffer.drawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
 }

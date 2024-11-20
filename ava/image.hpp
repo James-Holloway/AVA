@@ -39,6 +39,12 @@ namespace ava
     {
         updateImage(image, data.data(), data.size() * sizeof(T), aspectFlags, subresourceLayers, subresourceRange);
     }
+
+    template <typename T>
+    void updateImage(const Image& image, const std::vector<T>& data, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, std::optional<vk::ImageSubresourceLayers> subresourceLayers = {}, std::optional<vk::ImageSubresourceRange> subresourceRange = {})
+    {
+        updateImage(image, data.data(), data.size() * sizeof(T), aspectFlags, subresourceLayers, subresourceRange);
+    }
 }
 
 

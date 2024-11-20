@@ -17,9 +17,9 @@ namespace ava
         {
             const auto binding = attribute.binding;
             bool foundBinding = false;
-            for (auto& a : attributes)
+            for (const auto& b : bindings)
             {
-                if (a.binding == binding)
+                if (b == binding)
                 {
                     foundBinding = true;
                     break;
@@ -41,8 +41,8 @@ namespace ava
         const auto maxBinding = *std::ranges::max_element(bindings);
 
         std::vector<uint32_t> attributeIndices, attributeOffsets;
-        attributeIndices.resize(maxBinding, 0u);
-        attributeOffsets.resize(maxBinding, 0u);
+        attributeIndices.resize(maxBinding + 1, 0u);
+        attributeOffsets.resize(maxBinding + 1, 0u);
 
         std::vector<VertexAttribute> result;
         for (const auto& attribute : attributes)
@@ -106,5 +106,12 @@ namespace ava
         const auto attributes = fixupVertexAttributes(vertexAttributes, &strides);
 
         return createVAOMain(attributes, strides, topology, primitiveRestartEnable);
+    }
+
+    void destroyVAO(VAO& vao)
+    {
+        AVA_CHECK(vao != nullptr, "Cannot destroy invalid VAO");
+        delete vao;
+        vao = nullptr;
     }
 }
