@@ -61,7 +61,7 @@ add_library(ava STATIC
         shaders.cpp
         shaders.hpp
 )
-target_link_libraries(ava PUBLIC Vulkan::Vulkan glm::glm GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
+target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})
         target_link_libraries(ava PUBLIC ${CMAKE_DL_LIBS})
 endif ()

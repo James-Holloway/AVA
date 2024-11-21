@@ -5,12 +5,11 @@ project(ava)
 set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
-# Vulkan, VulkanMemoryAllocator, GLM, vk-bootstrap, SPIRV-Cross
+# Vulkan, VulkanMemoryAllocator, vk-bootstrap, SPIRV-Cross
 find_package(Vulkan REQUIRED)
 if (NOT VULKAN_FOUND)
     message(FATAL_ERROR "Vulkan installation required")
 endif ()
-find_package(glm REQUIRED)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 FetchContent_Declare(
         fetch_vk_bootstrap
