@@ -6,16 +6,16 @@
 
 namespace ava
 {
-    VBO createVBO(VAO vao, const void* data, size_t size, uint32_t binding = 0);
+    [[nodiscard]] VBO createVBO(VAO vao, const void* data, size_t size, uint32_t binding = 0);
 
     template <typename T>
-    VBO createVBO(const VAO vao, const std::span<T> data, const uint32_t binding = 0)
+    [[nodiscard]] VBO createVBO(const VAO vao, const std::span<T> data, const uint32_t binding = 0)
     {
         return createVBO(vao, data.data(), data.size() * sizeof(T), binding);
     }
 
     template <typename T>
-    VBO createVBO(const VAO vao, const std::vector<T>& data, const uint32_t binding = 0)
+    [[nodiscard]] VBO createVBO(const VAO vao, const std::vector<T>& data, const uint32_t binding = 0)
     {
         return createVBO(vao, data.data(), data.size() * sizeof(T), binding);
     }

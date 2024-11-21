@@ -60,8 +60,8 @@ namespace ava
         uint32_t subPasses = 1;
     };
 
-    RenderPass createRenderPass(const RenderPassCreateInfo& createInfo);
-    RenderPass createRenderPass(const vk::RenderPassCreateInfo& renderPassCreateInfo);
+    [[nodiscard]] RenderPass createRenderPass(const RenderPassCreateInfo& createInfo);
+    [[nodiscard]] RenderPass createRenderPass(const vk::RenderPassCreateInfo& renderPassCreateInfo);
     void destroyRenderPass(RenderPass& renderPass);
 
     // Simple functions to create a one render pass attachment with one subpass

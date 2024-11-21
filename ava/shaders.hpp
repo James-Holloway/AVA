@@ -31,14 +31,14 @@ namespace ava
         vk::PrimitiveTopology fallbackTopology = vk::PrimitiveTopology::eTriangleList; // Topology to be used if VAO is not provided
     };
 
-    Shader createShader(const std::string& shaderPath, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
-    Shader createShader(const std::vector<char>& shaderSpirv, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
+    [[nodiscard]] Shader createShader(const std::string& shaderPath, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
+    [[nodiscard]] Shader createShader(const std::vector<char>& shaderSpirv, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
     void destroyShader(Shader& shader);
 
     // Graphics pipeline population
     void populateGraphicsPipelineCreationInfo(GraphicsPipelineCreationInfo& pipelineCreationInfo, const std::vector<Shader>& shaders, const RenderPass& renderPass, uint32_t subpass, const VAO& vao, bool depthTest, bool depthWrite);
     // Graphics pipeline creation
-    GraphicsPipeline createGraphicsPipeline(const GraphicsPipelineCreationInfo& pipelineCreationInfo);
+    [[nodiscard]] GraphicsPipeline createGraphicsPipeline(const GraphicsPipelineCreationInfo& pipelineCreationInfo);
     void destroyGraphicsPipeline(GraphicsPipeline& pipeline);
 
     void bindGraphicsPipeline(const CommandBuffer& commandBuffer, const GraphicsPipeline& pipeline);

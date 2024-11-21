@@ -10,7 +10,7 @@ namespace ava
 {
     // Returns an un-started & un-reset graphics command buffer when the operation was successful, otherwise it will have no value
     // currentFrame and imageIndex are optional outs
-    std::optional<CommandBuffer> startFrame(uint32_t* currentFrame = nullptr, uint32_t* imageIndex = nullptr);
+    [[nodiscard]] std::optional<CommandBuffer> startFrame(uint32_t* currentFrame = nullptr, uint32_t* imageIndex = nullptr);
 
     // Presents the frame using the current frame's graphics command buffer
     void presentFrame();

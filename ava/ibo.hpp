@@ -5,11 +5,14 @@
 
 namespace ava
 {
-    IBO createIBO(const uint32_t* indices, uint32_t indexCount);
-    IBO createIBO(const uint16_t* indices, uint32_t indexCount);
+    [[nodiscard]] IBO createIBO(const uint32_t* indices, uint32_t indexCount);
+    [[nodiscard]] IBO createIBO(const uint16_t* indices, uint32_t indexCount);
 
-    IBO createIBO(std::span<const uint32_t> indices);
-    IBO createIBO(std::span<const uint16_t> indices);
+    [[nodiscard]] IBO createIBO(std::span<const uint32_t> indices);
+    [[nodiscard]] IBO createIBO(std::span<const uint16_t> indices);
+
+    [[nodiscard]] IBO createIBO(const std::vector<uint32_t>& indices);
+    [[nodiscard]] IBO createIBO(const std::vector<uint16_t>& indices);
 
     void destroyIBO(IBO& ibo);
 

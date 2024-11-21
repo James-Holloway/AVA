@@ -10,7 +10,7 @@ namespace ava
     void startCommandBuffer(const CommandBuffer& commandBuffer, vk::CommandBufferUsageFlags usageFlags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
     void endCommandBuffer(const CommandBuffer& commandBuffer);
 
-    CommandBuffer beginSingleTimeCommands(vk::QueueFlagBits queueType);
+    [[nodiscard]] CommandBuffer beginSingleTimeCommands(vk::QueueFlagBits queueType);
     void endSingleTimeCommands(const CommandBuffer& commandBuffer);
 
     void beginRenderPass(const CommandBuffer& commandBuffer, const RenderPass& renderPass, const Framebuffer& framebuffer, const std::vector<vk::ClearValue>& clearValues);

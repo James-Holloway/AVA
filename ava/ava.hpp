@@ -10,6 +10,8 @@
 #include "frame.hpp"
 #include "vao.hpp"
 #include "descriptors.hpp"
+#include "ibo.hpp"
+#include "vbo.hpp"
 
 namespace ava
 {

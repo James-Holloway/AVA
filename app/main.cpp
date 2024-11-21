@@ -6,9 +6,6 @@
 #include "ava/ava.hpp"
 #include <glm/glm.hpp>
 
-#include "ava/ibo.hpp"
-#include "ava/vbo.hpp"
-
 struct UBO
 {
     glm::vec2 offset;
@@ -147,7 +144,7 @@ int main()
             uboData.offset = glm::vec2(std::sin(glfwGetTime()) * 0.5f, std::cos(glfwGetTime()) * 0.5f);
             ava::updateBuffer(uboBuffer, uboData);
 
-            auto commandBuffer = cbRet.value();
+            const auto& commandBuffer = cbRet.value();
             ava::startCommandBuffer(commandBuffer);
 
             // Begin render pass
