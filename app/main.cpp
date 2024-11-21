@@ -21,7 +21,7 @@ int main()
         // Configure state
         ava::CreateInfo createInfo;
         createInfo.appName = "AVA app";
-        createInfo.apiVersion = {1, 2, 0};
+        createInfo.apiVersion = {1, 3, 0};
         createInfo.debug = true;
 
         uint32_t extensionsCount;
@@ -67,8 +67,8 @@ int main()
 
         // Create shaders for pipeline
         std::vector<ava::Shader> graphicsShaders{};
-        graphicsShaders.push_back(ava::createShader("shaders/test.vert.spv", vk::ShaderStageFlagBits::eVertex));
-        graphicsShaders.push_back(ava::createShader("shaders/test.frag.spv", vk::ShaderStageFlagBits::eFragment));
+        graphicsShaders.push_back(ava::createShader("shaders/test.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"));
+        graphicsShaders.push_back(ava::createShader("shaders/test.slang.spv", vk::ShaderStageFlagBits::eFragment, "pixel"));
 
         // Pipeline creation
         ava::GraphicsPipelineCreationInfo graphicsPipelineCreateInfo{};
@@ -82,7 +82,7 @@ int main()
         }
         graphicsShaders.clear();
 
-        auto computeShader = ava::createShader("shaders/test.comp.spv", vk::ShaderStageFlagBits::eCompute);
+        auto computeShader = ava::createShader("shaders/test_comp.slang.spv", vk::ShaderStageFlagBits::eCompute, "compute");
         auto computePipeline = ava::createComputePipeline({computeShader});
         ava::destroyShader(computeShader);
 

@@ -26,6 +26,7 @@ FetchContent_MakeAvailable(fetch_vk_bootstrap fetch_spirv_cross)
 
 # Shader utilities
 include(cmake/shaders_glslc.cmake)
+include(cmake/shaders_slang.cmake)
 
 # AVA itself
 add_subdirectory(ava)

@@ -6,8 +6,7 @@ add_executable(app
         main.cpp
 )
 target_link_libraries(app PRIVATE ava glfw)
-compile_shaders_glslc(app "shaders"
-        shaders/test.vert
-        shaders/test.frag
-        shaders/test.comp
+compile_shaders_slang(app "shaders"
+        shaders/test.slang
+        shaders/test_comp.slang
 )

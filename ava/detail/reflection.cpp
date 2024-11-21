@@ -7,6 +7,43 @@ namespace ava::detail
 {
     // https://github.com/KhronosGroup/SPIRV-Cross/wiki/Reflection-API-user-guide
 
+    static spv::ExecutionModel getExecutionModelFromStage(vk::ShaderStageFlagBits stage)
+    {
+        switch (stage)
+        {
+        case vk::ShaderStageFlagBits::eVertex:
+            return spv::ExecutionModelVertex;
+        case vk::ShaderStageFlagBits::eFragment:
+            return spv::ExecutionModelFragment;
+        case vk::ShaderStageFlagBits::eCompute:
+            return spv::ExecutionModelGLCompute;
+        case vk::ShaderStageFlagBits::eGeometry:
+            return spv::ExecutionModelGeometry;
+        case vk::ShaderStageFlagBits::eTessellationControl:
+            return spv::ExecutionModelTessellationControl;
+        case vk::ShaderStageFlagBits::eTessellationEvaluation:
+            return spv::ExecutionModelTessellationEvaluation;
+        case vk::ShaderStageFlagBits::eRaygenKHR:
+            return spv::ExecutionModelRayGenerationKHR;
+        case vk::ShaderStageFlagBits::eMissKHR:
+            return spv::ExecutionModelMissKHR;
+        case vk::ShaderStageFlagBits::eClosestHitKHR:
+            return spv::ExecutionModelClosestHitKHR;
+        case vk::ShaderStageFlagBits::eAnyHitKHR:
+            return spv::ExecutionModelAnyHitKHR;
+        case vk::ShaderStageFlagBits::eIntersectionKHR:
+            return spv::ExecutionModelIntersectionKHR;
+        case vk::ShaderStageFlagBits::eCallableKHR:
+            return spv::ExecutionModelCallableKHR;
+        case vk::ShaderStageFlagBits::eMeshEXT:
+            return spv::ExecutionModelMeshEXT;
+        case vk::ShaderStageFlagBits::eTaskEXT:
+            return spv::ExecutionModelTaskEXT;
+        default:
+            throw std::runtime_error("Cannot get spv::ExecutionModel from unhandled stage");
+        }
+    }
+
     static ReflectedShaderInfo reflectShader(const Shader* const& shader)
     {
         ReflectedShaderInfo info;
@@ -43,6 +80,9 @@ namespace ava::detail
                 addLayoutBinding(set, binding, outDescType, descriptorCount);
             }
         };
+
+        auto entryPoints = compiler.get_entry_points_and_stages();
+        compiler.set_entry_point(shader->entry, getExecutionModelFromStage(shader->stage));
 
         // Shader resource inputs
         auto shaderResources = compiler.get_shader_resources();
