@@ -210,6 +210,7 @@ namespace ava
                     State.device.destroyFence(inFlightGraphicsFence);
             }
             State.inFlightGraphicsFences.clear();
+            State.frameGraphicsCommandBuffers.clear();
 
             // Destroy command pools
             if (State.graphicsCommandPool)

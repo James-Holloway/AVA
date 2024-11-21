@@ -18,6 +18,9 @@ namespace ava
     void nextSubpass(const CommandBuffer& commandBuffer);
 
     vk::CommandBuffer getCommandBuffer(const CommandBuffer& commandBuffer);
+    void trackObject(const CommandBuffer& commandBuffer, const std::shared_ptr<void>& object);
+    void untrackAllObjects(const CommandBuffer& commandBuffer);
+
     void draw(const CommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0);
     // indexCount of 0 means it will draw the number of indices in the currently bound IBO
     void drawIndexed(const CommandBuffer& commandBuffer, uint32_t indexCount = 0, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0);

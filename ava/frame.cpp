@@ -54,6 +54,8 @@ namespace ava
 
         // Record command buffers
         auto commandBuffer = State.frameGraphicsCommandBuffers[State.currentFrame];
+        // Clear any previously tracked objects
+        commandBuffer->trackedObjects.clear();
 
         State.frameStarted = true;
 

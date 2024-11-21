@@ -12,6 +12,8 @@ namespace ava::detail
         vk::CommandBufferAllocateInfo allocateInfo;
         vk::QueueFlags queueFlags;
         vk::QueueFlagBits primaryQueue;
+        bool isSingleTime = false;
+        bool started = false;
 
         // State
         vk::Extent2D currentRenderPassExtent;
@@ -21,6 +23,9 @@ namespace ava::detail
         uint32_t familyQueueIndex = ~0u;
 
         uint32_t lastBoundIndexBufferIndexCount = 0;
+
+        // Track objects internally rather than in RAII wrapper
+        std::vector<std::shared_ptr<void>> trackedObjects;
     };
 
     using CommandBufferPtr = std::shared_ptr<CommandBuffer>;

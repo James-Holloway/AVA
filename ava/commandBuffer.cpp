@@ -17,12 +17,14 @@ namespace ava
         commandBuffer->commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
         commandBuffer->pipelineCurrentlyBound = false;
         commandBuffer->lastBoundIndexBufferIndexCount = 0;
+        commandBuffer->started = true;
     }
 
     void endCommandBuffer(const ava::CommandBuffer& commandBuffer)
     {
         AVA_CHECK_NO_EXCEPT_RETURN(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");
         commandBuffer->commandBuffer.end();
+        commandBuffer->started = false;
     }
 
     ava::CommandBuffer beginSingleTimeCommands(const vk::QueueFlagBits queueType)
@@ -35,12 +37,14 @@ namespace ava
         case vk::QueueFlagBits::eTransfer:
             {
                 auto commandBuffer = createGraphicsCommandBuffers(1, false).at(0);
+                commandBuffer->isSingleTime = true;
                 startCommandBuffer(commandBuffer, vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
                 return commandBuffer;
             }
         case vk::QueueFlagBits::eCompute:
             {
                 auto commandBuffer = createComputeCommandBuffers(1, false).at(0);
+                commandBuffer->isSingleTime = true;
                 startCommandBuffer(commandBuffer, vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
                 return commandBuffer;
             }
@@ -53,6 +57,7 @@ namespace ava
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end single time commands when Command buffer is invalid");
         AVA_CHECK(State.device != nullptr, "Cannot end single time commands while State device is invalid");
+        AVA_CHECK(commandBuffer->isSingleTime, "Cannot end a non-single time command buffer with endSingleTimeCommands");
 
         switch (commandBuffer->primaryQueue)
         {
@@ -64,7 +69,11 @@ namespace ava
             throw std::runtime_error("Unhandled queue type");
         }
 
-        endCommandBuffer(commandBuffer);
+        if (commandBuffer->started)
+        {
+            endCommandBuffer(commandBuffer);
+        }
+
         vk::SubmitInfo submitInfo{};
         submitInfo.setCommandBuffers(commandBuffer->commandBuffer);
 
@@ -98,8 +107,12 @@ namespace ava
         queue.submit(submitInfo, fence);
 
         const auto result = State.device.waitForFences(1, &fence, true, std::numeric_limits<uint64_t>::max());
+
+        commandBuffer->trackedObjects.clear();
+
         State.device.destroyFence(fence);
         State.device.freeCommandBuffers(pool, commandBuffer->commandBuffer);
+
         vk::detail::resultCheck(result, "endSingleTimeCommands failed waiting on submission fence");
     }
 
@@ -148,6 +161,18 @@ namespace ava
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot get Vulkan command buffer from an invalid command buffer");
         return commandBuffer->commandBuffer;
+    }
+
+    void trackObject(const ava::CommandBuffer& commandBuffer, const std::shared_ptr<void>& object)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot track object onto an invalid command buffer");
+        commandBuffer->trackedObjects.push_back(object);
+    }
+
+    void untrackAllObjects(const ava::CommandBuffer& commandBuffer)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot untrack objects on an invalid command buffer");
+        commandBuffer->trackedObjects.clear();
     }
 
     void draw(const ava::CommandBuffer& commandBuffer, const uint32_t vertexCount, const uint32_t instanceCount, const uint32_t firstVertex, const uint32_t firstInstance)
