@@ -1,10 +1,6 @@
 #ifndef AVA_DESCRIPTORS_HPP
 #define AVA_DESCRIPTORS_HPP
 
-#include "shaders.hpp"
-#include "buffer.hpp"
-#include "image.hpp"
-#include "sampler.hpp"
 #include "types.hpp"
 
 namespace ava

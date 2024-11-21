@@ -30,8 +30,8 @@ add_library(ava STATIC
         image.hpp
         frameBuffer.cpp
         frameBuffer.hpp
-        shaders.cpp
-        shaders.hpp
+        graphics.cpp
+        graphics.hpp
         vao.cpp
         vao.hpp
         detail/vao.hpp
@@ -58,6 +58,8 @@ add_library(ava STATIC
         ibo.hpp
         compute.cpp
         compute.hpp
+        shaders.cpp
+        shaders.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan glm::glm GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})
