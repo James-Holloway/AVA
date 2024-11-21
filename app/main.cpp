@@ -6,11 +6,6 @@
 #include "ava/ava.hpp"
 #include <glm/glm.hpp>
 
-struct UBO
-{
-    glm::vec2 offset;
-};
-
 struct Vertex
 {
     glm::vec2 position;
@@ -71,21 +66,25 @@ int main()
         auto vao = ava::createVAO({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
 
         // Create shaders for pipeline
-        std::vector<ava::Shader> shaders{};
-        shaders.push_back(ava::createShader("shaders/test.vert.spv", vk::ShaderStageFlagBits::eVertex));
-        shaders.push_back(ava::createShader("shaders/test.frag.spv", vk::ShaderStageFlagBits::eFragment));
+        std::vector<ava::Shader> graphicsShaders{};
+        graphicsShaders.push_back(ava::createShader("shaders/test.vert.spv", vk::ShaderStageFlagBits::eVertex));
+        graphicsShaders.push_back(ava::createShader("shaders/test.frag.spv", vk::ShaderStageFlagBits::eFragment));
 
         // Pipeline creation
         ava::GraphicsPipelineCreationInfo graphicsPipelineCreateInfo{};
-        ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, shaders, renderPass, 0, vao, false, false);
-        auto pipeline = ava::createGraphicsPipeline(graphicsPipelineCreateInfo);
+        ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, renderPass, 0, vao, false, false);
+        auto graphicsPipeline = ava::createGraphicsPipeline(graphicsPipelineCreateInfo);
 
         // Destroy shaders after pipeline creation
-        for (auto& shader : shaders)
+        for (auto& shader : graphicsShaders)
         {
             ava::destroyShader(shader);
         }
-        shaders.clear();
+        graphicsShaders.clear();
+
+        auto computeShader = ava::createShader("shaders/test.comp.spv", vk::ShaderStageFlagBits::eCompute);
+        auto computePipeline = ava::createComputePipeline({computeShader});
+        ava::destroyShader(computeShader);
 
         // Create VBO & IBO
         const auto vertices = std::vector<Vertex>{
@@ -100,16 +99,21 @@ int main()
         ava::VBO vbo = ava::createVBO(vao, vertices);
         ava::IBO ibo = ava::createIBO(indices);
 
-        // Create descriptor pool
-        auto descriptorPool = ava::createDescriptorPool(pipeline);
-        auto set0 = ava::allocateDescriptorSet(descriptorPool, 0u);
+        // Create descriptor pools
+        auto graphicsDescriptorPool = ava::createDescriptorPool(graphicsPipeline);
+        auto graphicsSet0 = ava::allocateDescriptorSet(graphicsDescriptorPool, 0u);
 
-        auto uboBuffer = ava::createUniformBuffer(sizeof(UBO));
-        UBO uboData{};
-        uboData.offset = glm::vec2(0.25f, 0.25f);
-        ava::updateBuffer(uboBuffer, uboData);
+        auto computeDescriptorPool = ava::createDescriptorPool(computePipeline);
+        auto computeSet0 = ava::allocateDescriptorSet(computeDescriptorPool, 0u);
 
-        ava::bindBuffer(set0, 0, uboBuffer);
+        auto offsetBuffer = ava::createBuffer(sizeof(glm::vec2), ava::DEFAULT_STORAGE_BUFFER_USAGE | ava::DEFAULT_UNIFORM_BUFFER_USAGE);
+
+        auto timeBuffer = ava::createUniformBuffer(sizeof(float));
+        ava::updateBuffer(timeBuffer, static_cast<float>(glfwGetTime()));
+
+        ava::bindBuffer(graphicsSet0, 0, offsetBuffer);
+        ava::bindBuffer(computeSet0, 0, timeBuffer);
+        ava::bindBuffer(computeSet0, 1, offsetBuffer);
 
         constexpr uint32_t imageData[] = {0xFF0000FF, 0xFF00FF00, 0xFFFF0000, 0xFF00FFFFu};
         auto image = ava::createImage2D({2, 2}, vk::Format::eR8G8B8A8Unorm);
@@ -117,7 +121,7 @@ int main()
 
         auto imageView = ava::createImageView(image);
         auto sampler = ava::createSampler(vk::Filter::eNearest, vk::SamplerMipmapMode::eNearest);
-        ava::bindImage(set0, 1, image, imageView, sampler);
+        ava::bindImage(graphicsSet0, 1, image, imageView, sampler);
 
         // Main loop
         while (!glfwWindowShouldClose(window))
@@ -140,19 +144,23 @@ int main()
             {
                 continue;
             }
-
-            uboData.offset = glm::vec2(std::sin(glfwGetTime()) * 0.5f, std::cos(glfwGetTime()) * 0.5f);
-            ava::updateBuffer(uboBuffer, uboData);
+            // Update the compute time buffer
+            ava::updateBuffer(timeBuffer, static_cast<float>(glfwGetTime()));
 
             const auto& commandBuffer = cbRet.value();
             ava::startCommandBuffer(commandBuffer);
+
+            // Compute offset buffer
+            ava::bindComputePipeline(commandBuffer, computePipeline);
+            ava::bindDescriptorSet(commandBuffer, computeSet0);
+            ava::dispatch(commandBuffer, 1, 1, 1);
 
             // Begin render pass
             vk::ClearValue clearColor{{1.0f, 0.0f, 1.0f, 1.0f}};
             ava::beginRenderPass(commandBuffer, renderPass, framebuffer, {clearColor});
             {
-                ava::bindGraphicsPipeline(commandBuffer, pipeline);
-                ava::bindDescriptorSet(commandBuffer, set0);
+                ava::bindGraphicsPipeline(commandBuffer, graphicsPipeline);
+                ava::bindDescriptorSet(commandBuffer, graphicsSet0);
                 ava::bindVBO(commandBuffer, vbo);
                 ava::bindIBO(commandBuffer, ibo);
                 ava::drawIndexed(commandBuffer);
@@ -171,9 +179,12 @@ int main()
         ava::destroySampler(sampler);
         ava::destroyImageView(imageView);
         ava::destroyImage(image);
-        ava::destroyBuffer(uboBuffer);
-        ava::destroyDescriptorPool(descriptorPool);
-        ava::destroyGraphicsPipeline(pipeline);
+        ava::destroyBuffer(timeBuffer);
+        ava::destroyBuffer(offsetBuffer);
+        ava::destroyDescriptorPool(graphicsDescriptorPool);
+        ava::destroyDescriptorPool(computeDescriptorPool);
+        ava::destroyComputePipeline(computePipeline);
+        ava::destroyGraphicsPipeline(graphicsPipeline);
         ava::destroyFramebuffer(framebuffer);
         ava::destroyRenderPass(renderPass);
         ava::destroyState();

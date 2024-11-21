@@ -11,6 +11,7 @@ namespace ava
 {
     // Descriptor pools
     [[nodiscard]] DescriptorPool createDescriptorPool(const GraphicsPipeline& graphicsPipeline, uint32_t maxSetsMultiplier = 32);
+    [[nodiscard]] DescriptorPool createDescriptorPool(const ComputePipeline& computePipeline, uint32_t maxSetsMultiplier = 32);
     void resetDescriptorPool(const DescriptorPool& descriptorPool);
     void destroyDescriptorPool(DescriptorPool& descriptorPool);
 
@@ -18,7 +19,7 @@ namespace ava
     [[nodiscard]] DescriptorSet allocateDescriptorSet(const DescriptorPool& descriptorPool, uint32_t set);
     [[nodiscard]] std::vector<DescriptorSet> allocateDescriptorSets(const DescriptorPool& descriptorPool, uint32_t set, uint32_t count);
     void freeDescriptorSet(const DescriptorPool& descriptorPool, DescriptorSet& descriptorSet);
-    void freeDescriptorSets(const DescriptorPool& descriptorPool, const std::vector<DescriptorSet>& descriptorSet);
+    void freeDescriptorSets(const DescriptorPool& descriptorPool, const std::vector<DescriptorSet>& descriptorSets);
 
     void bindDescriptorSet(const CommandBuffer& commandBuffer, const DescriptorSet& set);
 

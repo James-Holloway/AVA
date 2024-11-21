@@ -56,6 +56,8 @@ add_library(ava STATIC
         vbo.hpp
         ibo.cpp
         ibo.hpp
+        compute.cpp
+        compute.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan glm::glm GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

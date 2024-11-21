@@ -13,16 +13,16 @@
 
 namespace ava
 {
-    DescriptorPool createDescriptorPool(const GraphicsPipeline& graphicsPipeline, const uint32_t maxSetsMultiplier)
+    // Use a template because every pipeline is going to have the common factors:
+    // layout, layoutBindings, pushConstants and descriptorSetLayouts
+    template <typename T>
+    static DescriptorPool createDescriptorPoolMain(const T& pipeline, const uint32_t maxSetsMultiplier)
     {
-        AVA_CHECK(graphicsPipeline != nullptr && graphicsPipeline->layout, "Cannot create descriptor pool from an invalid graphics pipeline");
-        AVA_CHECK(maxSetsMultiplier > 0, "Cannot create a descriptor pool with a max sets multiplier of 0");
-
         std::vector<vk::DescriptorSetLayoutCreateInfo> descriptorSetLayoutCreateInfos{};
-        descriptorSetLayoutCreateInfos.reserve(graphicsPipeline->layoutBindings.size());
+        descriptorSetLayoutCreateInfos.reserve(pipeline->layoutBindings.size());
         std::vector<std::map<vk::DescriptorType, uint32_t>> setRequiredDescriptors;
         std::map<vk::DescriptorType, uint32_t> defaultPoolSizes;
-        for (auto& layoutSet : graphicsPipeline->layoutBindings)
+        for (auto& layoutSet : pipeline->layoutBindings)
         {
             setRequiredDescriptors.push_back({});
             auto& currentSetRequiredDescriptors = setRequiredDescriptors.back();
@@ -36,18 +36,34 @@ namespace ava
             descriptorSetLayoutCreateInfos.push_back(vk::DescriptorSetLayoutCreateInfo{{}, layoutSet});
         }
 
-        const uint32_t pipelineSets = graphicsPipeline->layoutBindings.size();
+        const uint32_t pipelineSets = pipeline->layoutBindings.size();
 
         const auto outDescriptorPool = new detail::DescriptorPool();
-        outDescriptorPool->pipelineLayout = graphicsPipeline->layout;
-        outDescriptorPool->layoutBindings = graphicsPipeline->layoutBindings;
-        outDescriptorPool->pushConstants = graphicsPipeline->pushConstants;
+        outDescriptorPool->pipelineLayout = pipeline->layout;
+        outDescriptorPool->layoutBindings = pipeline->layoutBindings;
+        outDescriptorPool->pushConstants = pipeline->pushConstants;
         outDescriptorPool->defaultPoolSizes = defaultPoolSizes;
         outDescriptorPool->setRequiredDescriptors = setRequiredDescriptors;
-        outDescriptorPool->descriptorSetLayouts = graphicsPipeline->descriptorSetLayouts;
+        outDescriptorPool->descriptorSetLayouts = pipeline->descriptorSetLayouts;
         outDescriptorPool->defaultMaxSets = pipelineSets * maxSetsMultiplier;
         outDescriptorPool->pipelineSets = pipelineSets;
         return outDescriptorPool;
+    }
+
+    DescriptorPool createDescriptorPool(const GraphicsPipeline& graphicsPipeline, const uint32_t maxSetsMultiplier)
+    {
+        AVA_CHECK(graphicsPipeline != nullptr && graphicsPipeline->layout, "Cannot create descriptor pool from an invalid graphics pipeline");
+        AVA_CHECK(maxSetsMultiplier > 0, "Cannot create a descriptor pool with a max sets multiplier of 0");
+
+        return createDescriptorPoolMain(graphicsPipeline, maxSetsMultiplier);
+    }
+
+    DescriptorPool createDescriptorPool(const ComputePipeline& computePipeline, const uint32_t maxSetsMultiplier)
+    {
+        AVA_CHECK(computePipeline != nullptr && computePipeline->layout, "Cannot create descriptor pool from an invalid compute pipeline");
+        AVA_CHECK(maxSetsMultiplier > 0, "Cannot create a descriptor pool with a max sets multiplier of 0");
+
+        return createDescriptorPoolMain(computePipeline, maxSetsMultiplier);
     }
 
     void resetDescriptorPool(const DescriptorPool& descriptorPool)

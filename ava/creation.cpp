@@ -141,12 +141,16 @@ namespace ava
         State.presentQueueFamilyIndex = State.vkbDevice.get_queue_index(vkb::QueueType::present).value();
         State.presentQueue = State.vkbDevice.get_queue(vkb::QueueType::present).value();
         AVA_CHECK(State.presentQueue, "Could not create Vulkan Present Queue");
+
         State.graphicsQueueFamilyIndex = State.vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
         State.graphicsQueue = State.vkbDevice.get_queue(vkb::QueueType::graphics).value();
         AVA_CHECK(State.graphicsQueue, "Could not create Vulkan Graphics Queue");
+        State.graphicsQueueFlags = static_cast<vk::QueueFlags>(State.vkbDevice.queue_families.at(State.graphicsQueueFamilyIndex).queueFlags);
+
         State.computeQueueFamilyIndex = State.vkbDevice.get_queue_index(vkb::QueueType::compute).value();
         State.computeQueue = State.vkbDevice.get_queue(vkb::QueueType::compute).value();
         AVA_CHECK(State.computeQueue, "Could not create Vulkan Compute Queue");
+        State.computeQueueFlags = static_cast<vk::QueueFlags>(State.vkbDevice.queue_families.at(State.computeQueueFamilyIndex).queueFlags);
 
         // Create sync objects
         vk::SemaphoreCreateInfo semaphoreCreateInfo{};

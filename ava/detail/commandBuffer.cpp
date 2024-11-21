@@ -10,16 +10,18 @@ namespace ava::detail
         auto outCommandBuffer = std::make_shared<CommandBuffer>();
         outCommandBuffer->commandBuffer = commandBuffer;
         outCommandBuffer->allocateInfo = allocateInfo;
-        outCommandBuffer->queue = queue;
+        outCommandBuffer->primaryQueue = queue;
 
         switch (queue)
         {
         case vk::QueueFlagBits::eTransfer:
         case vk::QueueFlagBits::eGraphics:
             outCommandBuffer->familyQueueIndex = State.graphicsQueueFamilyIndex;
+            outCommandBuffer->queueFlags = State.graphicsQueueFlags;
             break;
         case vk::QueueFlagBits::eCompute:
             outCommandBuffer->familyQueueIndex = State.computeQueueFamilyIndex;
+            outCommandBuffer->queueFlags = State.computeQueueFlags;
             break;
         // ReSharper disable once CppDFAUnreachableCode
         default:

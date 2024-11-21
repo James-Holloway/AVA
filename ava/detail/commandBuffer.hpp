@@ -10,7 +10,8 @@ namespace ava::detail
     {
         vk::CommandBuffer commandBuffer;
         vk::CommandBufferAllocateInfo allocateInfo;
-        vk::QueueFlagBits queue;
+        vk::QueueFlags queueFlags;
+        vk::QueueFlagBits primaryQueue;
 
         // State
         vk::Extent2D currentRenderPassExtent;

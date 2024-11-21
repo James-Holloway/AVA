@@ -54,7 +54,7 @@ namespace ava
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end single time commands when Command buffer is invalid");
         AVA_CHECK(State.device != nullptr, "Cannot end single time commands while State device is invalid");
 
-        switch (commandBuffer->queue)
+        switch (commandBuffer->primaryQueue)
         {
         case vk::QueueFlagBits::eGraphics:
         case vk::QueueFlagBits::eTransfer:
@@ -75,7 +75,7 @@ namespace ava
 
         vk::Queue queue;
         vk::CommandPool pool;
-        switch (commandBuffer->queue)
+        switch (commandBuffer->primaryQueue)
         {
         case vk::QueueFlagBits::eGraphics:
         case vk::QueueFlagBits::eTransfer:
@@ -130,7 +130,10 @@ namespace ava
         commandBuffer->commandBuffer.endRenderPass();
 
         commandBuffer->currentRenderPassExtent = vk::Extent2D{0, 0};
-        commandBuffer->pipelineCurrentlyBound = false;
+        if (commandBuffer->currentPipelineBindPoint == vk::PipelineBindPoint::eGraphics)
+        {
+            commandBuffer->pipelineCurrentlyBound = false;
+        }
         commandBuffer->lastBoundIndexBufferIndexCount = 0;
     }
 

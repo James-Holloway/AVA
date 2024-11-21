@@ -19,6 +19,7 @@ namespace ava
         struct DescriptorSet;
         struct Shader;
         struct GraphicsPipeline;
+        struct ComputePipeline;
         struct VAO;
         struct VBO;
         struct IBO;
@@ -35,6 +36,7 @@ namespace ava
     using DescriptorSet = std::weak_ptr<detail::DescriptorSet>;
     using Shader = detail::Shader*;
     using GraphicsPipeline = detail::GraphicsPipeline*;
+    using ComputePipeline = detail::ComputePipeline*;
     using VAO = detail::VAO*;
     using VBO = detail::VBO*;
     using IBO = detail::IBO*;

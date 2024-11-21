@@ -103,7 +103,7 @@ namespace ava
 
     GraphicsPipeline createGraphicsPipeline(const GraphicsPipelineCreationInfo& pipelineCreationInfo)
     {
-        AVA_CHECK(detail::State.device, "Cannot create a graphics pipeline with an invalid State device")
+        AVA_CHECK(detail::State.device, "Cannot create a graphics pipeline with an invalid State device");
         AVA_CHECK(pipelineCreationInfo.renderPass != nullptr && pipelineCreationInfo.renderPass->renderPass, "Cannot create a graphics pipeline with an invalid RenderPass");
         AVA_CHECK(!pipelineCreationInfo.shaders.empty(), "Cannot create a graphics pipeline with no shaders");
 
@@ -256,6 +256,7 @@ namespace ava
     {
         AVA_CHECK(pipeline != nullptr && pipeline->pipeline && pipeline->layout, "Cannot bind invalid graphics pipeline");
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot bind a pipeline to an invalid command buffer");
+        AVA_CHECK((commandBuffer->queueFlags & vk::QueueFlagBits::eGraphics) != vk::QueueFlags{}, "Cannot bind a graphics pipeline to a non-graphics command buffer");
 
         commandBuffer->commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline->pipeline);
 

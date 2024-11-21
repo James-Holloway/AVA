@@ -31,6 +31,17 @@ namespace ava::detail
         float maxDepth;
     };
 
+    struct ComputePipeline
+    {
+        vk::Pipeline pipeline;
+        vk::PipelineLayout layout;
+
+        std::vector<std::vector<vk::DescriptorSetLayoutBinding>> layoutBindings;
+        std::vector<vk::PushConstantRange> pushConstants;
+
+        std::vector<vk::DescriptorSetLayout> descriptorSetLayouts;
+    };
+
     vk::ShaderModule createShaderModule(const std::vector<char>& spirv);
     vk::ShaderModule loadShaderModule(const std::string& filePath, std::vector<char>& spirv);
 }

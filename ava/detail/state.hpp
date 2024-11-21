@@ -51,8 +51,10 @@ namespace ava::detail
         vk::Queue presentQueue;
         uint32_t graphicsQueueFamilyIndex = ~0u;
         vk::Queue graphicsQueue;
+        vk::QueueFlags graphicsQueueFlags;
         uint32_t computeQueueFamilyIndex = ~0u;
         vk::Queue computeQueue;
+        vk::QueueFlags computeQueueFlags;
 
         vk::CommandPool graphicsCommandPool;
         vk::CommandPool computeCommandPool;

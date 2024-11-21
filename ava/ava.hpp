@@ -5,6 +5,7 @@
 #include "renderPass.hpp"
 #include "./vulkan.hpp"
 #include "shaders.hpp"
+#include "ava/compute.hpp"
 #include "frameBuffer.hpp"
 #include "commandBuffer.hpp"
 #include "frame.hpp"
