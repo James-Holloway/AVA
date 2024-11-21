@@ -110,7 +110,7 @@ namespace ava
 
     void destroyVAO(VAO& vao)
     {
-        AVA_CHECK(vao != nullptr, "Cannot destroy invalid VAO");
+        AVA_CHECK_NO_EXCEPT_RETURN(vao != nullptr, "Cannot destroy invalid VAO");
         delete vao;
         vao = nullptr;
     }

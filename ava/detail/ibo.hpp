@@ -13,4 +13,4 @@ namespace ava::detail
     };
 }
 
-#endif //IBO_HPP
+#endif

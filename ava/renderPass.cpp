@@ -292,7 +292,7 @@ namespace ava
 
     void destroyRenderPass(RenderPass& renderPass)
     {
-        AVA_CHECK(renderPass != nullptr, "Cannot destroy an invalid render pass");
+        AVA_CHECK_NO_EXCEPT_RETURN(renderPass != nullptr, "Cannot destroy an invalid render pass");
 
         if (renderPass->renderPass)
         {

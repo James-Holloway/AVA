@@ -67,8 +67,8 @@ namespace ava
 
     void destroyDescriptorPool(DescriptorPool& descriptorPool)
     {
-        AVA_CHECK(descriptorPool != nullptr, "Cannot destroy invalid descriptor pool");
-        AVA_CHECK(detail::State.device, "Cannot destroy descriptor pool when State's device is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(descriptorPool != nullptr, "Cannot destroy invalid descriptor pool");
+        AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy descriptor pool when State's device is invalid");
 
         for (auto& pool : descriptorPool->pools)
         {

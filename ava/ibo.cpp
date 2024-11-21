@@ -67,7 +67,7 @@ namespace ava
 
     void destroyIBO(IBO& ibo)
     {
-        AVA_CHECK(ibo != nullptr, "Cannot destroy invalid IBO");
+        AVA_CHECK_NO_EXCEPT_RETURN(ibo != nullptr, "Cannot destroy invalid IBO");
 
         if (ibo->buffer != nullptr)
         {

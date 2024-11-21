@@ -70,14 +70,14 @@ namespace ava
 
     void destroyBuffer(Buffer& buffer)
     {
-        AVA_CHECK(buffer != nullptr, "Cannot destroy invalid buffer");
-        AVA_CHECK(detail::State.device, "Cannot destroy buffer when State's device is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(buffer != nullptr, "Cannot destroy invalid buffer");
+        AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy buffer when State's device is invalid");
 
         if (buffer->buffer)
         {
             if (buffer->allocation)
             {
-                AVA_CHECK(detail::State.allocator, "Cannot destroy buffer when State's allocator is invalid");
+                AVA_CHECK_NO_EXCEPT_RETURN(detail::State.allocator, "Cannot destroy buffer when State's allocator is invalid");
 
                 if (buffer->mapped != nullptr)
                 {

@@ -32,8 +32,8 @@ namespace ava
 
     void destroyVBO(VBO& vbo)
     {
-        AVA_CHECK(vbo != nullptr, "Cannot destroy invalid VBO");
-        AVA_CHECK(detail::State.device, "Cannot destroy VBO when State's device is invalid")
+        AVA_CHECK_NO_EXCEPT_RETURN(vbo != nullptr, "Cannot destroy invalid VBO");
+        AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy VBO when State's device is invalid")
 
         if (vbo->buffer != nullptr)
         {

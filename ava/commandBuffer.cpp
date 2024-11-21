@@ -12,7 +12,7 @@ namespace ava
 
     void startCommandBuffer(const ava::CommandBuffer& commandBuffer, const vk::CommandBufferUsageFlags usageFlags)
     {
-        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot start an invalid command buffer");
         commandBuffer->commandBuffer.reset();
         commandBuffer->commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
         commandBuffer->pipelineCurrentlyBound = false;
@@ -21,7 +21,7 @@ namespace ava
 
     void endCommandBuffer(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");
         commandBuffer->commandBuffer.end();
     }
 
@@ -51,7 +51,7 @@ namespace ava
 
     void endSingleTimeCommands(const ava::CommandBuffer& commandBuffer)
     {
-        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Command buffer is invalid");
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end single time commands when Command buffer is invalid");
         AVA_CHECK(State.device != nullptr, "Cannot end single time commands while State device is invalid");
 
         switch (commandBuffer->queue)

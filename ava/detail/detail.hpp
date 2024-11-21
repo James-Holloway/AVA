@@ -3,12 +3,22 @@
 
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 #define AVA_CHECK(condition, errorMessage) \
 { \
 if (!(condition)) \
 { \
 throw std::runtime_error(errorMessage); \
+} \
+}
+
+#define AVA_CHECK_NO_EXCEPT_RETURN(condition, errorMessage) \
+{ \
+if (!(condition))\
+{ \
+std::cerr << errorMessage << '\n'; \
+return; \
 } \
 }
 

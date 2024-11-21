@@ -53,8 +53,8 @@ namespace ava
 
     void destroyImage(Image& image)
     {
-        AVA_CHECK(image != nullptr, "Cannot destroy an invalid image view")
-        AVA_CHECK(detail::State.device, "Cannot destroy image when State's device is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(image != nullptr, "Cannot destroy an invalid image view")
+        AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy image when State's device is invalid");
 
         if (image->image)
         {
@@ -107,8 +107,8 @@ namespace ava
 
     void destroyImageView(ImageView& imageView)
     {
-        AVA_CHECK(imageView != nullptr, "Cannot destroy an invalid image view")
-        AVA_CHECK(detail::State.device, "Cannot destroy image view when State's device is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(imageView != nullptr, "Cannot destroy an invalid image view")
+        AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy image view when State's device is invalid");
 
         if (imageView->imageView)
         {

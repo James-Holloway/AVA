@@ -41,8 +41,8 @@ ava::Sampler ava::createSampler(vk::Filter minMagFilter, vk::SamplerMipmapMode m
 
 void ava::destroySampler(Sampler& sampler)
 {
-    AVA_CHECK(detail::State.device, "Cannot destroy sampler when State's device is invalid");
-    AVA_CHECK(sampler != nullptr, "Cannot destroy invalid sampler");
+    AVA_CHECK_NO_EXCEPT_RETURN(sampler != nullptr, "Cannot destroy invalid sampler");
+    AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy sampler when State's device is invalid");
 
     if (sampler->sampler != nullptr)
     {

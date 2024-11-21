@@ -1,5 +1,5 @@
-#ifndef BUFFER_HPP
-#define BUFFER_HPP
+#ifndef AVA_BUFFER_HPP
+#define AVA_BUFFER_HPP
 
 #include "detail/vulkan.hpp"
 #include "types.hpp"

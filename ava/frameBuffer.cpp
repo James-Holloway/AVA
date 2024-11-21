@@ -55,7 +55,7 @@ namespace ava
 
     void destroyFramebuffer(Framebuffer& frameBuffer)
     {
-        AVA_CHECK(frameBuffer != nullptr, "Cannot destroy an invalid framebuffer");
+        AVA_CHECK_NO_EXCEPT_RETURN(frameBuffer != nullptr, "Cannot destroy an invalid framebuffer");
 
         for (auto& framebuffer : frameBuffer->framebuffers)
         {

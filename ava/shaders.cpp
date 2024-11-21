@@ -65,7 +65,7 @@ namespace ava
 
     void destroyShader(Shader& shader)
     {
-        AVA_CHECK(shader != nullptr, "Cannot destroy an invalid shader");
+        AVA_CHECK_NO_EXCEPT_RETURN(shader != nullptr, "Cannot destroy an invalid shader");
         if (shader->module)
         {
             detail::State.device.destroyShaderModule(shader->module);
@@ -209,8 +209,8 @@ namespace ava
 
     void destroyGraphicsPipeline(GraphicsPipeline& pipeline)
     {
-        AVA_CHECK(pipeline != nullptr, "Cannot destroy invalid graphics pipeline");
-        AVA_CHECK(detail::State.device, "Cannot destroy graphics pipeline when State's device is invalid")
+        AVA_CHECK_NO_EXCEPT_RETURN(pipeline != nullptr, "Cannot destroy invalid graphics pipeline");
+        AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy graphics pipeline when State's device is invalid")
         if (pipeline->pipeline)
         {
             detail::State.device.destroyPipeline(pipeline->pipeline);
