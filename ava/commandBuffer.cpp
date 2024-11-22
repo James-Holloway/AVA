@@ -13,6 +13,7 @@ namespace ava
     void startCommandBuffer(const ava::CommandBuffer& commandBuffer, const vk::CommandBufferUsageFlags usageFlags)
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot start an invalid command buffer");
+        AVA_CHECK(!commandBuffer->started, "Cannot start a command buffer which has already been started");
         commandBuffer->commandBuffer.reset();
         commandBuffer->commandBuffer.begin(vk::CommandBufferBeginInfo{usageFlags});
         commandBuffer->pipelineCurrentlyBound = false;
@@ -23,6 +24,8 @@ namespace ava
     void endCommandBuffer(const ava::CommandBuffer& commandBuffer)
     {
         AVA_CHECK_NO_EXCEPT_RETURN(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");
+        AVA_CHECK_NO_EXCEPT_RETURN(commandBuffer->started, "Cannot end a command buffer which has not started");
+
         commandBuffer->commandBuffer.end();
         commandBuffer->started = false;
     }

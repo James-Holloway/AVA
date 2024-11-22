@@ -66,6 +66,14 @@ add_library(ava STATIC
         raii/commandBuffer.hpp
         raii/types.hpp
         raii.hpp
+        raii/compute.hpp
+        raii/compute.cpp
+        raii/frame.hpp
+        raii/frame.cpp
+        raii/graphics.cpp
+        raii/graphics.hpp
+        raii/descriptors.cpp
+        raii/descriptors.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

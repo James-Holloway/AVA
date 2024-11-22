@@ -14,7 +14,7 @@ namespace ava::raii
 
         ava::CommandBuffer commandBuffer;
 
-        void start() const;
+        void start(vk::CommandBufferUsageFlags usageFlags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit) const;
         void end() const;
         void endSingleTime() const;
 
@@ -28,6 +28,12 @@ namespace ava::raii
         void draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) const;
         // indexCount of 0 means it will draw the number of indices in the currently bound IBO
         void drawIndexed(uint32_t indexCount = 0, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) const;
+        void dispatch(uint32_t groupCountX, uint32_t groupCountY = 1, uint32_t groupCountZ = 1) const;
+
+        void bindComputePipeline(const Pointer<ComputePipeline>& pipeline) const;
+        void bindGraphicsPipeline(const Pointer<GraphicsPipeline>& pipeline) const;
+
+        void bindDescriptorSet(const Pointer<DescriptorSet>& set) const;
 
         static Pointer<CommandBuffer> beginSingleTime(vk::QueueFlagBits queueType);
     };

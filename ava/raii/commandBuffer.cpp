@@ -2,6 +2,11 @@
 #include "ava/commandBuffer.hpp"
 #include "ava/detail/commandBuffer.hpp"
 
+#include "compute.hpp"
+#include "descriptors.hpp"
+#include "graphics.hpp"
+#include "ava/compute.hpp"
+#include "ava/descriptors.hpp"
 #include "ava/detail/detail.hpp"
 
 namespace ava::raii
@@ -17,18 +22,16 @@ namespace ava::raii
         commandBuffer.reset();
     }
 
-    void CommandBuffer::start() const
+    void CommandBuffer::start(vk::CommandBufferUsageFlags usageFlags) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");
-        AVA_CHECK(!commandBuffer->started, "Cannot end a command buffer which has already been started");
 
-        startCommandBuffer(commandBuffer);
+        startCommandBuffer(commandBuffer, usageFlags);
     }
 
     void CommandBuffer::end() const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");
-        AVA_CHECK(commandBuffer->started, "Cannot end a command buffer which has not started");
 
         endCommandBuffer(commandBuffer);
     }
@@ -73,6 +76,29 @@ namespace ava::raii
     void CommandBuffer::drawIndexed(const uint32_t indexCount, const uint32_t instanceCount, const uint32_t firstIndex, const int32_t vertexOffset, const uint32_t firstInstance) const
     {
         ava::drawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+    }
+
+    void CommandBuffer::dispatch(const uint32_t groupCountX, const uint32_t groupCountY, const uint32_t groupCountZ) const
+    {
+        ava::dispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
+    }
+
+    void CommandBuffer::bindComputePipeline(const Pointer<ComputePipeline>& pipeline) const
+    {
+        AVA_CHECK(pipeline != nullptr && pipeline->pipeline, "Cannot bind an invalid compute pipeline");
+        ava::bindComputePipeline(commandBuffer, pipeline->pipeline);
+    }
+
+    void CommandBuffer::bindGraphicsPipeline(const Pointer<GraphicsPipeline>& pipeline) const
+    {
+        AVA_CHECK(pipeline != nullptr && pipeline->pipeline, "Cannot bind an invalid graphics pipeline");
+        ava::bindGraphicsPipeline(commandBuffer, pipeline->pipeline);
+    }
+
+    void CommandBuffer::bindDescriptorSet(const Pointer<DescriptorSet>& set) const
+    {
+        AVA_CHECK(set != nullptr, "Cannot bind an invalid descriptor set")
+        ava::bindDescriptorSet(commandBuffer, set->descriptorSet);
     }
 
     Pointer<CommandBuffer> CommandBuffer::beginSingleTime(const vk::QueueFlagBits queueType)

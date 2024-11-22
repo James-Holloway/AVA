@@ -6,7 +6,14 @@
 namespace ava::raii
 {
     class Buffer;
+    class Image;
+    class ImageView;
+    class Sampler;
     class CommandBuffer;
+    class ComputePipeline;
+    class GraphicsPipeline;
+    class DescriptorPool;
+    class DescriptorSet;
 
     template <typename T>
     using Pointer = std::shared_ptr<T>;
