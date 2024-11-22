@@ -17,6 +17,8 @@ namespace ava::raii
 
         Buffer(const Buffer& other) = delete;
         Buffer& operator=(Buffer& other) = delete;
+        Buffer(Buffer&& other) noexcept;
+        Buffer& operator=(Buffer&& other) noexcept;
 
         [[nodiscard]] vk::DeviceSize getBufferSize() const;
         [[nodiscard]] vk::BufferUsageFlags getBufferUsage() const;

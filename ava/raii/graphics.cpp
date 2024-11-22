@@ -23,6 +23,22 @@ namespace ava::raii
         }
     }
 
+    GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& other) noexcept
+    {
+        pipeline = other.pipeline;
+        other.pipeline = nullptr;
+    }
+
+    GraphicsPipeline& GraphicsPipeline::operator=(GraphicsPipeline&& other) noexcept
+    {
+        if (this != &other)
+        {
+            pipeline = other.pipeline;
+            other.pipeline = nullptr;
+        }
+        return *this;
+    }
+
     void GraphicsPipeline::bind(const Pointer<CommandBuffer>& commandBuffer) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot bind graphics pipeline to an invalid command buffer");

@@ -27,6 +27,22 @@ namespace ava::raii
         }
     }
 
+    DescriptorPool::DescriptorPool(DescriptorPool&& other) noexcept
+    {
+        descriptorPool = other.descriptorPool;
+        other.descriptorPool = nullptr;
+    }
+
+    DescriptorPool& DescriptorPool::operator=(DescriptorPool&& other) noexcept
+    {
+        if (this != &other)
+        {
+            descriptorPool = other.descriptorPool;
+            other.descriptorPool = nullptr;
+        }
+        return *this;
+    }
+
     Pointer<DescriptorSet> DescriptorPool::allocateDescriptorSet(const uint32_t set)
     {
         return std::make_shared<DescriptorSet>(shared_from_this(), ava::allocateDescriptorSet(descriptorPool, set));
@@ -74,6 +90,26 @@ namespace ava::raii
             AVA_CHECK_NO_EXCEPT_RETURN(pool != nullptr, "Cannot free descriptor set when allocated from pool has expired (gone out of scope before this set)");
             ava::freeDescriptorSet(pool->descriptorPool, descriptorSet);
         }
+    }
+
+    DescriptorSet::DescriptorSet(DescriptorSet&& other) noexcept
+    {
+        descriptorSet = other.descriptorSet;
+        allocatedFromPool = other.allocatedFromPool;
+        other.descriptorSet = {};
+        other.allocatedFromPool = {};
+    }
+
+    DescriptorSet& DescriptorSet::operator=(DescriptorSet&& other) noexcept
+    {
+        if (this != &other)
+        {
+            descriptorSet = other.descriptorSet;
+            allocatedFromPool = other.allocatedFromPool;
+            other.descriptorSet = {};
+            other.allocatedFromPool = {};
+        }
+        return *this;
     }
 
     void DescriptorSet::bindDescriptorSet(const Pointer<CommandBuffer>& commandBuffer) const

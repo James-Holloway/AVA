@@ -15,6 +15,8 @@ namespace ava::raii
 
         Framebuffer(const Framebuffer& other) = delete;
         Framebuffer& operator=(Framebuffer& other) = delete;
+        Framebuffer(Framebuffer&& other) noexcept;
+        Framebuffer& operator=(Framebuffer&& other) noexcept;
 
         static Pointer<Framebuffer> create(const Pointer<RenderPass>& renderPass, const std::vector<std::vector<vk::ImageView>>& attachments, vk::Extent2D extent, int layers = 1);
         static Pointer<Framebuffer> create(const Pointer<RenderPass>& renderPass, const std::vector<std::vector<Pointer<ImageView>>>& attachments, vk::Extent2D extent, int layers = 1);

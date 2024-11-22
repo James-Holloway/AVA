@@ -15,6 +15,8 @@ namespace ava::raii
 
         VBO(const VBO& other) = delete;
         VBO& operator=(VBO& other) = delete;
+        VBO(VBO&& other) noexcept;
+        VBO& operator=(VBO&& other) noexcept;
 
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 

@@ -23,6 +23,22 @@ namespace ava::raii
         }
     }
 
+    Image::Image(Image&& other) noexcept
+    {
+        image = other.image;
+        other.image = nullptr;
+    }
+
+    Image& Image::operator=(Image&& other) noexcept
+    {
+        if (this != &other)
+        {
+            image = other.image;
+            other.image = nullptr;
+        }
+        return *this;
+    }
+
     void Image::insertImageMemoryBarrier(const Pointer<CommandBuffer>& commandBuffer, const vk::ImageLayout newLayout, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage,
                                          const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
     {

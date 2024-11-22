@@ -29,6 +29,17 @@ namespace ava::raii
         commandBuffer.reset();
     }
 
+    CommandBuffer::CommandBuffer(CommandBuffer&& other) noexcept
+    {
+        commandBuffer = std::move(other.commandBuffer);
+    }
+
+    CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other) noexcept
+    {
+        commandBuffer = std::move(other.commandBuffer);
+        return *this;
+    }
+
     void CommandBuffer::start(const vk::CommandBufferUsageFlags usageFlags) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");

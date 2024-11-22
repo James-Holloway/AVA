@@ -20,6 +20,22 @@ namespace ava::raii
         }
     }
 
+    VAO::VAO(VAO&& other) noexcept
+    {
+        vao = other.vao;
+        other.vao = nullptr;
+    }
+
+    VAO& VAO::operator=(VAO&& other) noexcept
+    {
+        if (this != &other)
+        {
+            vao = other.vao;
+            other.vao = nullptr;
+        }
+        return *this;
+    }
+
     VAO::operator ava::VAO() const
     {
         return vao;

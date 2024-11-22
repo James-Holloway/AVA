@@ -22,6 +22,22 @@ namespace ava::raii
         }
     }
 
+    Framebuffer::Framebuffer(Framebuffer&& other) noexcept
+    {
+        framebuffer = other.framebuffer;
+        other.framebuffer = nullptr;
+    }
+
+    Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
+    {
+        if (this != &other)
+        {
+            framebuffer = other.framebuffer;
+            other.framebuffer = nullptr;
+        }
+        return *this;
+    }
+
     Pointer<Framebuffer> Framebuffer::create(const Pointer<RenderPass>& renderPass, const std::vector<std::vector<vk::ImageView>>& attachments, const vk::Extent2D extent, const int layers)
     {
         AVA_CHECK(renderPass != nullptr && renderPass->renderPass != nullptr, "Cannot create a framebuffer with an invalid render pass");

@@ -22,6 +22,22 @@ namespace ava::raii
         }
     }
 
+    ComputePipeline::ComputePipeline(ComputePipeline&& other) noexcept
+    {
+        pipeline = other.pipeline;
+        other.pipeline = nullptr;
+    }
+
+    ComputePipeline& ComputePipeline::operator=(ComputePipeline&& other) noexcept
+    {
+        if (this != &other)
+        {
+            pipeline = other.pipeline;
+            other.pipeline = nullptr;
+        }
+        return *this;
+    }
+
     void ComputePipeline::bind(const Pointer<CommandBuffer>& commandBuffer) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot bind compute pipeline to an invalid command buffer");

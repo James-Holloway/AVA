@@ -21,6 +21,22 @@ namespace ava::raii
         }
     }
 
+    IBO::IBO(IBO&& other) noexcept
+    {
+        ibo = other.ibo;
+        other.ibo = nullptr;
+    }
+
+    IBO& IBO::operator=(IBO&& other) noexcept
+    {
+        if (this != &other)
+        {
+            ibo = other.ibo;
+            other.ibo = nullptr;
+        }
+        return *this;
+    }
+
     void IBO::bind(const Pointer<CommandBuffer>& commandBuffer) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot bind IBO to an invalid command buffer");

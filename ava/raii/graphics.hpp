@@ -16,6 +16,8 @@ namespace ava::raii
 
         GraphicsPipeline(const GraphicsPipeline& other) = delete;
         GraphicsPipeline& operator=(GraphicsPipeline& other) = delete;
+        GraphicsPipeline(GraphicsPipeline&& other) noexcept;
+        GraphicsPipeline& operator=(GraphicsPipeline&& other) noexcept;
 
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 

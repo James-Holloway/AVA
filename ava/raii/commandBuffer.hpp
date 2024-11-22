@@ -16,6 +16,8 @@ namespace ava::raii
 
         CommandBuffer(const CommandBuffer& other) = delete;
         CommandBuffer& operator=(CommandBuffer& other) = delete;
+        CommandBuffer(CommandBuffer&& other) noexcept;
+        CommandBuffer& operator=(CommandBuffer&& other) noexcept;
 
         void start(vk::CommandBufferUsageFlags usageFlags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit) const;
         void end() const;

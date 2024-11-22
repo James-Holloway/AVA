@@ -20,6 +20,22 @@ namespace ava::raii
         }
     }
 
+    RenderPass::RenderPass(RenderPass&& other) noexcept
+    {
+        renderPass = other.renderPass;
+        other.renderPass = nullptr;
+    }
+
+    RenderPass& RenderPass::operator=(RenderPass&& other) noexcept
+    {
+        if (this != &other)
+        {
+            renderPass = other.renderPass;
+            other.renderPass = nullptr;
+        }
+        return *this;
+    }
+
     RenderPass::operator ava::RenderPass() const
     {
         return renderPass;

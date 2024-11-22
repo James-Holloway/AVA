@@ -26,6 +26,22 @@ namespace ava::raii
         }
     }
 
+    Buffer::Buffer(Buffer&& other) noexcept
+    {
+        buffer = other.buffer;
+        other.buffer = nullptr;
+    }
+
+    Buffer& Buffer::operator=(Buffer&& other) noexcept
+    {
+        if (this != &other)
+        {
+            buffer = other.buffer;
+            other.buffer = nullptr;
+        }
+        return *this;
+    }
+
     vk::DeviceSize Buffer::getBufferSize() const
     {
         AVA_CHECK(buffer != nullptr, "Cannot get buffer size when buffer is invali");

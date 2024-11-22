@@ -20,6 +20,22 @@ namespace ava::raii
         }
     }
 
+    Shader::Shader(Shader&& other) noexcept
+    {
+        shader = other.shader;
+        other.shader = nullptr;
+    }
+
+    Shader& Shader::operator=(Shader&& other) noexcept
+    {
+        if (this != &other)
+        {
+            shader = other.shader;
+            other.shader = nullptr;
+        }
+        return *this;
+    }
+
     Shader::operator ava::Shader() const
     {
         return shader;

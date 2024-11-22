@@ -16,6 +16,8 @@ namespace ava::raii
 
         ComputePipeline(const ComputePipeline& other) = delete;
         ComputePipeline& operator=(ComputePipeline& other) = delete;
+        ComputePipeline(ComputePipeline&& other) noexcept;
+        ComputePipeline& operator=(ComputePipeline&& other) noexcept;
 
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 
