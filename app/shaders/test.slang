@@ -25,7 +25,7 @@ v2p vertex(vertexInfo input) {
     v2p output;
     output.position = float4(input.position + offset, 0.0, 1.0);
     output.color = input.color;
-    output.uv = input.position;
+    output.uv = -input.position;
     return output;
 }
 

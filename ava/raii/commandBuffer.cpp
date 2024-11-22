@@ -6,8 +6,12 @@
 #include "descriptors.hpp"
 #include "graphics.hpp"
 #include "image.hpp"
+#include "vbo.hpp"
+#include "ibo.hpp"
 #include "ava/compute.hpp"
 #include "ava/descriptors.hpp"
+#include "ava/vbo.hpp"
+#include "ava/ibo.hpp"
 #include "ava/detail/detail.hpp"
 
 namespace ava::raii
@@ -67,6 +71,18 @@ namespace ava::raii
     void CommandBuffer::nextSubpass() const
     {
         ava::nextSubpass(commandBuffer);
+    }
+
+    void CommandBuffer::bindVBO(const Pointer<VBO>& vbo) const
+    {
+        AVA_CHECK(vbo != nullptr && vbo->vbo !=nullptr, "Cannot bind an invalid VBO to command buffer");
+        ava::bindVBO(commandBuffer, vbo->vbo);
+    }
+
+    void CommandBuffer::bindIBO(const Pointer<IBO>& ibo) const
+    {
+        AVA_CHECK(ibo != nullptr && ibo->ibo !=nullptr, "Cannot bind an invalid IBO to command buffer");
+        ava::bindIBO(commandBuffer, ibo->ibo);
     }
 
     void CommandBuffer::draw(const uint32_t vertexCount, const uint32_t instanceCount, const uint32_t firstVertex, const uint32_t firstInstance) const

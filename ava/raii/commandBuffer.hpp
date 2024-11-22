@@ -25,6 +25,9 @@ namespace ava::raii
         void endRenderPass() const;
         void nextSubpass() const;
 
+        void bindVBO(const Pointer<VBO>& vbo) const;
+        void bindIBO(const Pointer<IBO>& ibo) const;
+
         void draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) const;
         // indexCount of 0 means it will draw the number of indices in the currently bound IBO
         void drawIndexed(uint32_t indexCount = 0, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) const;

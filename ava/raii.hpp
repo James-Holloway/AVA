@@ -10,5 +10,8 @@
 #include "raii/descriptors.hpp"
 #include "raii/image.hpp"
 #include "raii/sampler.hpp"
+#include "raii/vao.hpp"
+#include "raii/ibo.hpp"
+#include "raii/vbo.hpp"
 
 #endif

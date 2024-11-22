@@ -14,6 +14,9 @@ namespace ava::raii
     class GraphicsPipeline;
     class DescriptorPool;
     class DescriptorSet;
+    class VAO;
+    class VBO;
+    class IBO;
 
     template <typename T>
     using Pointer = std::shared_ptr<T>;

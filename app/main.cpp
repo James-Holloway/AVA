@@ -64,7 +64,7 @@ int main()
             auto framebuffer = ava::createSwapchainFramebuffer(renderPass);
 
             // Create VAO
-            auto vao = ava::createVAO({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
+            auto vao = ava::raii::VAO::create({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
 
             // Create shaders for pipeline
             std::vector<ava::Shader> graphicsShaders{};
@@ -73,7 +73,7 @@ int main()
 
             // Pipeline creation
             ava::GraphicsPipelineCreationInfo graphicsPipelineCreateInfo{};
-            ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, renderPass, 0, vao, false, false);
+            ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, renderPass, 0, *vao, false, false);
             auto graphicsPipeline = ava::raii::GraphicsPipeline::create(graphicsPipelineCreateInfo);
 
             // Destroy shaders after pipeline creation
@@ -97,8 +97,8 @@ int main()
             const auto indices = std::vector<uint16_t>{
                 0, 1, 2, 1, 3, 2
             };
-            ava::VBO vbo = ava::createVBO(vao, vertices);
-            ava::IBO ibo = ava::createIBO(indices);
+            auto vbo = ava::raii::VBO::create(vao, vertices);
+            auto ibo = ava::raii::IBO::create(indices);
 
             // Create descriptor pools
             auto graphicsDescriptorPool = ava::raii::DescriptorPool::create(graphicsPipeline);
@@ -161,8 +161,8 @@ int main()
                 {
                     commandBuffer->bindGraphicsPipeline(graphicsPipeline);
                     commandBuffer->bindDescriptorSet(graphicsSet0);
-                    ava::bindVBO(commandBuffer->commandBuffer, vbo);
-                    ava::bindIBO(commandBuffer->commandBuffer, ibo);
+                    commandBuffer->bindVBO(vbo);
+                    commandBuffer->bindIBO(ibo);
                     commandBuffer->drawIndexed();
                     // TODO: attachments
                 }
@@ -173,9 +173,6 @@ int main()
             }
 
             ava::deviceWaitIdle();
-            ava::destroyIBO(ibo);
-            ava::destroyVBO(vbo);
-            ava::destroyVAO(vao);
             ava::destroyFramebuffer(framebuffer);
             ava::destroyRenderPass(renderPass);
         }
