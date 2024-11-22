@@ -13,5 +13,7 @@
 #include "raii/vao.hpp"
 #include "raii/ibo.hpp"
 #include "raii/vbo.hpp"
+#include "raii/renderPass.hpp"
+#include "raii/framebuffer.hpp"
 
 #endif

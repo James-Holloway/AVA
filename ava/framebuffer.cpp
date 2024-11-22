@@ -1,13 +1,14 @@
-#include "frameBuffer.hpp"
+#include "framebuffer.hpp"
 
 #include "detail/detail.hpp"
+#include "detail/image.hpp"
 #include "detail/renderPass.hpp"
 #include "detail/state.hpp"
 
 namespace ava
 {
     // Framebuffer
-    Framebuffer createFramebuffer(const RenderPass& renderPass, std::vector<std::vector<vk::ImageView>> attachments, vk::Extent2D extent, int layers)
+    Framebuffer createFramebuffer(const RenderPass& renderPass, std::vector<std::vector<vk::ImageView>> attachments, const vk::Extent2D extent, const int layers)
     {
         AVA_CHECK(detail::State.device != nullptr, "Cannot create a framebuffer without a State device");
         AVA_CHECK(renderPass != nullptr && renderPass->renderPass, "Cannot create a framebuffer using an invalid render pass");
@@ -38,6 +39,32 @@ namespace ava
         outFramebuffer->attachmentCount = static_cast<uint32_t>(attachments.size());
 
         return outFramebuffer;
+    }
+
+    Framebuffer createFramebuffer(const RenderPass& renderPass, const std::vector<std::vector<ava::ImageView>>& attachments, const vk::Extent2D extent, const int layers)
+    {
+        std::vector<std::vector<vk::ImageView>> imageViews;
+        imageViews.reserve(attachments.size());
+        for (auto& frame : attachments)
+        {
+            imageViews.push_back(std::vector<vk::ImageView>());
+            auto& outFrame = imageViews.back();
+            outFrame.reserve(frame.size());
+
+            for (auto& attachment : frame)
+            {
+                if (attachment != nullptr)
+                {
+                    outFrame.push_back(attachment->imageView);
+                }
+                else
+                {
+                    outFrame.push_back(nullptr);
+                }
+            }
+        }
+
+        return createFramebuffer(renderPass, imageViews, extent, layers);
     }
 
     Framebuffer createSwapchainFramebuffer(const RenderPass& renderPass)

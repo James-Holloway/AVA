@@ -21,7 +21,7 @@ namespace ava::raii
         void trackObject(const std::shared_ptr<void>& object) const;
         void untrackAllObjects() const;
 
-        void beginRenderPass(const RenderPass& renderPass, const Framebuffer& framebuffer, const std::vector<vk::ClearValue>& clearValues) const;
+        void beginRenderPass(const Pointer<RenderPass>& renderPass, const Pointer<Framebuffer>& framebuffer, const std::vector<vk::ClearValue>& clearValues) const;
         void endRenderPass() const;
         void nextSubpass() const;
 

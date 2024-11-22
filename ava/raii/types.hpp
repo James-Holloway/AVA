@@ -17,6 +17,8 @@ namespace ava::raii
     class VAO;
     class VBO;
     class IBO;
+    class RenderPass;
+    class Framebuffer;
 
     template <typename T>
     using Pointer = std::shared_ptr<T>;

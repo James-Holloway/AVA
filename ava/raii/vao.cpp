@@ -22,11 +22,6 @@ namespace ava::raii
         return vao;
     }
 
-    ava::VAO VAO::get() const
-    {
-        return vao;
-    }
-
     Pointer<VAO> VAO::create(const std::vector<VertexAttribute>& vertexAttributes, const std::vector<uint32_t>& strides, const vk::PrimitiveTopology topology, const bool primitiveRestartEnable)
     {
         return std::make_shared<VAO>(ava::createVAO(vertexAttributes, strides, topology, primitiveRestartEnable));

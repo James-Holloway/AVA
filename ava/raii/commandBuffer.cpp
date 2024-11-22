@@ -4,10 +4,12 @@
 
 #include "compute.hpp"
 #include "descriptors.hpp"
+#include "framebuffer.hpp"
 #include "graphics.hpp"
 #include "image.hpp"
 #include "vbo.hpp"
 #include "ibo.hpp"
+#include "renderPass.hpp"
 #include "ava/compute.hpp"
 #include "ava/descriptors.hpp"
 #include "ava/vbo.hpp"
@@ -58,9 +60,9 @@ namespace ava::raii
         ava::untrackAllObjects(commandBuffer);
     }
 
-    void CommandBuffer::beginRenderPass(const RenderPass& renderPass, const Framebuffer& framebuffer, const std::vector<vk::ClearValue>& clearValues) const
+    void CommandBuffer::beginRenderPass(const Pointer<RenderPass>& renderPass, const Pointer<Framebuffer>& framebuffer, const std::vector<vk::ClearValue>& clearValues) const
     {
-        ava::beginRenderPass(commandBuffer, renderPass, framebuffer, clearValues);
+        ava::beginRenderPass(commandBuffer, renderPass->renderPass, framebuffer->framebuffer, clearValues);
     }
 
     void CommandBuffer::endRenderPass() const

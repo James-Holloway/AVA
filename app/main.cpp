@@ -60,8 +60,8 @@ int main()
                 },
                 1
             };
-            auto renderPass = ava::createRenderPass(renderPassCreateInfo);
-            auto framebuffer = ava::createSwapchainFramebuffer(renderPass);
+            auto renderPass = ava::raii::RenderPass::create(renderPassCreateInfo);
+            auto framebuffer = ava::raii::Framebuffer::createSwapchain(renderPass);
 
             // Create VAO
             auto vao = ava::raii::VAO::create({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
@@ -73,7 +73,7 @@ int main()
 
             // Pipeline creation
             ava::GraphicsPipelineCreationInfo graphicsPipelineCreateInfo{};
-            ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, renderPass, 0, *vao, false, false);
+            ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, *renderPass, 0, *vao, false, false);
             auto graphicsPipeline = ava::raii::GraphicsPipeline::create(graphicsPipelineCreateInfo);
 
             // Destroy shaders after pipeline creation
@@ -135,8 +135,7 @@ int main()
                 {
                     ava::deviceWaitIdle();
                     recreateSwapchain();
-                    ava::destroyFramebuffer(framebuffer);
-                    framebuffer = ava::createSwapchainFramebuffer(renderPass);
+                    framebuffer = ava::raii::Framebuffer::createSwapchain(renderPass);
                 }
 
                 // Start a new frame
@@ -173,8 +172,6 @@ int main()
             }
 
             ava::deviceWaitIdle();
-            ava::destroyFramebuffer(framebuffer);
-            ava::destroyRenderPass(renderPass);
         }
         ava::destroyState();
 

@@ -16,7 +16,6 @@ namespace ava::raii
 
         // ReSharper disable once CppNonExplicitConversionOperator
         operator ava::VAO() const;
-        ava::VAO get() const;
 
         static Pointer<VAO> create(const std::vector<VertexAttribute>& vertexAttributes, const std::vector<uint32_t>& strides, vk::PrimitiveTopology topology = vk::PrimitiveTopology::eTriangleList, bool primitiveRestartEnable = false);
         static Pointer<VAO> create(const std::vector<VertexAttribute>& vertexAttributes, vk::PrimitiveTopology topology = vk::PrimitiveTopology::eTriangleList, bool primitiveRestartEnable = false);

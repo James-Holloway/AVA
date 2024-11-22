@@ -7,7 +7,7 @@
 #include "shaders.hpp"
 #include "graphics.hpp"
 #include "compute.hpp"
-#include "frameBuffer.hpp"
+#include "framebuffer.hpp"
 #include "commandBuffer.hpp"
 #include "buffer.hpp"
 #include "image.hpp"
