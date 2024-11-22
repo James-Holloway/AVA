@@ -17,6 +17,7 @@ namespace ava::raii
     class VAO;
     class VBO;
     class IBO;
+    class VIBO;
     class RenderPass;
     class Framebuffer;
     class Shader;

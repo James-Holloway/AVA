@@ -134,7 +134,7 @@ namespace ava
 
         // Create staging buffer
         auto stagingBuffer = createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, BufferLocation::eCpuToGpu, 0);
-        updateBuffer(stagingBuffer, data, size, offset);
+        updateBuffer(stagingBuffer, data, size, 0);
 
         // Update via single time command-buffer buffer-copy
         auto commandBuffer = beginSingleTimeCommands(vk::QueueFlagBits::eTransfer);

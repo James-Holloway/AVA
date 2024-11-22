@@ -10,10 +10,12 @@
 #include "vbo.hpp"
 #include "ibo.hpp"
 #include "renderPass.hpp"
+#include "vibo.hpp"
 #include "ava/compute.hpp"
 #include "ava/descriptors.hpp"
 #include "ava/vbo.hpp"
 #include "ava/ibo.hpp"
+#include "ava/vibo.hpp"
 #include "ava/detail/detail.hpp"
 
 namespace ava::raii
@@ -94,8 +96,14 @@ namespace ava::raii
 
     void CommandBuffer::bindIBO(const Pointer<IBO>& ibo) const
     {
-        AVA_CHECK(ibo != nullptr && ibo->ibo !=nullptr, "Cannot bind an invalid IBO to command buffer");
+        AVA_CHECK(ibo != nullptr && ibo->ibo != nullptr, "Cannot bind an invalid IBO to command buffer");
         ava::bindIBO(commandBuffer, ibo->ibo);
+    }
+
+    void CommandBuffer::bindVIBO(const Pointer<VIBO>& vibo) const
+    {
+        AVA_CHECK(vibo != nullptr && vibo->vibo != nullptr, "Cannot bind an invalid VIBO to command buffer");
+        ava::bindVIBO(commandBuffer, vibo->vibo);
     }
 
     void CommandBuffer::draw(const uint32_t vertexCount, const uint32_t instanceCount, const uint32_t firstVertex, const uint32_t firstInstance) const

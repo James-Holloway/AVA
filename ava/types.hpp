@@ -23,6 +23,7 @@ namespace ava
         struct VAO;
         struct VBO;
         struct IBO;
+        struct VIBO;
     }
 
     using CommandBuffer = std::shared_ptr<detail::CommandBuffer>;
@@ -40,6 +41,7 @@ namespace ava
     using VAO = detail::VAO*;
     using VBO = detail::VBO*;
     using IBO = detail::IBO*;
+    using VIBO = detail::VIBO*;
 }
 
 #endif

@@ -90,6 +90,11 @@ add_library(ava STATIC
         raii/framebuffer.hpp
         raii/shaders.cpp
         raii/shaders.hpp
+        detail/vibo.hpp
+        vibo.cpp
+        vibo.hpp
+        raii/vibo.cpp
+        raii/vibo.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

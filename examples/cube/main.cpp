@@ -69,8 +69,7 @@ public:
     Pointer<ava::raii::GraphicsPipeline> graphicsPipeline;
     std::vector<Pointer<ava::raii::Framebuffer>> framebuffers;
 
-    Pointer<ava::raii::VBO> vbo;
-    Pointer<ava::raii::IBO> ibo;
+    Pointer<ava::raii::VIBO> vibo;
     Pointer<ava::raii::Buffer> ubo;
 
     Pointer<ava::raii::DescriptorPool> pool;
@@ -105,8 +104,7 @@ public:
         set0 = pool->allocateDescriptorSet(0);
 
         // Cube model
-        vbo = ava::raii::VBO::create(vao, cubeVertices, sizeof(cubeVertices));
-        ibo = ava::raii::IBO::create(cubeIndices, std::size(cubeIndices));
+        vibo = ava::raii::VIBO::create(vao, cubeVertices, sizeof(cubeVertices), cubeIndices, std::size(cubeIndices));
 
         // Cube descriptor set
         ubo = ava::raii::Buffer::createUniform(sizeof(UBO));
@@ -131,8 +129,7 @@ public:
         vk::ClearValue clearValue{{0.0f, 0.0f, 0.0f, 1.0f}};
         commandBuffer->beginRenderPass(renderPass, framebuffers.at(imageIndex), {clearValue});
         commandBuffer->bindGraphicsPipeline(graphicsPipeline);
-        commandBuffer->bindVBO(vbo);
-        commandBuffer->bindIBO(ibo);
+        commandBuffer->bindVIBO(vibo);
         commandBuffer->bindDescriptorSet(set0);
         commandBuffer->drawIndexed();
         commandBuffer->endRenderPass();
@@ -145,8 +142,7 @@ public:
         framebuffers.clear();
         set0.reset();
         pool.reset();
-        vbo.reset();
-        ibo.reset();
+        vibo.reset();
         ubo.reset();
     }
 
