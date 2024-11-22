@@ -5,6 +5,7 @@
 #include "compute.hpp"
 #include "descriptors.hpp"
 #include "graphics.hpp"
+#include "image.hpp"
 #include "ava/compute.hpp"
 #include "ava/descriptors.hpp"
 #include "ava/detail/detail.hpp"
@@ -22,7 +23,7 @@ namespace ava::raii
         commandBuffer.reset();
     }
 
-    void CommandBuffer::start(vk::CommandBufferUsageFlags usageFlags) const
+    void CommandBuffer::start(const vk::CommandBufferUsageFlags usageFlags) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot end an invalid command buffer");
 
@@ -99,6 +100,19 @@ namespace ava::raii
     {
         AVA_CHECK(set != nullptr, "Cannot bind an invalid descriptor set")
         ava::bindDescriptorSet(commandBuffer, set->descriptorSet);
+    }
+
+    void CommandBuffer::insertImageMemoryBarrier(const Pointer<Image>& image, const vk::ImageLayout newLayout, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage,
+                                                 const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
+    {
+        AVA_CHECK(image != nullptr && image->image, "Cannot insert memory barrier when image is invalid");
+        ava::insertImageMemoryBarrier(commandBuffer, image->image, newLayout, srcAccessMask, dstAccessMask, aspectFlags, srcStage, dstStage, subresourceRange);
+    }
+
+    void CommandBuffer::transitionImageLayout(const Pointer<Image>& image, const vk::ImageLayout newLayout, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
+    {
+        AVA_CHECK(image != nullptr && image->image, "Cannot transition image layout when image is invalid");
+        ava::transitionImageLayout(commandBuffer, image->image, newLayout, aspectFlags, srcStage, dstStage, subresourceRange);
     }
 
     Pointer<CommandBuffer> CommandBuffer::beginSingleTime(const vk::QueueFlagBits queueType)

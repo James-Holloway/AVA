@@ -6,6 +6,8 @@
 #include "commandBuffer.hpp"
 #include "compute.hpp"
 #include "graphics.hpp"
+#include "image.hpp"
+#include "sampler.hpp"
 #include "ava/detail/detail.hpp"
 
 namespace ava::raii
@@ -78,5 +80,13 @@ namespace ava::raii
     {
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot bind buffer to a descriptor set when buffer is invalid");
         ava::bindBuffer(descriptorSet, binding, buffer->buffer, bufferSize, bufferOffset, dstArrayElement);
+    }
+
+    void DescriptorSet::bindImage(const uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler, uint32_t dstArrayElement) const
+    {
+        AVA_CHECK(image != nullptr && image->image, "Cannot bind image to a descriptor set when image is invalid");
+        AVA_CHECK(imageView != nullptr && imageView->imageView != nullptr, "Cannot bind image to a descriptor set when image view is invalid");
+        AVA_CHECK(sampler != nullptr && sampler->sampler != nullptr, "Cannot bind image to a descriptor set when sampler is invalid");
+        ava::bindImage(descriptorSet, binding, image->image, imageView->imageView, sampler->sampler, dstArrayElement);
     }
 }

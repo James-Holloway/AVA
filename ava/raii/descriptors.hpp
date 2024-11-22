@@ -32,7 +32,7 @@ namespace ava::raii
         void bindDescriptorSet(const Pointer<CommandBuffer>& commandBuffer) const;
 
         void bindBuffer(uint32_t binding, const Pointer<Buffer>& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0) const;
-        void bindImage(uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler = nullptr, uint32_t dstArrayElement = 0);
+        void bindImage(uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler = nullptr, uint32_t dstArrayElement = 0) const;
     };
 }
 

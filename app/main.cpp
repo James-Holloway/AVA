@@ -117,12 +117,12 @@ int main()
             computeSet0->bindBuffer(1, offsetBuffer);
 
             constexpr uint32_t imageData[] = {0xFF0000FF, 0xFF00FF00, 0xFFFF0000, 0xFF00FFFFu};
-            auto image = ava::createImage2D({2, 2}, vk::Format::eR8G8B8A8Unorm);
-            ava::updateImage(image, imageData, sizeof(imageData));
+            auto image = ava::raii::Image::create2D({2, 2}, vk::Format::eR8G8B8A8Unorm);
+            image->update(imageData, sizeof(imageData));
 
-            auto imageView = ava::createImageView(image);
-            auto sampler = ava::createSampler(vk::Filter::eNearest, vk::SamplerMipmapMode::eNearest);
-            ava::bindImage(graphicsSet0->descriptorSet, 1, image, imageView, sampler);
+            auto imageView = image->createImageView();
+            auto sampler = ava::raii::Sampler::create(vk::Filter::eNearest, vk::SamplerMipmapMode::eNearest);
+            graphicsSet0->bindImage(1, image, imageView, sampler);
 
             // Main loop
             while (!glfwWindowShouldClose(window))
@@ -176,9 +176,6 @@ int main()
             ava::destroyIBO(ibo);
             ava::destroyVBO(vbo);
             ava::destroyVAO(vao);
-            ava::destroySampler(sampler);
-            ava::destroyImageView(imageView);
-            ava::destroyImage(image);
             ava::destroyFramebuffer(framebuffer);
             ava::destroyRenderPass(renderPass);
         }

@@ -8,5 +8,7 @@
 #include "raii/frame.hpp"
 #include "raii/graphics.hpp"
 #include "raii/descriptors.hpp"
+#include "raii/image.hpp"
+#include "raii/sampler.hpp"
 
 #endif

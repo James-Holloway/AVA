@@ -35,6 +35,11 @@ namespace ava::raii
 
         void bindDescriptorSet(const Pointer<DescriptorSet>& set) const;
 
+        void insertImageMemoryBarrier(const Pointer<Image>& image, vk::ImageLayout newLayout, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
+                                      vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands, const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
+        void transitionImageLayout(const Pointer<Image>& image, vk::ImageLayout newLayout, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands,
+                                   const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
+
         static Pointer<CommandBuffer> beginSingleTime(vk::QueueFlagBits queueType);
     };
 }
