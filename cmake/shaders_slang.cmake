@@ -7,6 +7,8 @@ function(compile_shaders_slang TARGET_NAME BINRELOUTDIR)
         return()
     endif ()
 
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${BINRELOUTDIR}")
+
     set(SHADER_COMMANDS)
     set(SHADER_OUTPUTS)
 

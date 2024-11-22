@@ -26,6 +26,7 @@ namespace ava
     uint32_t getImageIndex();
     uint32_t getFramesInFlight();
     void deviceWaitIdle();
+    vk::Extent2D getSwapchainExtent();
 }
 
 #endif

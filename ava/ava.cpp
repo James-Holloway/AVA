@@ -3,6 +3,7 @@
 
 #include "ava.hpp"
 
+#include "detail/detail.hpp"
 #include "detail/state.hpp"
 
 namespace ava
@@ -26,6 +27,12 @@ namespace ava
 
     void deviceWaitIdle()
     {
+        AVA_CHECK(State.device, "Cannot wait idle on an invalid device");
         State.device.waitIdle();
+    }
+
+    vk::Extent2D getSwapchainExtent()
+    {
+        return State.swapchainExtent;
     }
 }

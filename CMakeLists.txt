@@ -29,5 +29,5 @@ include(cmake/shaders_slang.cmake)
 
 # AVA itself
 add_subdirectory(ava)
-# GLFW Test App
-add_subdirectory(app)
+# Examples
+add_subdirectory(examples)
