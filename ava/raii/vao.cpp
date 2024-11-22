@@ -14,7 +14,10 @@ namespace ava::raii
 
     VAO::~VAO()
     {
-        ava::destroyVAO(vao);
+        if (vao != nullptr)
+        {
+            ava::destroyVAO(vao);
+        }
     }
 
     VAO::operator ava::VAO() const

@@ -17,7 +17,10 @@ namespace ava::raii
 
     Image::~Image()
     {
-        destroyImage(image);
+        if (image != nullptr)
+        {
+            ava::destroyImage(image);
+        }
     }
 
     void Image::insertImageMemoryBarrier(const Pointer<CommandBuffer>& commandBuffer, const vk::ImageLayout newLayout, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage,
@@ -36,12 +39,12 @@ namespace ava::raii
     void Image::update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, const vk::BufferImageCopy& bufferImageCopy, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot update image with an invalid command buffer");
-        updateImage(commandBuffer->commandBuffer, image, stagingBuffer->buffer, bufferImageCopy, subresourceRange);
+        ava::updateImage(commandBuffer->commandBuffer, image, stagingBuffer->buffer, bufferImageCopy, subresourceRange);
     }
 
     void Image::update(const void* data, const vk::DeviceSize dataSize, const vk::ImageAspectFlags aspectFlags, const std::optional<vk::ImageSubresourceLayers>& subresourceLayers, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
     {
-        updateImage(image, data, dataSize, aspectFlags, subresourceLayers, subresourceRange);
+        ava::updateImage(image, data, dataSize, aspectFlags, subresourceLayers, subresourceRange);
     }
 
     Pointer<ImageView> Image::createImageView(const vk::ImageAspectFlags aspectFlags, const vk::ImageViewType imageViewType, const std::optional<vk::Format> format, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const

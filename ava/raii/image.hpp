@@ -14,6 +14,9 @@ namespace ava::raii
 
         ava::Image image;
 
+        Image(const Image& other) = delete;
+        Image& operator=(Image& other) = delete;
+
         void insertImageMemoryBarrier(const Pointer<CommandBuffer>& commandBuffer, vk::ImageLayout newLayout, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
                                       vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands, const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
         void transitionImageLayout(const Pointer<CommandBuffer>& commandBuffer, vk::ImageLayout newLayout, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands,
@@ -51,6 +54,9 @@ namespace ava::raii
         ~ImageView();
 
         ava::ImageView imageView;
+
+        ImageView(const ImageView& other) = delete;
+        ImageView& operator=(ImageView& other) = delete;
     };
 }
 

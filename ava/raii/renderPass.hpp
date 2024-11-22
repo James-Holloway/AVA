@@ -14,6 +14,9 @@ namespace ava::raii
 
         ava::RenderPass renderPass;
 
+        RenderPass(const RenderPass& other) = delete;
+        RenderPass& operator=(RenderPass& other) = delete;
+
         // ReSharper disable once CppNonExplicitConversionOperator
         operator ava::RenderPass() const;
 

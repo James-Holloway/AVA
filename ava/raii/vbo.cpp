@@ -16,7 +16,10 @@ namespace ava::raii
 
     VBO::~VBO()
     {
-        ava::destroyVBO(vbo);
+        if (vbo != nullptr)
+        {
+            ava::destroyVBO(vbo);
+        }
     }
 
     void VBO::bind(const Pointer<CommandBuffer>& commandBuffer) const

@@ -105,9 +105,9 @@ int main()
             auto computeDescriptorPool = ava::raii::DescriptorPool::create(computePipeline);
             auto computeSet0 = computeDescriptorPool->allocateDescriptorSet(0u);
 
-            auto offsetBuffer = ava::raii::Buffer::createBuffer(sizeof(glm::vec2), ava::DEFAULT_STORAGE_BUFFER_USAGE | ava::DEFAULT_UNIFORM_BUFFER_USAGE);
+            auto offsetBuffer = ava::raii::Buffer::create(sizeof(glm::vec2), ava::DEFAULT_STORAGE_BUFFER_USAGE | ava::DEFAULT_UNIFORM_BUFFER_USAGE);
 
-            auto timeBuffer = ava::raii::Buffer::createUniformBuffer(sizeof(float));
+            auto timeBuffer = ava::raii::Buffer::createUniform(sizeof(float));
             timeBuffer->update(static_cast<float>(glfwGetTime()));
 
             graphicsSet0->bindBuffer(0, offsetBuffer);

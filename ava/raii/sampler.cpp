@@ -15,7 +15,10 @@ namespace ava::raii
 
     Sampler::~Sampler()
     {
-        ava::destroySampler(sampler);
+        if (sampler != nullptr)
+        {
+            ava::destroySampler(sampler);
+        }
     }
 
     Pointer<Sampler> Sampler::create(const vk::Filter minMagFilter, const vk::SamplerMipmapMode mipFilter, const vk::SamplerAddressMode repeat, const float maxAnisotropy, const std::optional<vk::CompareOp>& compareOp)

@@ -21,7 +21,10 @@ namespace ava::raii
 
     DescriptorPool::~DescriptorPool()
     {
-        ava::destroyDescriptorPool(descriptorPool);
+        if (descriptorPool != nullptr)
+        {
+            ava::destroyDescriptorPool(descriptorPool);
+        }
     }
 
     Pointer<DescriptorSet> DescriptorPool::allocateDescriptorSet(const uint32_t set)
@@ -65,9 +68,12 @@ namespace ava::raii
 
     DescriptorSet::~DescriptorSet()
     {
-        const auto pool = allocatedFromPool.lock();
-        AVA_CHECK_NO_EXCEPT_RETURN(pool != nullptr, "Cannot free descriptor set when allocated from pool has expired (gone out of scope before this set)");
-        ava::freeDescriptorSet(pool->descriptorPool, descriptorSet);
+        if (!descriptorSet.expired())
+        {
+            const auto pool = allocatedFromPool.lock();
+            AVA_CHECK_NO_EXCEPT_RETURN(pool != nullptr, "Cannot free descriptor set when allocated from pool has expired (gone out of scope before this set)");
+            ava::freeDescriptorSet(pool->descriptorPool, descriptorSet);
+        }
     }
 
     void DescriptorSet::bindDescriptorSet(const Pointer<CommandBuffer>& commandBuffer) const

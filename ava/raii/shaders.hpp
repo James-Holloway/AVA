@@ -13,6 +13,9 @@ namespace ava::raii
 
         ava::Shader shader;
 
+        Shader(const Shader& other) = delete;
+        Shader& operator=(Shader& other) = delete;
+
         // ReSharper disable once CppNonExplicitConversionOperator
         operator ava::Shader() const;
 

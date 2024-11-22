@@ -14,6 +14,9 @@ namespace ava::raii
 
         ava::GraphicsPipeline pipeline;
 
+        GraphicsPipeline(const GraphicsPipeline& other) = delete;
+        GraphicsPipeline& operator=(GraphicsPipeline& other) = delete;
+
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 
         static Pointer<GraphicsPipeline> create(const GraphicsPipelineCreationInfo& creationInfo);

@@ -14,6 +14,9 @@ namespace ava::raii
 
         ava::VAO vao;
 
+        VAO(const VAO& other) = delete;
+        VAO& operator=(VAO& other) = delete;
+
         // ReSharper disable once CppNonExplicitConversionOperator
         operator ava::VAO() const;
 

@@ -13,6 +13,9 @@ namespace ava::raii
 
         ava::DescriptorPool descriptorPool;
 
+        DescriptorPool(const DescriptorPool& other) = delete;
+        DescriptorPool& operator=(DescriptorPool& other) = delete;
+
         [[nodiscard]] Pointer<DescriptorSet> allocateDescriptorSet(uint32_t set);
         [[nodiscard]] std::vector<Pointer<DescriptorSet>> allocateDescriptorSets(uint32_t set, uint32_t count);
 
@@ -28,6 +31,9 @@ namespace ava::raii
 
         WeakPointer<DescriptorPool> allocatedFromPool;
         ava::DescriptorSet descriptorSet;
+
+        DescriptorSet(const DescriptorSet& other) = delete;
+        DescriptorSet& operator=(DescriptorSet& other) = delete;
 
         void bindDescriptorSet(const Pointer<CommandBuffer>& commandBuffer) const;
 

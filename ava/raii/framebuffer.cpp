@@ -16,7 +16,10 @@ namespace ava::raii
 
     Framebuffer::~Framebuffer()
     {
-        ava::destroyFramebuffer(framebuffer);
+        if (framebuffer != nullptr)
+        {
+            ava::destroyFramebuffer(framebuffer);
+        }
     }
 
     Pointer<Framebuffer> Framebuffer::create(const Pointer<RenderPass>& renderPass, const std::vector<std::vector<vk::ImageView>>& attachments, const vk::Extent2D extent, const int layers)

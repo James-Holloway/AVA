@@ -13,6 +13,9 @@ namespace ava::raii
 
         ava::Sampler sampler;
 
+        Sampler(const Sampler& other) = delete;
+        Sampler& operator=(Sampler& other) = delete;
+
         static Pointer<Sampler> create(vk::Filter minMagFilter = vk::Filter::eLinear, vk::SamplerMipmapMode mipFilter = vk::SamplerMipmapMode::eLinear, vk::SamplerAddressMode repeat = vk::SamplerAddressMode::eRepeat, float maxAnisotropy = 8.0f, const std::optional<vk::CompareOp>& compareOp = {});
     };
 }

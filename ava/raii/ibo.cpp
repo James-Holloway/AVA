@@ -15,7 +15,10 @@ namespace ava::raii
 
     IBO::~IBO()
     {
-        destroyIBO(ibo);
+        if (ibo != nullptr)
+        {
+            destroyIBO(ibo);
+        }
     }
 
     void IBO::bind(const Pointer<CommandBuffer>& commandBuffer) const

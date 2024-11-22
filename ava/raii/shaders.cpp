@@ -14,7 +14,10 @@ namespace ava::raii
 
     Shader::~Shader()
     {
-        ava::destroyShader(shader);
+        if (shader != nullptr)
+        {
+            ava::destroyShader(shader);
+        }
     }
 
     Shader::operator ava::Shader() const

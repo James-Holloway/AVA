@@ -15,7 +15,9 @@ namespace ava::raii
 
         ava::Buffer buffer;
 
-        [[nodiscard]] ava::Buffer getBuffer() const;
+        Buffer(const Buffer& other) = delete;
+        Buffer& operator=(Buffer& other) = delete;
+
         [[nodiscard]] vk::DeviceSize getBufferSize() const;
         [[nodiscard]] vk::BufferUsageFlags getBufferUsage() const;
 
@@ -41,8 +43,8 @@ namespace ava::raii
             update(reinterpret_cast<void*>(data.data()), data.size() * sizeof(T), offset);
         }
 
-        static Pointer<Buffer> createBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
-        static Pointer<Buffer> createUniformBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, BufferLocation = BufferLocation::eCpuToGpu, vk::DeviceSize alignment = 0);
+        static Pointer<Buffer> create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
+        static Pointer<Buffer> createUniform(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, BufferLocation = BufferLocation::eCpuToGpu, vk::DeviceSize alignment = 0);
     };
 }
 

@@ -12,8 +12,10 @@ namespace ava::raii
         buffer = ava::createBuffer(size, bufferUsage, bufferLocation, alignment);
     }
 
-    Buffer::Buffer(const ava::Buffer& existingBuffer) : buffer(existingBuffer)
+    Buffer::Buffer(const ava::Buffer& existingBuffer)
     {
+        AVA_CHECK(existingBuffer != nullptr && existingBuffer->buffer, "Cannot create a RAII buffer from an invalid buffer");
+        buffer = existingBuffer;
     }
 
     Buffer::~Buffer()
@@ -22,11 +24,6 @@ namespace ava::raii
         {
             destroyBuffer(buffer);
         }
-    }
-
-    ava::Buffer Buffer::getBuffer() const
-    {
-        return buffer;
     }
 
     vk::DeviceSize Buffer::getBufferSize() const
@@ -45,20 +42,21 @@ namespace ava::raii
 
     void Buffer::update(const void* data, const vk::DeviceSize size, const vk::DeviceSize offset) const
     {
-        updateBuffer(buffer, data, size, offset);
+        ava::updateBuffer(buffer, data, size, offset);
     }
 
     void Buffer::update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, const vk::DeviceSize offset) const
     {
-        updateBuffer(buffer, commandBuffer->commandBuffer, stagingBuffer->buffer, offset);
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot update buffer with staging buffer when command buffer is invalid");
+        ava::updateBuffer(buffer, commandBuffer->commandBuffer, stagingBuffer->buffer, offset);
     }
 
-    Pointer<Buffer> Buffer::createBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation, vk::DeviceSize alignment)
+    Pointer<Buffer> Buffer::create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation, vk::DeviceSize alignment)
     {
         return std::make_shared<Buffer>(size, bufferUsage, bufferLocation, alignment);
     }
 
-    Pointer<Buffer> Buffer::createUniformBuffer(vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, BufferLocation bufferLocation, vk::DeviceSize alignment)
+    Pointer<Buffer> Buffer::createUniform(vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, BufferLocation bufferLocation, vk::DeviceSize alignment)
     {
         return std::make_shared<Buffer>(size, DEFAULT_UNIFORM_BUFFER_USAGE | extraBufferUsage, bufferLocation, alignment);
     }

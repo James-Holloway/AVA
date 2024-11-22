@@ -14,6 +14,9 @@ namespace ava::raii
 
         ava::ComputePipeline pipeline;
 
+        ComputePipeline(const ComputePipeline& other) = delete;
+        ComputePipeline& operator=(ComputePipeline& other) = delete;
+
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 
         static Pointer<ComputePipeline> create(const ComputePipelineCreationInfo& creationInfo);

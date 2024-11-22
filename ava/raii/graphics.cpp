@@ -17,7 +17,10 @@ namespace ava::raii
 
     GraphicsPipeline::~GraphicsPipeline()
     {
-        ava::destroyGraphicsPipeline(pipeline);
+        if (pipeline)
+        {
+            ava::destroyGraphicsPipeline(pipeline);
+        }
     }
 
     void GraphicsPipeline::bind(const Pointer<CommandBuffer>& commandBuffer) const

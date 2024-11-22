@@ -13,6 +13,9 @@ namespace ava::raii
 
         ava::IBO ibo;
 
+        IBO(const IBO& other) = delete;
+        IBO& operator=(IBO& other) = delete;
+
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 
         static Pointer<IBO> create(const uint32_t* indices, uint32_t indexCount);

@@ -14,7 +14,10 @@ namespace ava::raii
 
     RenderPass::~RenderPass()
     {
-        ava::destroyRenderPass(renderPass);
+        if (renderPass != nullptr)
+        {
+            ava::destroyRenderPass(renderPass);
+        }
     }
 
     RenderPass::operator ava::RenderPass() const

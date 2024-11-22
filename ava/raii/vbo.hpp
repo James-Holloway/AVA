@@ -13,6 +13,9 @@ namespace ava::raii
 
         ava::VBO vbo;
 
+        VBO(const VBO& other) = delete;
+        VBO& operator=(VBO& other) = delete;
+
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 
         static Pointer<VBO> create(const Pointer<VAO>& vao, const void* data, size_t size, uint32_t binding = 0);

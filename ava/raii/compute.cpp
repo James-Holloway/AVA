@@ -16,7 +16,10 @@ namespace ava::raii
 
     ComputePipeline::~ComputePipeline()
     {
-        ava::destroyComputePipeline(pipeline);
+        if (pipeline != nullptr)
+        {
+            ava::destroyComputePipeline(pipeline);
+        }
     }
 
     void ComputePipeline::bind(const Pointer<CommandBuffer>& commandBuffer) const
