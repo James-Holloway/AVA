@@ -15,5 +15,6 @@
 #include "raii/vbo.hpp"
 #include "raii/renderPass.hpp"
 #include "raii/framebuffer.hpp"
+#include "raii/shaders.hpp"
 
 #endif

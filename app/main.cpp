@@ -67,25 +67,23 @@ int main()
             auto vao = ava::raii::VAO::create({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
 
             // Create shaders for pipeline
-            std::vector<ava::Shader> graphicsShaders{};
-            graphicsShaders.push_back(ava::createShader("shaders/test.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"));
-            graphicsShaders.push_back(ava::createShader("shaders/test.slang.spv", vk::ShaderStageFlagBits::eFragment, "pixel"));
+            std::vector graphicsShaders{
+                ava::raii::Shader::create("shaders/test.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
+                ava::raii::Shader::create("shaders/test.slang.spv", vk::ShaderStageFlagBits::eFragment, "pixel"),
+            };
 
             // Pipeline creation
             ava::GraphicsPipelineCreationInfo graphicsPipelineCreateInfo{};
-            ava::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, *renderPass, 0, *vao, false, false);
+            ava::raii::populateGraphicsPipelineCreationInfo(graphicsPipelineCreateInfo, graphicsShaders, renderPass, 0, vao, false, false);
             auto graphicsPipeline = ava::raii::GraphicsPipeline::create(graphicsPipelineCreateInfo);
 
             // Destroy shaders after pipeline creation
-            for (auto& shader : graphicsShaders)
-            {
-                ava::destroyShader(shader);
-            }
             graphicsShaders.clear();
 
-            auto computeShader = ava::createShader("shaders/test_comp.slang.spv", vk::ShaderStageFlagBits::eCompute, "compute");
-            auto computePipeline = ava::raii::ComputePipeline::create({computeShader});
-            ava::destroyShader(computeShader);
+            auto computeShader = ava::raii::Shader::create("shaders/test_comp.slang.spv", vk::ShaderStageFlagBits::eCompute, "compute");
+            auto computePipeline = ava::raii::ComputePipeline::create({*computeShader});
+            // Destroy shader after pipeline creation
+            computeShader.reset();
 
             // Create VBO & IBO
             const auto vertices = std::vector<Vertex>{

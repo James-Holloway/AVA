@@ -18,6 +18,9 @@ namespace ava::raii
 
         static Pointer<GraphicsPipeline> create(const GraphicsPipelineCreationInfo& creationInfo);
     };
+
+    // Graphics pipeline population
+    void populateGraphicsPipelineCreationInfo(GraphicsPipelineCreationInfo& pipelineCreationInfo, const std::vector<Pointer<Shader>>& shaders, const Pointer<RenderPass>& renderPass, uint32_t subpass, const Pointer<VAO>& vao, bool depthTest, bool depthWrite);
 }
 
 #endif

@@ -19,6 +19,7 @@ namespace ava::raii
     class IBO;
     class RenderPass;
     class Framebuffer;
+    class Shader;
 
     template <typename T>
     using Pointer = std::shared_ptr<T>;

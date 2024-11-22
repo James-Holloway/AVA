@@ -88,6 +88,8 @@ add_library(ava STATIC
         raii/renderPass.hpp
         raii/framebuffer.cpp
         raii/framebuffer.hpp
+        raii/shaders.cpp
+        raii/shaders.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})
