@@ -15,7 +15,7 @@ namespace ava::detail
 
     struct Framebuffer
     {
-        std::vector<vk::Framebuffer> framebuffers;
+        vk::Framebuffer framebuffer;
         vk::Extent2D extent;
         uint32_t layers = 0;
         uint32_t attachmentCount = 0;

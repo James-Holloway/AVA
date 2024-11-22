@@ -3,6 +3,7 @@
 
 #include "./vulkan.hpp"
 #include "../version.hpp"
+#include "../types.hpp"
 #include <atomic>
 #include <memory>
 
@@ -33,7 +34,9 @@ namespace ava::detail
         vk::Format swapchainImageFormat = vk::Format::eUndefined;
         vk::Extent2D swapchainExtent;
         uint32_t swapchainImageCount = 0;
-        vk::ImageLayout swapchainImageLayout = vk::ImageLayout::eUndefined;
+
+        std::vector<ava::Image> swapchainAvaImages;
+        std::vector<ava::ImageView> swapchainAvaImageViews;
 
         vk::SurfaceKHR surface; // User's surface - we still destroy it when State is destroyed
 

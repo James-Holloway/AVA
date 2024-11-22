@@ -55,6 +55,7 @@ namespace ava
     {
         AVA_CHECK_NO_EXCEPT_RETURN(image != nullptr, "Cannot destroy an invalid image view")
         AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy image when State's device is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(!image->isSwapchainImage, "Cannot destroy swapchain image");
 
         if (image->image)
         {
@@ -79,7 +80,7 @@ namespace ava
         return image->image;
     }
 
-    ImageView createImageView(const Image& image, const vk::ImageAspectFlags aspectFlags, const vk::ImageViewType imageViewType, std::optional<vk::Format> format, std::optional<vk::ImageSubresourceRange> subresourceRange)
+    ImageView createImageView(const Image& image, const vk::ImageAspectFlags aspectFlags, const vk::ImageViewType imageViewType, const std::optional<vk::Format> format, std::optional<vk::ImageSubresourceRange> subresourceRange)
     {
         AVA_CHECK(image != nullptr && image->image, "Cannot create an image view from an invalid image");
         if (!subresourceRange.has_value())
@@ -109,6 +110,7 @@ namespace ava
     {
         AVA_CHECK_NO_EXCEPT_RETURN(imageView != nullptr, "Cannot destroy an invalid image view")
         AVA_CHECK_NO_EXCEPT_RETURN(detail::State.device, "Cannot destroy image view when State's device is invalid");
+        AVA_CHECK_NO_EXCEPT_RETURN(!imageView->isSwapchainImageView, "Cannot destroy swapchain image view");
 
         if (imageView->imageView)
         {
@@ -333,5 +335,27 @@ namespace ava
 
         endSingleTimeCommands(commandBuffer);
         destroyBuffer(stagingBuffer);
+    }
+
+    ava::Image getSwapchainImage(const uint32_t index)
+    {
+        AVA_CHECK(index < detail::State.swapchainImageCount, "Cannot get swapchain image when index is out of range of image count");
+        return detail::State.swapchainAvaImages.at(index);
+    }
+
+    ava::ImageView getSwapchainImageView(const uint32_t index)
+    {
+        AVA_CHECK(index < detail::State.swapchainImageCount, "Cannot get swapchain image when index is out of range of image count");
+        return detail::State.swapchainAvaImageViews.at(index);
+    }
+
+    std::vector<ava::Image> getSwapchainImages()
+    {
+        return detail::State.swapchainAvaImages;
+    }
+
+    std::vector<ava::ImageView> getSwapchainImageViews()
+    {
+        return detail::State.swapchainAvaImageViews;
     }
 }

@@ -28,15 +28,6 @@ namespace ava
         AVA_CHECK(State.renderFinishedSemaphores.size() >= State.currentFrame, "Render finished semaphores was not properly initialized");
         vk::detail::resultCheck(State.device.waitForFences(State.inFlightGraphicsFences[State.currentFrame], true, std::numeric_limits<uint64_t>::max()), "Failed while waiting for previous frame fence");
 
-        if (currentFrame != nullptr)
-        {
-            *currentFrame = State.currentFrame;
-        }
-        if (imageIndex != nullptr)
-        {
-            *imageIndex = State.imageIndex;
-        }
-
         auto nextImageResult = State.device.acquireNextImageKHR(State.swapchain, std::numeric_limits<uint64_t>::max(), State.imageAvailableSemaphores[State.currentFrame], nullptr, &State.imageIndex);
         if (nextImageResult == vk::Result::eErrorOutOfDateKHR)
         {
@@ -56,6 +47,15 @@ namespace ava
         auto commandBuffer = State.frameGraphicsCommandBuffers[State.currentFrame];
         // Clear any previously tracked objects
         commandBuffer->trackedObjects.clear();
+
+        if (currentFrame != nullptr)
+        {
+            *currentFrame = State.currentFrame;
+        }
+        if (imageIndex != nullptr)
+        {
+            *imageIndex = State.imageIndex;
+        }
 
         State.frameStarted = true;
 

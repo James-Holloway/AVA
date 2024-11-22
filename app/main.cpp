@@ -61,7 +61,7 @@ int main()
                 1
             };
             auto renderPass = ava::raii::RenderPass::create(renderPassCreateInfo);
-            auto framebuffer = ava::raii::Framebuffer::createSwapchain(renderPass);
+            auto framebuffers = ava::raii::Framebuffer::createSwapchain(renderPass);
 
             // Create VAO
             auto vao = ava::raii::VAO::create({ava::VertexAttribute::CreateVec2(), ava::VertexAttribute::CreateVec3()});
@@ -133,7 +133,7 @@ int main()
                 {
                     ava::deviceWaitIdle();
                     recreateSwapchain();
-                    framebuffer = ava::raii::Framebuffer::createSwapchain(renderPass);
+                    framebuffers = ava::raii::Framebuffer::createSwapchain(renderPass);
                 }
 
                 // Start a new frame
@@ -154,14 +154,13 @@ int main()
 
                 // Begin render pass
                 vk::ClearValue clearColor{{1.0f, 0.0f, 1.0f, 1.0f}};
-                commandBuffer->beginRenderPass(renderPass, framebuffer, {clearColor});
+                commandBuffer->beginRenderPass(renderPass, framebuffers.at(imageIndex), {clearColor});
                 {
                     commandBuffer->bindGraphicsPipeline(graphicsPipeline);
                     commandBuffer->bindDescriptorSet(graphicsSet0);
                     commandBuffer->bindVBO(vbo);
                     commandBuffer->bindIBO(ibo);
                     commandBuffer->drawIndexed();
-                    // TODO: attachments
                 }
                 commandBuffer->endRenderPass();
 
@@ -169,6 +168,7 @@ int main()
                 ava::presentFrame();
             }
 
+            // Wait before ava RAII objects go out of scope
             ava::deviceWaitIdle();
         }
         ava::destroyState();

@@ -7,33 +7,28 @@
 
 namespace ava
 {
-    // Framebuffer
-    Framebuffer createFramebuffer(const RenderPass& renderPass, std::vector<std::vector<vk::ImageView>> attachments, const vk::Extent2D extent, const int layers)
+    Framebuffer createFramebuffer(const RenderPass& renderPass, const std::vector<vk::ImageView>& attachments, const vk::Extent2D extent, const int layers)
     {
         AVA_CHECK(detail::State.device != nullptr, "Cannot create a framebuffer without a State device");
         AVA_CHECK(renderPass != nullptr && renderPass->renderPass, "Cannot create a framebuffer using an invalid render pass");
         AVA_CHECK(!attachments.empty(), "Cannot create a framebuffer using an empty attachments vector");
         AVA_CHECK(extent.width > 0 && extent.height > 0, "Cannot create a framebuffer using an invalid extent");
 
-        std::vector<vk::Framebuffer> framebuffers;
-        framebuffers.resize(attachments.size());
-        for (uint32_t i = 0; i < framebuffers.size(); i++)
-        {
-            vk::FramebufferCreateInfo framebufferCreateInfo{};
+        vk::FramebufferCreateInfo framebufferCreateInfo{};
 
-            // ReSharper disable once CppDFANullDereference
-            framebufferCreateInfo.renderPass = renderPass->renderPass;
-            framebufferCreateInfo.setAttachments(attachments[i]);
-            framebufferCreateInfo.width = extent.width;
-            framebufferCreateInfo.height = extent.height;
-            framebufferCreateInfo.layers = layers;
-            framebufferCreateInfo.flags = {};
+        // ReSharper disable once CppDFANullDereference
+        framebufferCreateInfo.renderPass = renderPass->renderPass;
+        framebufferCreateInfo.setAttachments(attachments);
+        framebufferCreateInfo.width = extent.width;
+        framebufferCreateInfo.height = extent.height;
+        framebufferCreateInfo.layers = layers;
+        framebufferCreateInfo.flags = {};
 
-            framebuffers[i] = detail::State.device.createFramebuffer(framebufferCreateInfo);
-        }
+        const auto framebuffer = detail::State.device.createFramebuffer(framebufferCreateInfo);
 
+        // ReSharper disable once CppDFAMemoryLeak
         const auto outFramebuffer = new detail::Framebuffer();
-        outFramebuffer->framebuffers = framebuffers;
+        outFramebuffer->framebuffer = framebuffer;
         outFramebuffer->extent = extent;
         outFramebuffer->layers = layers;
         outFramebuffer->attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -41,58 +36,59 @@ namespace ava
         return outFramebuffer;
     }
 
-    Framebuffer createFramebuffer(const RenderPass& renderPass, const std::vector<std::vector<ava::ImageView>>& attachments, const vk::Extent2D extent, const int layers)
+    Framebuffer createFramebuffer(const RenderPass& renderPass, const std::vector<ava::ImageView>& attachments, const vk::Extent2D extent, const int layers)
     {
-        std::vector<std::vector<vk::ImageView>> imageViews;
+        std::vector<vk::ImageView> imageViews;
         imageViews.reserve(attachments.size());
-        for (auto& frame : attachments)
+        for (auto& attachment : attachments)
         {
-            imageViews.push_back(std::vector<vk::ImageView>());
-            auto& outFrame = imageViews.back();
-            outFrame.reserve(frame.size());
-
-            for (auto& attachment : frame)
+            if (attachment != nullptr)
             {
-                if (attachment != nullptr)
-                {
-                    outFrame.push_back(attachment->imageView);
-                }
-                else
-                {
-                    outFrame.push_back(nullptr);
-                }
+                imageViews.push_back(attachment->imageView);
+            }
+            else
+            {
+                imageViews.emplace_back(nullptr);
             }
         }
 
         return createFramebuffer(renderPass, imageViews, extent, layers);
     }
 
-    Framebuffer createSwapchainFramebuffer(const RenderPass& renderPass)
+    std::vector<Framebuffer> createSwapchainFramebuffers(const RenderPass& renderPass)
     {
         AVA_CHECK(detail::State.swapchain, "Cannot create a swapchain framebuffer without a valid State swapchain");
 
-        std::vector<std::vector<vk::ImageView>> attachments;
-        attachments.reserve(detail::State.swapchainImageViews.size());
+        std::vector<Framebuffer> framebuffers;
+        framebuffers.reserve(detail::State.swapchainImageViews.size());
         for (auto& imageView : detail::State.swapchainImageViews)
         {
-            attachments.push_back({imageView});
+            framebuffers.push_back(createFramebuffer(renderPass, {imageView}, detail::State.swapchainExtent));
         }
-        return createFramebuffer(renderPass, attachments, detail::State.swapchainExtent);
+
+        // ReSharper disable once CppDFAMemoryLeak
+        return framebuffers;
     }
 
-    void destroyFramebuffer(Framebuffer& frameBuffer)
+    void destroyFramebuffer(Framebuffer& framebuffer)
     {
-        AVA_CHECK_NO_EXCEPT_RETURN(frameBuffer != nullptr, "Cannot destroy an invalid framebuffer");
+        AVA_CHECK_NO_EXCEPT_RETURN(framebuffer != nullptr, "Cannot destroy an invalid framebuffer");
 
-        for (auto& framebuffer : frameBuffer->framebuffers)
+        if (framebuffer->framebuffer)
         {
-            if (framebuffer)
-            {
-                detail::State.device.destroyFramebuffer(framebuffer);
-            }
+            detail::State.device.destroyFramebuffer(framebuffer->framebuffer);
         }
 
-        delete frameBuffer;
-        frameBuffer = nullptr;
+        delete framebuffer;
+        framebuffer = nullptr;
+    }
+
+    void destroyFramebuffers(std::vector<Framebuffer>& framebuffers)
+    {
+        for (auto& framebuffer : framebuffers)
+        {
+            destroyFramebuffer(framebuffer);
+        }
+        framebuffers.clear();
     }
 }

@@ -6,6 +6,7 @@
 #include "detail/detail.hpp"
 #include "detail/state.hpp"
 #include "detail/debugCallback.hpp"
+#include "detail/image.hpp"
 
 namespace ava
 {
@@ -230,6 +231,16 @@ namespace ava
                     State.device.destroyImageView(imageView);
                     imageView = nullptr;
                 }
+                for (auto& avaImageView : State.swapchainAvaImageViews)
+                {
+                    delete avaImageView;
+                    avaImageView = nullptr;
+                }
+                for (auto& avaImage : State.swapchainAvaImages)
+                {
+                    delete avaImage;
+                    avaImage = nullptr;
+                }
 
                 vkb::destroy_swapchain(State.vkbSwapchain);
                 State.swapchainImages.clear();
@@ -293,6 +304,16 @@ namespace ava
             State.device.destroyImageView(imageView);
             imageView = nullptr;
         }
+        for (auto& avaImageView : State.swapchainAvaImageViews)
+        {
+            delete avaImageView;
+            avaImageView = nullptr;
+        }
+        for (auto& avaImage : State.swapchainAvaImages)
+        {
+            delete avaImage;
+            avaImage = nullptr;
+        }
 
         vkb::SwapchainBuilder swapchainBuilder{State.vkbDevice, surface};
         vk::SurfaceFormatKHR surfaceFormat{desiredFormat, colorSpace};
@@ -331,12 +352,32 @@ namespace ava
         // Assign the swapchain
         State.swapchainImageViews.resize(State.swapchainImageCount);
         State.swapchainImages.resize(State.swapchainImageCount);
-        const auto imageViews = State.vkbSwapchain.get_image_views().value();
+        State.swapchainAvaImages.resize(State.swapchainImageCount);
+        State.swapchainAvaImageViews.resize(State.swapchainImageCount);
+
         const auto images = State.vkbSwapchain.get_images().value();
+        const auto imageViews = State.vkbSwapchain.get_image_views().value();
         for (size_t i = 0; i < State.swapchainImageCount; i++)
         {
             State.swapchainImages[i] = images[i];
             State.swapchainImageViews[i] = imageViews[i];
+
+            const auto memoryRequirements = State.device.getImageMemoryRequirements(images[i]);
+            State.swapchainAvaImages[i] = new detail::Image();
+            State.swapchainAvaImages[i]->image = images[i];
+            State.swapchainAvaImages[i]->allocationInfo.size = memoryRequirements.size;
+            State.swapchainAvaImages[i]->creationInfo.extent = vk::Extent3D{State.swapchainExtent, 1};
+            State.swapchainAvaImages[i]->creationInfo.format = State.swapchainImageFormat;
+            State.swapchainAvaImages[i]->creationInfo.arrayLayers = 1;
+            State.swapchainAvaImages[i]->creationInfo.mipLevels = 1;
+            State.swapchainAvaImages[i]->creationInfo.usage = static_cast<vk::ImageUsageFlags>(State.vkbSwapchain.image_usage_flags);
+            State.swapchainAvaImages[i]->imageLayout = vk::ImageLayout::eUndefined;
+            State.swapchainAvaImages[i]->isSwapchainImage = true;
+
+            State.swapchainAvaImageViews[i] = new detail::ImageView();
+            State.swapchainAvaImageViews[i]->imageView = imageViews[i];
+            State.swapchainAvaImageViews[i]->format = State.swapchainImageFormat;
+            State.swapchainAvaImageViews[i]->isSwapchainImageView = true;
         }
 
         State.resizeNeeded = false;

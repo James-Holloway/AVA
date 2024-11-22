@@ -124,11 +124,11 @@ namespace ava
         AVA_CHECK(State.device != nullptr, "Cannot begin render pass while State device is invalid");
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot begin render pass while command buffer is invalid");
         AVA_CHECK(renderPass != nullptr && renderPass->renderPass, "Cannot begin render pass while RenderPass is invalid");
-        AVA_CHECK(framebuffer != nullptr && framebuffer->framebuffers.size() >= State.swapchainImageCount, "Cannot begin render pass while Framebuffer is invalid");
+        AVA_CHECK(framebuffer != nullptr && framebuffer->framebuffer, "Cannot begin render pass while Framebuffer is invalid");
 
         vk::RenderPassBeginInfo beginInfo{};
         // ReSharper disable once CppDFANullDereference
-        beginInfo.framebuffer = framebuffer->framebuffers[State.imageIndex];
+        beginInfo.framebuffer = framebuffer->framebuffer;
         // ReSharper disable once CppDFANullDereference
         beginInfo.renderPass = renderPass->renderPass;
         beginInfo.renderArea = vk::Rect2D{{0, 0}, framebuffer->extent};

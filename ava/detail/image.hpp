@@ -20,6 +20,8 @@ namespace ava::detail
     {
         vk::ImageView imageView;
         vk::Format format;
+
+        bool isSwapchainImageView = false;
     };
 }
 
