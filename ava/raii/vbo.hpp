@@ -8,6 +8,8 @@ namespace ava::raii
     class VBO
     {
     public:
+        using Ptr = Pointer<VBO>;
+
         explicit VBO(const ava::VBO& existingVBO);
         ~VBO();
 

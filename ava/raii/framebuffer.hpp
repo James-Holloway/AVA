@@ -8,6 +8,8 @@ namespace ava::raii
     class Framebuffer
     {
     public:
+        using Ptr = Pointer<Framebuffer>;
+
         explicit Framebuffer(const ava::Framebuffer& existingFramebuffer);
         ~Framebuffer();
 

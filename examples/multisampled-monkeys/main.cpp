@@ -5,9 +5,6 @@
 #include <random>
 #include <tiny_obj_loader.h>
 
-template <typename T>
-using Pointer = ava::raii::Pointer<T>;
-
 struct Vertex
 {
     glm::vec3 position;
@@ -33,23 +30,23 @@ public:
 
     ~MultisampledMonkeys() override = default;
 
-    Pointer<ava::raii::RenderPass> renderPass;
-    Pointer<ava::raii::GraphicsPipeline> graphicsPipeline;
-    std::vector<Pointer<ava::raii::Framebuffer>> framebuffers;
+    ava::raii::RenderPass::Ptr renderPass;
+    ava::raii::GraphicsPipeline::Ptr graphicsPipeline;
+    std::vector<ava::raii::Framebuffer::Ptr> framebuffers;
 
-    Pointer<ava::raii::VBO> monkeyModel;
+    ava::raii::VBO::Ptr monkeyModel;
     uint32_t monkeyVertexCount = 0;
-    Pointer<ava::raii::Buffer> ubo;
+    ava::raii::Buffer::Ptr ubo;
 
-    Pointer<ava::raii::DescriptorPool> pool;
-    std::vector<Pointer<ava::raii::DescriptorSet>> monkeySets;
+    ava::raii::DescriptorPool::Ptr pool;
+    std::vector<ava::raii::DescriptorSet::Ptr> monkeySets;
     std::vector<glm::mat4> monkeyStartMatrix;
 
-    Pointer<ava::raii::Image> msaaImage;
-    Pointer<ava::raii::ImageView> msaaImageView;
+    ava::raii::Image::Ptr msaaImage;
+    ava::raii::ImageView::Ptr msaaImageView;
 
-    Pointer<ava::raii::Image> depthImage;
-    Pointer<ava::raii::ImageView> depthImageView;
+    ava::raii::Image::Ptr depthImage;
+    ava::raii::ImageView::Ptr depthImageView;
 
     void init() override
     {
@@ -199,7 +196,7 @@ public:
         ubo->update(ubos);
     }
 
-    void draw(const Pointer<ava::raii::CommandBuffer>& commandBuffer, const uint32_t currentFrame, const uint32_t imageIndex) override
+    void draw(const ava::raii::CommandBuffer::Ptr& commandBuffer, const uint32_t currentFrame, const uint32_t imageIndex) override
     {
         vk::ClearValue colorClearValue{{0.0f, 0.0f, 0.0f, 1.0f}};
         vk::ClearValue depthClearValue{{1.0f, 0u}};

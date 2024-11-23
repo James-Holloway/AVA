@@ -117,7 +117,7 @@ public:
     {
     }
 
-    virtual void draw(const ava::raii::Pointer<ava::raii::CommandBuffer>& commandBuffer, uint32_t currentFrame, uint32_t imageIndex)
+    virtual void draw(const ava::raii::CommandBuffer::Ptr& commandBuffer, uint32_t currentFrame, uint32_t imageIndex)
     {
     }
 

@@ -8,6 +8,8 @@ namespace ava::raii
     class Sampler
     {
     public:
+        using Ptr = Pointer<Sampler>;
+
         explicit Sampler(const ava::Sampler& existingSampler);
         ~Sampler();
 

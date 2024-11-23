@@ -9,6 +9,8 @@ namespace ava::raii
     class RenderPass
     {
     public:
+        using Ptr = Pointer<RenderPass>;
+
         explicit RenderPass(const ava::RenderPass& existingRenderPass);
         ~RenderPass();
 

@@ -9,6 +9,8 @@ namespace ava::raii
     class VAO
     {
     public:
+        using Ptr = Pointer<VAO>;
+
         explicit VAO(const ava::VAO& existingVAO);
         ~VAO();
 

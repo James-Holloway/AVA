@@ -8,6 +8,8 @@ namespace ava::raii
     class IBO
     {
     public:
+        using Ptr = Pointer<IBO>;
+
         explicit IBO(const ava::IBO& existingIBO);
         ~IBO();
 

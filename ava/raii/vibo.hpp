@@ -8,6 +8,8 @@ namespace ava::raii
     class VIBO
     {
     public:
+        using Ptr = Pointer<VIBO>;
+
         VIBO(ava::VIBO existingVIBO);
         ~VIBO();
 

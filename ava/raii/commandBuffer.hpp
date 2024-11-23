@@ -9,6 +9,8 @@ namespace ava::raii
     class CommandBuffer
     {
     public:
+        using Ptr = Pointer<CommandBuffer>;
+
         explicit CommandBuffer(const ava::CommandBuffer& existingCommandBuffer);
         virtual ~CommandBuffer();
 

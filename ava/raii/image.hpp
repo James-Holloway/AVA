@@ -9,6 +9,8 @@ namespace ava::raii
     class Image
     {
     public:
+        using Ptr = Pointer<Image>;
+
         explicit Image(const ava::Image& existingImage);
         ~Image();
 
@@ -52,6 +54,8 @@ namespace ava::raii
     class ImageView
     {
     public:
+        using Ptr = Pointer<ImageView>;
+
         explicit ImageView(const ava::ImageView& existingImageView);
         ~ImageView();
 

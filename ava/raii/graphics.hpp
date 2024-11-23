@@ -9,6 +9,8 @@ namespace ava::raii
     class GraphicsPipeline
     {
     public:
+        using Ptr = Pointer<GraphicsPipeline>;
+
         explicit GraphicsPipeline(const ava::GraphicsPipeline& existingPipeline);
         ~GraphicsPipeline();
 

@@ -9,6 +9,8 @@ namespace ava::raii
     class Buffer
     {
     public:
+        using Ptr = Pointer<Buffer>;
+
         Buffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);
         explicit Buffer(const ava::Buffer& existingBuffer);
         virtual ~Buffer();

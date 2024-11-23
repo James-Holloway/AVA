@@ -9,6 +9,8 @@ namespace ava::raii
     class ComputePipeline
     {
     public:
+        using Ptr = Pointer<ComputePipeline>;
+        
         explicit ComputePipeline(const ava::ComputePipeline& existingPipeline);
         ~ComputePipeline();
 

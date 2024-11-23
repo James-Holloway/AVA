@@ -8,6 +8,8 @@ namespace ava::raii
     class Shader
     {
     public:
+        using Ptr = Pointer<Shader>;
+
         explicit Shader(const ava::Shader& existingShader);
         ~Shader();
 

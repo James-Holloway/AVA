@@ -1,8 +1,5 @@
 #include <framework.hpp>
 
-template <typename T>
-using Pointer = ava::raii::Pointer<T>;
-
 struct Vertex
 {
     glm::vec3 position;
@@ -65,15 +62,15 @@ public:
 
     ~Cube() override = default;
 
-    Pointer<ava::raii::RenderPass> renderPass;
-    Pointer<ava::raii::GraphicsPipeline> graphicsPipeline;
-    std::vector<Pointer<ava::raii::Framebuffer>> framebuffers;
+    ava::raii::RenderPass::Ptr renderPass;
+    ava::raii::GraphicsPipeline::Ptr graphicsPipeline;
+    std::vector<ava::raii::Framebuffer::Ptr> framebuffers;
 
-    Pointer<ava::raii::VIBO> vibo;
-    Pointer<ava::raii::Buffer> ubo;
+    ava::raii::VIBO::Ptr vibo;
+    ava::raii::Buffer::Ptr ubo;
 
-    Pointer<ava::raii::DescriptorPool> pool;
-    Pointer<ava::raii::DescriptorSet> set0;
+    ava::raii::DescriptorPool::Ptr pool;
+    ava::raii::DescriptorSet::Ptr set0;
 
     void init() override
     {
@@ -124,7 +121,7 @@ public:
         ubo->update(uboData);
     }
 
-    void draw(const Pointer<ava::raii::CommandBuffer>& commandBuffer, const uint32_t currentFrame, const uint32_t imageIndex) override
+    void draw(const ava::raii::CommandBuffer::Ptr& commandBuffer, const uint32_t currentFrame, const uint32_t imageIndex) override
     {
         vk::ClearValue clearValue{{0.0f, 0.0f, 0.0f, 1.0f}};
         commandBuffer->beginRenderPass(renderPass, framebuffers.at(imageIndex), {clearValue});

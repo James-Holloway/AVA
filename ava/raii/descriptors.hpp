@@ -8,6 +8,8 @@ namespace ava::raii
     class DescriptorPool : public std::enable_shared_from_this<DescriptorPool>
     {
     public:
+        using Ptr = Pointer<DescriptorPool>;
+
         explicit DescriptorPool(const ava::DescriptorPool& existingPool);
         ~DescriptorPool();
 
@@ -28,6 +30,8 @@ namespace ava::raii
     class DescriptorSet
     {
     public:
+        using Ptr = Pointer<DescriptorSet>;
+
         explicit DescriptorSet(const Pointer<DescriptorPool>& poolAllocatedFrom, const ava::DescriptorSet& existingSet);
         ~DescriptorSet();
 
