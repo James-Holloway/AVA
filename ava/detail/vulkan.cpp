@@ -2,6 +2,22 @@
 
 namespace ava::detail
 {
+    bool vulkanFormatHasDepth(const vk::Format format)
+    {
+        switch (format)
+        {
+        case vk::Format::eD16Unorm:
+        case vk::Format::eD16UnormS8Uint:
+        case vk::Format::eD24UnormS8Uint:
+        case vk::Format::eD32Sfloat:
+        case vk::Format::eD32SfloatS8Uint:
+        case vk::Format::eX8D24UnormPack32:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     bool vulkanFormatHasStencil(const vk::Format format)
     {
         return format == vk::Format::eD32SfloatS8Uint || format == vk::Format::eD24UnormS8Uint || format == vk::Format::eD16UnormS8Uint || format == vk::Format::eS8Uint;

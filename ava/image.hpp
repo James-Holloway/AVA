@@ -10,6 +10,8 @@ namespace ava
     constexpr vk::ImageUsageFlags DEFAULT_IMAGE_TRANSFER_USAGE_FLAGS = vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
     constexpr vk::ImageUsageFlags DEFAULT_IMAGE_SAMPLED_USAGE_FLAGS = vk::ImageUsageFlagBits::eSampled | DEFAULT_IMAGE_TRANSFER_USAGE_FLAGS;
     constexpr vk::ImageUsageFlags DEFAULT_IMAGE_STORAGE_USAGE_FLAGS = vk::ImageUsageFlagBits::eStorage | DEFAULT_IMAGE_TRANSFER_USAGE_FLAGS;
+    constexpr vk::ImageUsageFlags DEFAULT_IMAGE_DEPTH_ATTACHMENT_USAGE_FLAGS = vk::ImageUsageFlagBits::eDepthStencilAttachment;
+    constexpr vk::ImageUsageFlags DEFAULT_IMAGE_COLOR_ATTACHMENT_USAGE_FLAGS = vk::ImageUsageFlagBits::eColorAttachment;
 
     // Generic and more advanced image creation
     [[nodiscard]] Image createImage(vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usageFlags = DEFAULT_IMAGE_SAMPLED_USAGE_FLAGS, vk::ImageType imageType = vk::ImageType::e2D, vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
@@ -51,6 +53,8 @@ namespace ava
     ava::ImageView getSwapchainImageView(uint32_t imageIndex);
     std::vector<ava::Image> getSwapchainImages();
     std::vector<ava::ImageView> getSwapchainImageViews();
+
+    vk::ImageAspectFlags getImageAspectFlagsForFormat(vk::Format format);
 }
 
 

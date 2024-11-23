@@ -36,13 +36,13 @@ namespace ava::raii
         template <typename T>
         void update(const std::span<T> data, const vk::DeviceSize offset = 0) const
         {
-            update(reinterpret_cast<void*>(data.data()), data.size() * sizeof(T), offset);
+            update(reinterpret_cast<const void*>(data.data()), data.size() * sizeof(T), offset);
         }
 
         template <typename T>
         void update(const std::vector<T>& data, const vk::DeviceSize offset = 0) const
         {
-            update(reinterpret_cast<void*>(data.data()), data.size() * sizeof(T), offset);
+            update(reinterpret_cast<const void*>(data.data()), data.size() * sizeof(T), offset);
         }
 
         static Pointer<Buffer> create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);

@@ -1,4 +1,5 @@
 #include "memoryLocation.hpp"
+#include "detail/state.hpp"
 
 namespace ava
 {
@@ -12,7 +13,11 @@ namespace ava
         case MemoryLocation::eCpuToGpu:
             return vma::MemoryUsage::eCpuToGpu;
         case MemoryLocation::eLazyGpu:
-            return vma::MemoryUsage::eGpuLazilyAllocated;
+            {
+                if (!detail::State.lazyGpuMemoryAvailable)
+                    return vma::MemoryUsage::eGpuOnly;
+                return vma::MemoryUsage::eGpuLazilyAllocated;
+            }
         }
     }
 }

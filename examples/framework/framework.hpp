@@ -51,11 +51,13 @@ public:
             createInfo.extraInstanceExtensions.push_back(extensions[i]);
         }
 
+        configure(createInfo);
+
         ava::configureState(createInfo);
 
         // Create window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        window = glfwCreateWindow(windowWidth, windowHeight, appTitle.c_str(), nullptr, nullptr);
+        window = glfwCreateWindow(static_cast<int>(windowWidth), static_cast<int>(windowHeight), appTitle.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
             throw std::runtime_error("GLFW Window could not be created");
@@ -105,6 +107,10 @@ public:
 
         cleanup();
         ava::destroyState();
+    }
+
+    virtual void configure(ava::CreateInfo& createInfo)
+    {
     }
 
     virtual void init()

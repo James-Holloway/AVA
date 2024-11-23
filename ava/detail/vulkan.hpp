@@ -7,6 +7,7 @@
 
 namespace ava::detail
 {
+    bool vulkanFormatHasDepth(vk::Format format);
     bool vulkanFormatHasStencil(vk::Format format);
     size_t vulkanFormatByteWidth(vk::Format format);
 }

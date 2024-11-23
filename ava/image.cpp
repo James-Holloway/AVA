@@ -41,7 +41,7 @@ namespace ava
         newImage->allocationInfo = allocationInfo;
 
         auto commandBuffer = beginSingleTimeCommands(vk::QueueFlagBits::eTransfer);
-        transitionImageLayout(commandBuffer, newImage, vk::ImageLayout::eGeneral, vk::ImageAspectFlagBits::eColor);
+        transitionImageLayout(commandBuffer, newImage, vk::ImageLayout::eGeneral, getImageAspectFlagsForFormat(format));
         endSingleTimeCommands(commandBuffer);
         return newImage;
     }
@@ -85,7 +85,7 @@ namespace ava
         AVA_CHECK(image != nullptr && image->image, "Cannot create an image view from an invalid image");
         if (!subresourceRange.has_value())
         {
-            subresourceRange = vk::ImageSubresourceRange(aspectFlags, 0, image->creationInfo.mipLevels, 0, image->creationInfo.arrayLayers);
+            subresourceRange = vk::ImageSubresourceRange{aspectFlags, 0, image->creationInfo.mipLevels, 0, image->creationInfo.arrayLayers};
         }
 
         const auto selectedFormat = format.value_or(image->creationInfo.format);
@@ -297,7 +297,7 @@ namespace ava
 
         if (!subresourceRange.has_value())
         {
-            subresourceRange = vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, image->creationInfo.mipLevels, 0, image->creationInfo.arrayLayers};
+            subresourceRange = vk::ImageSubresourceRange{getImageAspectFlagsForFormat(image->creationInfo.format), 0, image->creationInfo.mipLevels, 0, image->creationInfo.arrayLayers};
         }
 
         const auto oldLayout = image->imageLayout;
@@ -357,5 +357,25 @@ namespace ava
     std::vector<ava::ImageView> getSwapchainImageViews()
     {
         return detail::State.swapchainAvaImageViews;
+    }
+
+    vk::ImageAspectFlags getImageAspectFlagsForFormat(const vk::Format format)
+    {
+        vk::ImageAspectFlags aspectFlags{};
+
+        if (detail::vulkanFormatHasDepth(format))
+        {
+            aspectFlags |= vk::ImageAspectFlagBits::eDepth;
+        }
+        else
+        {
+            aspectFlags |= vk::ImageAspectFlagBits::eColor;
+        }
+
+        if (detail::vulkanFormatHasStencil(format))
+        {
+            aspectFlags |= vk::ImageAspectFlagBits::eStencil;
+        }
+        return aspectFlags;
     }
 }

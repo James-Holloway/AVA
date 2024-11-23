@@ -17,7 +17,7 @@ namespace ava::raii
 
     Image::~Image()
     {
-        if (image != nullptr)
+        if (image != nullptr && !image->isSwapchainImage)
         {
             ava::destroyImage(image);
         }
@@ -86,6 +86,39 @@ namespace ava::raii
 
     ImageView::~ImageView()
     {
-        ava::destroyImageView(imageView);
+        if (imageView != nullptr && !imageView->isSwapchainImageView)
+        {
+            ava::destroyImageView(imageView);
+        }
+    }
+
+    Pointer<Image> getSwapchainImage(const uint32_t imageIndex)
+    {
+        return std::make_shared<Image>(ava::getSwapchainImage(imageIndex));
+    }
+
+    Pointer<ImageView> getSwapchainImageView(const uint32_t imageIndex)
+    {
+        return std::make_shared<ImageView>(ava::getSwapchainImageView(imageIndex));
+    }
+
+    std::vector<Pointer<Image>> getSwapchainImages()
+    {
+        std::vector<Pointer<Image>> images;
+        for (const auto& image : ava::getSwapchainImages())
+        {
+            images.push_back(std::make_shared<Image>(image));
+        }
+        return images;
+    }
+
+    std::vector<Pointer<ImageView>> getSwapchainImageViews()
+    {
+        std::vector<Pointer<ImageView>> imageViews;
+        for (const auto& imageView : ava::getSwapchainImageViews())
+        {
+            imageViews.push_back(std::make_shared<ImageView>(imageView));
+        }
+        return imageViews;
     }
 }

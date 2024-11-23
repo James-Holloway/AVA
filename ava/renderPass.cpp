@@ -13,11 +13,11 @@ namespace ava
         vk::AttachmentDescription attachmentDescription;
 
         // If attachment has a subpass matching the subpass and subpass attachment type
-        [[nodiscard]] bool hasAttachmentType(const uint32_t subpass, const SubPassAttachmentTypeFlagBits type) const
+        [[nodiscard]] bool hasAttachmentType(const uint32_t subpass, const SubPassAttachmentTypeFlags type) const
         {
             if (subpass >= attachment.subpassInfos.size()) return false;
 
-            return (attachment.subpassInfos[subpass].attachmentType & type) != SubPassAttachmentTypeFlags{};
+            return (attachment.subpassInfos[subpass].attachmentType & type) == type;
         }
     };
 
@@ -31,6 +31,11 @@ namespace ava
 
         vk::SubpassDescription subpassDescription{};
     };
+
+    SubPassAttachmentTypeFlags operator|(const SubPassAttachmentTypeFlagBits lhs, const SubPassAttachmentTypeFlagBits rhs)
+    {
+        return SubPassAttachmentTypeFlags{lhs} | rhs;
+    }
 
     [[nodiscard]] static vk::AttachmentDescription createAttachmentDescription(const RenderPassAttachmentInfo& info)
     {
@@ -123,10 +128,59 @@ namespace ava
         return subpassAttachments;
     }
 
-    static void populateSubpassInfo(IntermediateSubPassInfo& subPassInfo, const std::vector<IntermediateRenderPassAttachmentInfo>& intermediateAttachments, uint32_t subpass)
+    // No ignores
+    [[nodiscard]] static std::vector<vk::AttachmentReference> filterAttachmentReferencesToNonIgnore(const std::vector<vk::AttachmentReference>& attachments)
+    {
+        std::vector<vk::AttachmentReference> filteredAttachments;
+        for (auto& attachment : attachments)
+        {
+            if (attachment.attachment != vk::AttachmentUnused)
+            {
+                filteredAttachments.push_back(attachment);
+            }
+        }
+        return filteredAttachments;
+    }
+
+    static std::vector<vk::AttachmentReference> createResolveSubpassAttachmentReferences(const std::vector<IntermediateRenderPassAttachmentInfo>& attachments, const uint32_t subpass, const SubPassAttachmentTypeFlags subPassAttachment, const uint32_t vectorSize)
+    {
+        std::vector resolveSubpassAttachments(vectorSize, vk::AttachmentReference{vk::AttachmentUnused});
+        uint32_t attachmentIndex = 0;
+        for (auto& attachment : attachments)
+        {
+            if (attachment.hasAttachmentType(subpass, subPassAttachment))
+            {
+                auto location = attachment.attachment.subpassInfos[subpass].attachmentLocation;
+                if (location == SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX)
+                {
+                    location = attachmentIndex;
+                }
+
+                auto resolveLocation = attachment.attachment.subpassInfos[subpass].resolveAttachmentIndex;
+                if (resolveLocation == SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX)
+                {
+                    resolveLocation = attachmentIndex;
+                }
+
+                if (resolveLocation != SubpassAttachmentInfo::IGNORE_ATTACHMENT)
+                {
+                    AVA_CHECK(resolveLocation < attachments.size(), "Resolve attachment index " + std::to_string(resolveLocation) + " is out of range of attachments size (" + std::to_string(attachments.size()) + ") on attachment " + std::to_string(attachmentIndex) + " and subpass " + std::to_string(subpass));
+                    const auto layout = attachments[resolveLocation].attachment.subpassInfos[subpass].layout;
+
+                    resolveSubpassAttachments[location] = vk::AttachmentReference{resolveLocation, layout};
+                }
+            }
+
+            attachmentIndex++;
+        }
+
+        return resolveSubpassAttachments;
+    }
+
+    static void populateSubpassInfo(IntermediateSubPassInfo& subPassInfo, const std::vector<IntermediateRenderPassAttachmentInfo>& intermediateAttachments, const uint32_t subpass)
     {
         subPassInfo.colorAttachments = createSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::eColor);
-        subPassInfo.depthAttachments = createSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::eDepthStencil);
+        subPassInfo.depthAttachments = filterAttachmentReferencesToNonIgnore(createSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::eDepthStencil));
         subPassInfo.inputAttachments = createSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::eInputAttachment);
         auto preserveAttachmentReferences = createSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::ePreserve);
         if (!preserveAttachmentReferences.empty())
@@ -137,22 +191,8 @@ namespace ava
                 subPassInfo.preserveAttachments.push_back(preserveAttachment.attachment);
             }
         }
-        // Resolve shares colorAttachmentCount so we need to set the other attachments to unused
-        auto resolveAttachments = createSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::eResolve);
-        subPassInfo.resolveAttachments.resize(subPassInfo.colorAttachments.size(), vk::AttachmentReference{vk::AttachmentUnused});
-        for (uint32_t i = 0; i < subPassInfo.colorAttachments.size(); i++)
-        {
-            auto& outResolveAttachment = subPassInfo.resolveAttachments[i];
-            const auto& colorAttachment = subPassInfo.colorAttachments[i];
-            for (const auto& resolveAttachment : resolveAttachments)
-            {
-                if (resolveAttachment.attachment == colorAttachment.attachment)
-                {
-                    outResolveAttachment = resolveAttachment;
-                    break;
-                }
-            }
-        }
+        // Resolve shares colorAttachmentCount
+        subPassInfo.resolveAttachments = createResolveSubpassAttachmentReferences(intermediateAttachments, subpass, SubPassAttachmentTypeFlagBits::eColor | SubPassAttachmentTypeFlagBits::eResolve, subPassInfo.colorAttachments.size());
 
         AVA_CHECK(subPassInfo.depthAttachments.size() <= 1, "Cannot have more than one depth attachment for subpass " + std::to_string(subpass));
         AVA_CHECK(!subPassInfo.depthAttachments.empty() || !subPassInfo.colorAttachments.empty(), "Cannot have a subpass with 0 color attachments and no depth attachment");
@@ -182,7 +222,7 @@ namespace ava
         return colorAttachmentCount;
     }
 
-    static uint32_t getSubpassColorAttachmentCount(const vk::AttachmentReference* colorAttachmentReferences, uint32_t colorAttachmentCount) noexcept
+    static uint32_t getSubpassColorAttachmentCount(const vk::AttachmentReference* colorAttachmentReferences, const uint32_t colorAttachmentCount) noexcept
     {
         return getSubpassColorAttachmentCount(std::vector(colorAttachmentReferences, &colorAttachmentReferences[colorAttachmentCount]));
     }
@@ -302,7 +342,7 @@ namespace ava
         renderPass = nullptr;
     }
 
-    RenderPassAttachmentInfo createSimpleColorAttachmentInfo(vk::Format colorFormat, bool isFirst, bool isFinal)
+    RenderPassAttachmentInfo createSimpleColorAttachmentInfo(const vk::Format colorFormat, const bool isFirst, const bool isFinal)
     {
         RenderPassAttachmentInfo renderPassAttachmentInfo;
         renderPassAttachmentInfo.subpassInfos = {
@@ -320,21 +360,39 @@ namespace ava
         return renderPassAttachmentInfo;
     }
 
-    RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(vk::Format depthFormat, bool isFirst)
+    RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(const vk::Format depthFormat, const bool isFirst)
     {
         const bool hasStencil = detail::vulkanFormatHasStencil(depthFormat);
         RenderPassAttachmentInfo renderPassAttachmentInfo;
         renderPassAttachmentInfo.subpassInfos = {
-            {SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX, hasStencil ? vk::ImageLayout::eDepthStencilAttachmentOptimal : vk::ImageLayout::eDepthAttachmentOptimal, SubPassAttachmentTypeFlagBits::eColor}
+            {SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX, vk::ImageLayout::eDepthStencilAttachmentOptimal, SubPassAttachmentTypeFlagBits::eDepthStencil}
         };
         renderPassAttachmentInfo.format = depthFormat;
         renderPassAttachmentInfo.sampleCount = vk::SampleCountFlagBits::e1;
         renderPassAttachmentInfo.initialLayout = vk::ImageLayout::eUndefined;
-        renderPassAttachmentInfo.finalLayout = hasStencil ? vk::ImageLayout::eDepthAttachmentOptimal : vk::ImageLayout::eDepthAttachmentOptimal;
+        renderPassAttachmentInfo.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
         renderPassAttachmentInfo.loadOp = isFirst ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad;
         renderPassAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
         renderPassAttachmentInfo.stencilLoadOp = hasStencil ? (isFirst ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad) : vk::AttachmentLoadOp::eDontCare;
         renderPassAttachmentInfo.stencilStoreOp = hasStencil ? vk::AttachmentStoreOp::eStore : vk::AttachmentStoreOp::eDontCare;
+
+        return renderPassAttachmentInfo;
+    }
+
+    RenderPassAttachmentInfo createSimpleResolveAttachmentInfo(const vk::Format colorFormat, bool isFinal)
+    {
+        RenderPassAttachmentInfo renderPassAttachmentInfo;
+        renderPassAttachmentInfo.subpassInfos = {
+            {SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX, vk::ImageLayout::eColorAttachmentOptimal, {}}
+        };
+        renderPassAttachmentInfo.format = colorFormat;
+        renderPassAttachmentInfo.sampleCount = vk::SampleCountFlagBits::e1;
+        renderPassAttachmentInfo.initialLayout = vk::ImageLayout::eUndefined;
+        renderPassAttachmentInfo.finalLayout = isFinal ? vk::ImageLayout::ePresentSrcKHR : vk::ImageLayout::eColorAttachmentOptimal;
+        renderPassAttachmentInfo.loadOp = vk::AttachmentLoadOp::eDontCare;
+        renderPassAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
+        renderPassAttachmentInfo.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        renderPassAttachmentInfo.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
 
         return renderPassAttachmentInfo;
     }

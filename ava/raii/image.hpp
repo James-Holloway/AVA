@@ -60,6 +60,11 @@ namespace ava::raii
         ImageView(const ImageView& other) = delete;
         ImageView& operator=(ImageView& other) = delete;
     };
+
+    Pointer<Image> getSwapchainImage(uint32_t imageIndex);
+    Pointer<ImageView> getSwapchainImageView(uint32_t imageIndex);
+    std::vector<Pointer<Image>> getSwapchainImages();
+    std::vector<Pointer<ImageView>> getSwapchainImageViews();
 }
 
 #endif

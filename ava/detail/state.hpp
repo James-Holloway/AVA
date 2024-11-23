@@ -69,6 +69,8 @@ namespace ava::detail
         std::vector<vk::Fence> inFlightGraphicsFences;
 
         std::atomic<uint32_t> descriptorPoolIndexCounter = 0;
+
+        bool lazyGpuMemoryAvailable = false;
     };
 
     inline State State;

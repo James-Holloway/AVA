@@ -179,6 +179,17 @@ namespace ava
         // Allocate frame graphic command buffers
         State.frameGraphicsCommandBuffers = createGraphicsCommandBuffers(State.framesInFlight, false);
 
+        // Check lazily allocated memory is available
+        const auto memoryProperties = State.physicalDevice.getMemoryProperties();
+        for (auto& memoryType : memoryProperties.memoryTypes)
+        {
+            if ((memoryType.propertyFlags & vk::MemoryPropertyFlagBits::eLazilyAllocated) != vk::MemoryPropertyFlags{})
+            {
+                State.lazyGpuMemoryAvailable = true;
+                break;
+            }
+        }
+
         State.stateCreated = true;
     }
 

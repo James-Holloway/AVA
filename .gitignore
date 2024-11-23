@@ -406,3 +406,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Examples
+!examples/*.obj

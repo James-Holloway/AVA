@@ -17,6 +17,7 @@ namespace ava
     };
 
     using SubPassAttachmentTypeFlags = vk::Flags<SubPassAttachmentTypeFlagBits>;
+    inline SubPassAttachmentTypeFlags operator|(SubPassAttachmentTypeFlagBits lhs, SubPassAttachmentTypeFlagBits rhs);
 
     struct SubpassAttachmentInfo
     {
@@ -28,6 +29,7 @@ namespace ava
         uint32_t attachmentLocation = AUTO_ATTACHMENT_INDEX;
         vk::ImageLayout layout = vk::ImageLayout::eColorAttachmentOptimal;
         SubPassAttachmentTypeFlags attachmentType = SubPassAttachmentTypeFlagBits::eColor;
+        uint32_t resolveAttachmentIndex = IGNORE_ATTACHMENT;
     };
 
     struct RenderPassAttachmentInfo
@@ -67,6 +69,7 @@ namespace ava
     // Simple functions to create a one render pass attachment with one subpass
     RenderPassAttachmentInfo createSimpleColorAttachmentInfo(vk::Format colorFormat, bool isFirst, bool isFinal);
     RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(vk::Format depthFormat, bool isFirst);
+    RenderPassAttachmentInfo createSimpleResolveAttachmentInfo(vk::Format colorFormat, bool isFinal);
 }
 
 #endif
