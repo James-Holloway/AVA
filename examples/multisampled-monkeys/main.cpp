@@ -12,12 +12,12 @@ struct Vertex
     glm::vec2 uv;
 };
 
-struct UBO
+struct MVP
 {
     glm::mat4 mvp;
 };
 
-constexpr uint32_t MAX_MONKEYS = 16;
+constexpr uint32_t MAX_MONKEYS = 32;
 constexpr auto depthFormat = vk::Format::eD32Sfloat;
 constexpr auto sampleCount = vk::SampleCountFlagBits::e4; // MSAA 4x
 
@@ -39,7 +39,7 @@ public:
     ava::raii::Buffer::Ptr ubo;
 
     ava::raii::DescriptorPool::Ptr pool;
-    std::vector<ava::raii::DescriptorSet::Ptr> monkeySets;
+    ava::raii::DescriptorSet::Ptr set0;
     std::vector<glm::mat4> monkeyStartMatrix;
 
     ava::raii::Image::Ptr msaaImage;
@@ -76,7 +76,7 @@ public:
         {
             const auto shaders = std::vector{
                 ava::raii::Shader::create("multisampled-monkeys.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
-                ava::raii::Shader::create("multisampled-monkeys.slang.spv", vk::ShaderStageFlagBits::eFragment, "pixel"),
+                ava::raii::Shader::create("multisampled-monkeys.slang.spv", vk::ShaderStageFlagBits::eFragment, "fragment"),
             };
 
             ava::GraphicsPipelineCreationInfo creationInfo{};
@@ -87,7 +87,7 @@ public:
 
         // Descriptors
         pool = ava::raii::DescriptorPool::create(graphicsPipeline);
-        monkeySets = pool->allocateDescriptorSets(0, MAX_MONKEYS);
+        set0 = pool->allocateDescriptorSet(0);
 
         // Monkey model
         {
@@ -158,8 +158,8 @@ public:
             for (uint32_t i = 0; i < MAX_MONKEYS; i++)
             {
                 auto position = glm::vec3(distribution(generator), distribution(generator), distribution(generator)) * 2.0f - 1.0f; // [0,1] to [-1,1]
-                position *= 4.0f; // [-4,4]
-                position.z += 4.0f; // [0,8]
+                position *= 8.0f; // [-8,8]
+                position.z += 8.0f; // [0,16]
                 glm::vec3 scale{distribution(generator) * 0.5f + 0.5f}; // [0.5,1.0]
                 glm::vec3 eulerRotation{distribution(generator) * glm::pi<float>() * 2.0f, distribution(generator) * glm::pi<float>() * 2.0f, 0.0f};
 
@@ -169,12 +169,9 @@ public:
             }
         }
 
-        // Monkey descriptor sets
-        ubo = ava::raii::Buffer::createUniform(sizeof(UBO) * MAX_MONKEYS);
-        for (uint32_t i = 0; i < MAX_MONKEYS; i++)
-        {
-            monkeySets[i]->bindBuffer(0, ubo, sizeof(UBO), sizeof(UBO) * i);
-        }
+        // Monkey descriptor set
+        ubo = ava::raii::Buffer::create(sizeof(MVP) * MAX_MONKEYS, ava::DEFAULT_STORAGE_BUFFER_USAGE);
+        set0->bindBuffer(0, ubo, sizeof(MVP) * MAX_MONKEYS, 0);
     }
 
     void update() override
@@ -184,7 +181,7 @@ public:
         const auto view = glm::lookAt(glm::vec3{0.0f, 0.0f, -12.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
         const auto projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.01f, 100.0f);
 
-        std::vector<UBO> ubos(MAX_MONKEYS, UBO{});
+        std::vector<MVP> ubos(MAX_MONKEYS, MVP{});
         for (uint32_t i = 0; i < MAX_MONKEYS; i++)
         {
             const auto t = time + static_cast<float>(i) * 0.5f;
@@ -203,11 +200,8 @@ public:
         commandBuffer->beginRenderPass(renderPass, framebuffers.at(imageIndex), {colorClearValue, colorClearValue, depthClearValue});
         commandBuffer->bindGraphicsPipeline(graphicsPipeline);
         commandBuffer->bindVBO(monkeyModel);
-        for (uint32_t i = 0; i < MAX_MONKEYS; i++)
-        {
-            commandBuffer->bindDescriptorSet(monkeySets[i]);
-            commandBuffer->draw(monkeyVertexCount);
-        }
+        commandBuffer->bindDescriptorSet(set0);
+        commandBuffer->draw(monkeyVertexCount, MAX_MONKEYS);
         commandBuffer->endRenderPass();
     }
 
@@ -220,7 +214,7 @@ public:
         renderPass.reset();
         graphicsPipeline.reset();
         framebuffers.clear();
-        monkeySets.clear();
+        set0.reset();
         pool.reset();
         monkeyModel.reset();
         ubo.reset();

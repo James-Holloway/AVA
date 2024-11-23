@@ -6,7 +6,7 @@ struct Vertex
     glm::vec3 normal;
 };
 
-struct UBO
+struct MVP
 {
     glm::mat4 mvp;
 };
@@ -88,7 +88,7 @@ public:
         {
             const auto shaders = std::vector{
                 ava::raii::Shader::create("cube.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
-                ava::raii::Shader::create("cube.slang.spv", vk::ShaderStageFlagBits::eFragment, "pixel"),
+                ava::raii::Shader::create("cube.slang.spv", vk::ShaderStageFlagBits::eFragment, "fragment"),
             };
 
             ava::GraphicsPipelineCreationInfo creationInfo{};
@@ -104,7 +104,7 @@ public:
         vibo = ava::raii::VIBO::create(vao, cubeVertices, sizeof(cubeVertices), cubeIndices, std::size(cubeIndices));
 
         // Cube descriptor set
-        ubo = ava::raii::Buffer::createUniform(sizeof(UBO));
+        ubo = ava::raii::Buffer::createUniform(sizeof(MVP));
         set0->bindBuffer(0, ubo);
     }
 
@@ -112,7 +112,7 @@ public:
     {
         const auto time = static_cast<float>(glfwGetTime()) * 0.25f;
 
-        UBO uboData{};
+        MVP uboData{};
         const auto model = glm::eulerAngleYXZ(std::sin(time + 0.125f) * glm::pi<float>() * 2.0f, std::cos(time * 0.7025f) * glm::pi<float>() * 2.0f, 0.0f);
         const auto view = glm::lookAt(glm::vec3{0.0f, 0.0f, -6.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
         const auto projection = glm::perspective(glm::radians(60.0f), static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.01f, 100.0f);

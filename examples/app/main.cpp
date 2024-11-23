@@ -69,7 +69,7 @@ int main()
             // Create shaders for pipeline
             std::vector graphicsShaders{
                 ava::raii::Shader::create("shaders/test.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
-                ava::raii::Shader::create("shaders/test.slang.spv", vk::ShaderStageFlagBits::eFragment, "pixel"),
+                ava::raii::Shader::create("shaders/test.slang.spv", vk::ShaderStageFlagBits::eFragment, "fragment"),
             };
 
             // Pipeline creation

@@ -24,8 +24,8 @@ v2p vertex(vertexInfo input) {
     return output;
 }
 
-[shader("pixel")]
-float4 pixel(v2p input)
+[shader("fragment")]
+float4 fragment(v2p input)
 {
     return float4(input.normal * 0.5 + 0.5, 1.0);
 }

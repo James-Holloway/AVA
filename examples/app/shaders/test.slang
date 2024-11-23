@@ -29,8 +29,8 @@ v2p vertex(vertexInfo input) {
     return output;
 }
 
-[shader("pixel")]
-float4 pixel(v2p input)
+[shader("fragment")]
+float4 fragment(v2p input)
 {
     // return float4(input.uv, 0.0, 1.0);
     return tex.Sample(input.uv);

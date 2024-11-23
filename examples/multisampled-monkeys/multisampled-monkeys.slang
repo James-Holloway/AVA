@@ -5,11 +5,12 @@ struct vertexInfo
     [vk::location(2)] float2 uv;
 }
 
-[vk::binding(0,0)]
-cbuffer UBO
+struct MVP
 {
     float4x4 mvp;
-} ubo;
+}
+[vk::binding(0,0)]
+StructuredBuffer<MVP> mvps;
 
 struct v2p
 {
@@ -19,16 +20,17 @@ struct v2p
 }
 
 [shader("vertex")]
-v2p vertex(vertexInfo input) {
+v2p vertex(vertexInfo input, uint instance : SV_InstanceID) {
+    float4x4 mvp = mvps[instance].mvp;
     v2p output;
-    output.position = mul(ubo.mvp, float4(input.position, 1.0));
+    output.position = mul(mvp, float4(input.position, 1.0));
     output.normal = input.normal;
     output.uv = input.uv;
     return output;
 }
 
-[shader("pixel")]
-float4 pixel(v2p input)
+[shader("fragment")]
+float4 fragment(v2p input) : SV_Target
 {
     return float4(input.normal * 0.5 + 0.5, 1.0);
 }
