@@ -44,7 +44,7 @@ namespace ava::raii
 
         // Generic and more advanced image creation
         [[nodiscard]] static Pointer<Image> create(vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usageFlags = DEFAULT_IMAGE_SAMPLED_USAGE_FLAGS, vk::ImageType imageType = vk::ImageType::e2D, vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
-                                                   uint32_t mipLevels = 1, uint32_t arrayLayers = 1, vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1, vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly);
+                                                   uint32_t mipLevels = 1, uint32_t arrayLayers = 1, vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1, MemoryLocation memoryLocation = MemoryLocation::eGpuOnly);
         // Simpler image creation
         [[nodiscard]] static Pointer<Image> create2D(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usageFlags = DEFAULT_IMAGE_SAMPLED_USAGE_FLAGS, uint32_t mipLevels = 1);
     };

@@ -68,9 +68,9 @@ namespace ava::raii
         return std::make_shared<ImageView>(ava::createImageView(image, aspectFlags, imageViewType, format, subresourceRange));
     }
 
-    Pointer<Image> Image::create(const vk::Extent3D extent, const vk::Format format, const vk::ImageUsageFlags usageFlags, const vk::ImageType imageType, const vk::ImageTiling tiling, const uint32_t mipLevels, const uint32_t arrayLayers, const vk::SampleCountFlagBits samples, const vma::MemoryUsage memoryUsage)
+    Pointer<Image> Image::create(const vk::Extent3D extent, const vk::Format format, const vk::ImageUsageFlags usageFlags, const vk::ImageType imageType, const vk::ImageTiling tiling, const uint32_t mipLevels, const uint32_t arrayLayers, const vk::SampleCountFlagBits samples, const MemoryLocation memoryLocation)
     {
-        return std::make_shared<Image>(ava::createImage(extent, format, usageFlags, imageType, tiling, mipLevels, arrayLayers, samples, memoryUsage));
+        return std::make_shared<Image>(ava::createImage(extent, format, usageFlags, imageType, tiling, mipLevels, arrayLayers, samples, memoryLocation));
     }
 
     Pointer<Image> Image::create2D(const vk::Extent2D extent, const vk::Format format, const vk::ImageUsageFlags usageFlags, const uint32_t mipLevels)

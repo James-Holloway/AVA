@@ -54,7 +54,7 @@ int main()
             recreateSwapchain();
 
             // Create render pass and framebuffer
-            const ava::RenderPassCreateInfo renderPassCreateInfo{
+            const ava::RenderPassCreationInfo renderPassCreateInfo{
                 {
                     ava::RenderPassAttachmentInfo{ava::createSimpleColorAttachmentInfo(surfaceFormat, true, true),},
                 },

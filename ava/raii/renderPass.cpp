@@ -41,7 +41,7 @@ namespace ava::raii
         return renderPass;
     }
 
-    Pointer<RenderPass> RenderPass::create(const ava::RenderPassCreateInfo& renderPassCreateInfo)
+    Pointer<RenderPass> RenderPass::create(const ava::RenderPassCreationInfo& renderPassCreateInfo)
     {
         return std::make_shared<RenderPass>(ava::createRenderPass(renderPassCreateInfo));
     }

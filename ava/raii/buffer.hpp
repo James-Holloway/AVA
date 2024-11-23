@@ -2,14 +2,14 @@
 #define AVA_RAII_BUFFER_HPP
 
 #include "types.hpp"
-#include "../bufferLocation.hpp"
+#include "../memoryLocation.hpp"
 
 namespace ava::raii
 {
     class Buffer
     {
     public:
-        Buffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
+        Buffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);
         explicit Buffer(const ava::Buffer& existingBuffer);
         virtual ~Buffer();
 
@@ -45,8 +45,8 @@ namespace ava::raii
             update(reinterpret_cast<void*>(data.data()), data.size() * sizeof(T), offset);
         }
 
-        static Pointer<Buffer> create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
-        static Pointer<Buffer> createUniform(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, BufferLocation = BufferLocation::eCpuToGpu, vk::DeviceSize alignment = 0);
+        static Pointer<Buffer> create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);
+        static Pointer<Buffer> createUniform(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, MemoryLocation = MemoryLocation::eCpuToGpu, vk::DeviceSize alignment = 0);
     };
 }
 

@@ -9,19 +9,7 @@
 
 namespace ava
 {
-    vma::MemoryUsage getMemoryUsageFromBufferLocation(const BufferLocation bufferLocation)
-    {
-        switch (bufferLocation)
-        {
-        default:
-        case BufferLocation::eGpuOnly:
-            return vma::MemoryUsage::eGpuOnly;
-        case BufferLocation::eCpuToGpu:
-            return vma::MemoryUsage::eCpuToGpu;
-        }
-    }
-
-    Buffer createBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags bufferUsage, const BufferLocation bufferLocation, const vk::DeviceSize alignment)
+    Buffer createBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags bufferUsage, const MemoryLocation bufferLocation, const vk::DeviceSize alignment)
     {
         AVA_CHECK(size > 0, "Cannot create a buffer with a size of 0");
         AVA_CHECK(detail::State.device, "Cannot create buffer when State's device is invalid");
@@ -50,7 +38,7 @@ namespace ava
         }
         const auto allocationInfo = detail::State.allocator.getAllocationInfo(allocation);
         void* mapped = nullptr;
-        if (bufferLocation == BufferLocation::eCpuToGpu)
+        if (bufferLocation == MemoryLocation::eCpuToGpu)
         {
             mapped = detail::State.allocator.mapMemory(allocation);
             std::memset(mapped, 0, size);
@@ -95,17 +83,17 @@ namespace ava
         buffer = nullptr;
     }
 
-    Buffer createUniformBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, const BufferLocation bufferLocation, const vk::DeviceSize alignment)
+    Buffer createUniformBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, const MemoryLocation bufferLocation, const vk::DeviceSize alignment)
     {
         return createBuffer(size, DEFAULT_UNIFORM_BUFFER_USAGE | extraBufferUsage, bufferLocation, alignment);
     }
 
-    Buffer createVertexBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, const BufferLocation bufferLocation, const vk::DeviceSize alignment)
+    Buffer createVertexBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, const MemoryLocation bufferLocation, const vk::DeviceSize alignment)
     {
         return createBuffer(size, DEFAULT_VERTEX_BUFFER_USAGE | extraBufferUsage, bufferLocation, alignment);
     }
 
-    Buffer createIndexBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, const BufferLocation bufferLocation, const vk::DeviceSize alignment)
+    Buffer createIndexBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, const MemoryLocation bufferLocation, const vk::DeviceSize alignment)
     {
         return createBuffer(size, DEFAULT_INDEX_BUFFER_USAGE | extraBufferUsage, bufferLocation, alignment);
     }
@@ -117,7 +105,7 @@ namespace ava
         AVA_CHECK(data != nullptr, "Cannot update buffer when buffer data is nullptr");
 
         // If CPU mapped then write to such mapped pointer
-        if (buffer->bufferLocation == BufferLocation::eCpuToGpu && buffer->mapped != nullptr)
+        if (buffer->bufferLocation == MemoryLocation::eCpuToGpu && buffer->mapped != nullptr)
         {
             AVA_CHECK(detail::State.allocator, "Cannot update CpuToGpu buffer when State's allocator is invalid");
 
@@ -133,7 +121,7 @@ namespace ava
         AVA_CHECK((buffer->bufferUsage & vk::BufferUsageFlagBits::eTransferDst) != vk::BufferUsageFlags{}, "Cannot update Gpu Only buffer with a staging buffer & single time command when buffer does not have any TransferDst BufferUsage");
 
         // Create staging buffer
-        auto stagingBuffer = createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, BufferLocation::eCpuToGpu, 0);
+        auto stagingBuffer = createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, MemoryLocation::eCpuToGpu, 0);
         updateBuffer(stagingBuffer, data, size, 0);
 
         // Update via single time command-buffer buffer-copy

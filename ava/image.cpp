@@ -10,7 +10,7 @@
 
 namespace ava
 {
-    Image createImage(const vk::Extent3D extent, const vk::Format format, const vk::ImageUsageFlags usageFlags, const vk::ImageType imageType, const vk::ImageTiling tiling, const uint32_t mipLevels, const uint32_t arrayLayers, const vk::SampleCountFlagBits samples, const vma::MemoryUsage memoryUsage)
+    Image createImage(const vk::Extent3D extent, const vk::Format format, const vk::ImageUsageFlags usageFlags, const vk::ImageType imageType, const vk::ImageTiling tiling, const uint32_t mipLevels, const uint32_t arrayLayers, const vk::SampleCountFlagBits samples, const MemoryLocation memoryLocation)
     {
         AVA_CHECK(extent.width > 0 && extent.height > 0 && extent.depth > 0, "Invalid image extent when creating image");
         AVA_CHECK(detail::State.allocator, "Cannot create an image without a valid State allocator");
@@ -28,7 +28,7 @@ namespace ava
         createInfo.sharingMode = vk::SharingMode::eExclusive;
 
         vma::AllocationCreateInfo allocInfo;
-        allocInfo.usage = memoryUsage;
+        allocInfo.usage = getMemoryUsageFromBufferLocation(memoryLocation);
 
         const auto pair = detail::State.allocator.createImage(createInfo, allocInfo);
         const auto allocationInfo = detail::State.allocator.getAllocationInfo(pair.second);
@@ -48,7 +48,7 @@ namespace ava
 
     Image createImage2D(const vk::Extent2D extent, const vk::Format format, const vk::ImageUsageFlags usageFlags, const uint32_t mipLevels)
     {
-        return createImage(vk::Extent3D{extent, 1}, format, usageFlags, vk::ImageType::e2D, vk::ImageTiling::eOptimal, mipLevels, 1, vk::SampleCountFlagBits::e1, vma::MemoryUsage::eGpuOnly);
+        return createImage(vk::Extent3D{extent, 1}, format, usageFlags, vk::ImageType::e2D, vk::ImageTiling::eOptimal, mipLevels, 1, vk::SampleCountFlagBits::e1, MemoryLocation::eGpuOnly);
     }
 
     void destroyImage(Image& image)
@@ -327,7 +327,7 @@ namespace ava
         region.imageOffset = vk::Offset3D{0, 0, 0};
         region.imageSubresource = subresourceLayers.value();
 
-        auto stagingBuffer = createBuffer(dataSize, vk::BufferUsageFlagBits::eTransferSrc, BufferLocation::eCpuToGpu, 0);
+        auto stagingBuffer = createBuffer(dataSize, vk::BufferUsageFlagBits::eTransferSrc, MemoryLocation::eCpuToGpu, 0);
         updateBuffer(stagingBuffer, data, dataSize);
 
         const auto commandBuffer = beginSingleTimeCommands(vk::QueueFlagBits::eTransfer);

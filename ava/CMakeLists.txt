@@ -45,7 +45,7 @@ add_library(ava STATIC
         detail/buffer.hpp
         buffer.cpp
         buffer.hpp
-        bufferLocation.hpp
+        memoryLocation.hpp
         detail/sampler.hpp
         sampler.cpp
         sampler.hpp
@@ -95,6 +95,7 @@ add_library(ava STATIC
         vibo.hpp
         raii/vibo.cpp
         raii/vibo.hpp
+        memoryLocation.cpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

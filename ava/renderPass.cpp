@@ -187,7 +187,7 @@ namespace ava
         return getSubpassColorAttachmentCount(std::vector(colorAttachmentReferences, &colorAttachmentReferences[colorAttachmentCount]));
     }
 
-    RenderPass createRenderPass(const RenderPassCreateInfo& createInfo)
+    RenderPass createRenderPass(const RenderPassCreationInfo& createInfo)
     {
         AVA_CHECK(!createInfo.attachments.empty(), "Cannot create RenderPass without any attachments");
         AVA_CHECK(createInfo.subPasses != 0, "Cannot create a RenderPass with 0 subpasses");

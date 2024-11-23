@@ -22,7 +22,7 @@ namespace ava::raii
         // ReSharper disable once CppNonExplicitConversionOperator
         operator ava::RenderPass() const;
 
-        static Pointer<RenderPass> create(const ava::RenderPassCreateInfo& renderPassCreateInfo);
+        static Pointer<RenderPass> create(const ava::RenderPassCreationInfo& renderPassCreateInfo);
         static Pointer<RenderPass> create(const vk::RenderPassCreateInfo& renderPassCreateInfo);
     };
 }

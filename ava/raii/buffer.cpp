@@ -7,7 +7,7 @@
 
 namespace ava::raii
 {
-    Buffer::Buffer(const vk::DeviceSize size, const vk::BufferUsageFlags bufferUsage, const BufferLocation bufferLocation, const vk::DeviceSize alignment)
+    Buffer::Buffer(const vk::DeviceSize size, const vk::BufferUsageFlags bufferUsage, const MemoryLocation bufferLocation, const vk::DeviceSize alignment)
     {
         buffer = ava::createBuffer(size, bufferUsage, bufferLocation, alignment);
     }
@@ -67,12 +67,12 @@ namespace ava::raii
         ava::updateBuffer(buffer, commandBuffer->commandBuffer, stagingBuffer->buffer, offset);
     }
 
-    Pointer<Buffer> Buffer::create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation, vk::DeviceSize alignment)
+    Pointer<Buffer> Buffer::create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation, vk::DeviceSize alignment)
     {
         return std::make_shared<Buffer>(size, bufferUsage, bufferLocation, alignment);
     }
 
-    Pointer<Buffer> Buffer::createUniform(vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, BufferLocation bufferLocation, vk::DeviceSize alignment)
+    Pointer<Buffer> Buffer::createUniform(vk::DeviceSize size, const vk::BufferUsageFlags extraBufferUsage, MemoryLocation bufferLocation, vk::DeviceSize alignment)
     {
         return std::make_shared<Buffer>(size, DEFAULT_UNIFORM_BUFFER_USAGE | extraBufferUsage, bufferLocation, alignment);
     }

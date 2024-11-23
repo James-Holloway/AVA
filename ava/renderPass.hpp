@@ -53,14 +53,14 @@ namespace ava
         vk::AttachmentDescriptionFlags flags = {};
     };
 
-    struct RenderPassCreateInfo
+    struct RenderPassCreationInfo
     {
         // Attachments
         std::vector<RenderPassAttachmentInfo> attachments;
         uint32_t subPasses = 1;
     };
 
-    [[nodiscard]] RenderPass createRenderPass(const RenderPassCreateInfo& createInfo);
+    [[nodiscard]] RenderPass createRenderPass(const RenderPassCreationInfo& createInfo);
     [[nodiscard]] RenderPass createRenderPass(const vk::RenderPassCreateInfo& renderPassCreateInfo);
     void destroyRenderPass(RenderPass& renderPass);
 

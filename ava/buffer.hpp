@@ -3,7 +3,7 @@
 
 #include "detail/vulkan.hpp"
 #include "types.hpp"
-#include "bufferLocation.hpp"
+#include "memoryLocation.hpp"
 
 namespace ava
 {
@@ -15,14 +15,14 @@ namespace ava
     constexpr vk::BufferUsageFlags DEFAULT_COMBINED_VERTEX_INDEX_BUFFER_USAGE = DEFAULT_VERTEX_BUFFER_USAGE | DEFAULT_INDEX_BUFFER_USAGE;
 
     // General buffer creation
-    [[nodiscard]] Buffer createBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
+    [[nodiscard]] Buffer createBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);
     // Destroys any buffer
     void destroyBuffer(Buffer& buffer);
 
     // More specialized buffer creation
-    [[nodiscard]] Buffer createUniformBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, BufferLocation bufferLocation = BufferLocation::eCpuToGpu, vk::DeviceSize alignment = 0);
-    [[nodiscard]] Buffer createVertexBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
-    [[nodiscard]] Buffer createIndexBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, BufferLocation bufferLocation = BufferLocation::eGpuOnly, vk::DeviceSize alignment = 0);
+    [[nodiscard]] Buffer createUniformBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, MemoryLocation bufferLocation = MemoryLocation::eCpuToGpu, vk::DeviceSize alignment = 0);
+    [[nodiscard]] Buffer createVertexBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);
+    [[nodiscard]] Buffer createIndexBuffer(vk::DeviceSize size, vk::BufferUsageFlags extraBufferUsage = {}, MemoryLocation bufferLocation = MemoryLocation::eGpuOnly, vk::DeviceSize alignment = 0);
 
     // Updating buffer data
     // Updates CpuToGpu buffers using mapped data, otherwise creates a single time command buffer and staging buffer to update GpuOnly data (requires TransferSrc)

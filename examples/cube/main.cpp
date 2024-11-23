@@ -81,7 +81,7 @@ public:
 
         // Render pass
         {
-            const ava::RenderPassCreateInfo creationInfo{
+            const ava::RenderPassCreationInfo creationInfo{
                 {ava::createSimpleColorAttachmentInfo(surfaceFormat, true, true)}, 1
             };
             renderPass = ava::raii::RenderPass::create(creationInfo);
@@ -124,7 +124,7 @@ public:
         ubo->update(uboData);
     }
 
-    void draw(const ava::raii::Pointer<ava::raii::CommandBuffer>& commandBuffer, const uint32_t currentFrame, const uint32_t imageIndex) override
+    void draw(const Pointer<ava::raii::CommandBuffer>& commandBuffer, const uint32_t currentFrame, const uint32_t imageIndex) override
     {
         vk::ClearValue clearValue{{0.0f, 0.0f, 0.0f, 1.0f}};
         commandBuffer->beginRenderPass(renderPass, framebuffers.at(imageIndex), {clearValue});
