@@ -17,7 +17,8 @@ function(compile_shaders_slang TARGET_NAME BINRELOUTDIR)
             -target spirv
             -emit-spirv-directly
             -force-glsl-scalar-layout
-            -fvk-use-entrypoint-name # don't emit main as entrypoint but instead use
+            -matrix-layout-column-major
+            -fvk-use-entrypoint-name # don't emit main as entrypoint but instead use named entrypoints
             -g3 # Debug level 3
     )
 

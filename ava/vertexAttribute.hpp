@@ -50,6 +50,16 @@ namespace ava
             return VertexAttribute{vk::Format::eR8Uint, location, offset, binding};
         }
 
+        constexpr static VertexAttribute CreateInt(const uint32_t location = AUTO_LOCATION, const uint32_t offset = AUTO_OFFSET, const uint32_t binding = 0)
+        {
+            return VertexAttribute{vk::Format::eR32Sint, location, offset, binding};
+        }
+
+        constexpr static VertexAttribute CreateShort(const uint32_t location = AUTO_LOCATION, const uint32_t offset = AUTO_OFFSET, const uint32_t binding = 0)
+        {
+            return VertexAttribute{vk::Format::eR16Sint, location, offset, binding};
+        }
+
         constexpr static VertexAttribute CreateByteVec2(const uint32_t location = AUTO_LOCATION, const uint32_t offset = AUTO_OFFSET, const uint32_t binding = 0)
         {
             return VertexAttribute{vk::Format::eR8G8Uint, location, offset, binding};

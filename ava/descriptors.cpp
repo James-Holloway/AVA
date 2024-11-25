@@ -330,7 +330,12 @@ namespace ava
         }
 
         auto descriptorType = getDescriptorType(ds, binding);
-        AVA_CHECK(descriptorType.has_value(), "Cannot bind a buffer to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+        // AVA_CHECK(descriptorType.has_value(), "Cannot bind a buffer to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+        if (!descriptorType.has_value())
+        {
+            AVA_WARN("Could not bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            return; // If no binding type could be found then don't do any binding
+        }
 
         vk::DescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = buffer->buffer;
@@ -362,7 +367,12 @@ namespace ava
         }
 
         auto descriptorType = getDescriptorType(ds, binding);
-        AVA_CHECK(descriptorType.has_value(), "Cannot bind a buffer to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+        // AVA_CHECK(descriptorType.has_value(), "Cannot bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+        if (!descriptorType.has_value())
+        {
+            AVA_WARN("Could not bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            return; // If no binding type could be found then don't do any binding
+        }
 
         vk::DescriptorImageInfo imageInfo{};
         imageInfo.sampler = sampler != nullptr ? sampler->sampler : nullptr;

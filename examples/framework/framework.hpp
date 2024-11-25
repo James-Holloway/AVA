@@ -4,10 +4,11 @@
 #include <ava/ava.hpp>
 #include <ava/raii.hpp>
 #include <GLFW/glfw3.h>
+#define GLM_FORCE_XYZW_ONLY
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
 class AvaFramework

@@ -21,12 +21,12 @@ namespace ava
 
     struct SubpassAttachmentInfo
     {
-        constexpr static uint32_t AUTO_ATTACHMENT_INDEX = ~0u;
-        constexpr static uint32_t IGNORE_ATTACHMENT = AUTO_ATTACHMENT_INDEX - 1;
+        constexpr static uint32_t IGNORE_ATTACHMENT = ~0u;
+        constexpr static uint32_t AUTO_ATTACHMENT_ORDER = IGNORE_ATTACHMENT - 1;
 
         // Use IGNORE_ATTACHMENT as a subpassAttachment to not use it in that subpass
-        // Use AUTO_ATTACHMENT_INDEX to use the RenderPassAttachmentInfo's position
-        uint32_t attachmentLocation = AUTO_ATTACHMENT_INDEX;
+        // Use AUTO_ATTACHMENT_ORDER to use the declared order
+        uint32_t attachmentOrder = AUTO_ATTACHMENT_ORDER;
         vk::ImageLayout layout = vk::ImageLayout::eColorAttachmentOptimal;
         SubPassAttachmentTypeFlags attachmentType = SubPassAttachmentTypeFlagBits::eColor;
         uint32_t resolveAttachmentIndex = IGNORE_ATTACHMENT;
@@ -67,9 +67,9 @@ namespace ava
     void destroyRenderPass(RenderPass& renderPass);
 
     // Simple functions to create a one render pass attachment with one subpass
-    RenderPassAttachmentInfo createSimpleColorAttachmentInfo(vk::Format colorFormat, bool isFirst, bool isFinal);
-    RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(vk::Format depthFormat, bool isFirst);
-    RenderPassAttachmentInfo createSimpleResolveAttachmentInfo(vk::Format colorFormat, bool isFinal);
+    RenderPassAttachmentInfo createSimpleColorAttachmentInfo(vk::Format colorFormat, bool isFirst, bool isFinal, uint32_t subpasses = 1);
+    RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(vk::Format depthFormat, bool isFirst, uint32_t subpasses = 1);
+    RenderPassAttachmentInfo createSimpleResolveAttachmentInfo(vk::Format colorFormat, bool isFinal, uint32_t subpasses = 1);
 }
 
 #endif

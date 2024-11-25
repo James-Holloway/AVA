@@ -69,9 +69,10 @@ namespace ava::detail
 
                 const auto& spirType = compiler.get_type(resource.type_id);
                 uint32_t descriptorCount = 1;
-                for (auto& size : spirType.array) // array[4][2] is 2 * 4 descriptor counts (arrays of arrays are backwards)
+                for (auto size : spirType.array) // array[4][2] is 2 * 4 descriptor counts (arrays of arrays are backwards)
                 {
-                    descriptorCount *= std::max(size, 1u); // array sizes can be 0 if they are unsized
+                    if (size == 0) size = 64; // array sizes can be 0 if they are unsized, let's presume 64 array size if unsized
+                    descriptorCount *= size;
                 }
                 // TODO: allow specialization constant sized arrays
 
@@ -92,6 +93,7 @@ namespace ava::detail
         updateResources(shaderResources.storage_images, vk::DescriptorType::eStorageBuffer, vk::DescriptorType::eStorageTexelBuffer); // image2D, imageBuffer
         updateResources(shaderResources.uniform_buffers, vk::DescriptorType::eUniformBuffer); // uniform UBO {}
         updateResources(shaderResources.storage_buffers, vk::DescriptorType::eStorageBuffer); // buffer SSBO {}
+        updateResources(shaderResources.subpass_inputs, vk::DescriptorType::eInputAttachment); // subpass input
 
         // Push constants
         for (const auto& pushConstantResource : shaderResources.push_constant_buffers)

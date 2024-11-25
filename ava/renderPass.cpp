@@ -1,6 +1,9 @@
 #include "renderPass.hpp"
 
 #include "detail/renderPass.hpp"
+
+#include <map>
+
 #include "detail/detail.hpp"
 #include "detail/state.hpp"
 
@@ -82,47 +85,36 @@ namespace ava
             return {};
         }
 
-        uint32_t maxAttachmentLocationSize = 0; // Number of attachments to create
+        std::map<uint32_t, const IntermediateRenderPassAttachmentInfo*> attachmentOrderMap;
         uint32_t attachmentIndex = 0;
         for (auto& attachment : attachments)
         {
             if (attachment.hasAttachmentType(subpass, subPassAttachmentType))
             {
-                auto location = attachment.attachment.subpassInfos[subpass].attachmentLocation;
-                if (location == SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX)
+                auto order = attachment.attachment.subpassInfos[subpass].attachmentOrder;
+                if (order == SubpassAttachmentInfo::AUTO_ATTACHMENT_ORDER)
                 {
-                    location = attachmentIndex;
+                    order = attachmentIndex;
                 }
 
-                if (location != SubpassAttachmentInfo::IGNORE_ATTACHMENT)
+                if (order != SubpassAttachmentInfo::IGNORE_ATTACHMENT)
                 {
-                    maxAttachmentLocationSize = std::max(maxAttachmentLocationSize, location + 1); // Add one so that 0 means no subpass attachments
+                    while (attachmentOrderMap.contains(order))
+                    {
+                        order++;
+                    }
+
+                    attachmentOrderMap[order] = &attachment;
                 }
             }
-
             attachmentIndex++;
         }
 
         std::vector<vk::AttachmentReference> subpassAttachments;
-        subpassAttachments.resize(maxAttachmentLocationSize, vk::AttachmentReference{vk::AttachmentUnused});
-        attachmentIndex = 0;
-        for (auto& attachment : attachments)
+        subpassAttachments.reserve(attachmentOrderMap.size());
+        for (auto& [location, attachment] : attachmentOrderMap)
         {
-            if (attachment.hasAttachmentType(subpass, subPassAttachmentType))
-            {
-                const auto layout = attachment.attachment.subpassInfos[subpass].layout;
-                auto location = attachment.attachment.subpassInfos[subpass].attachmentLocation;
-                if (location == SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX)
-                {
-                    location = attachmentIndex;
-                }
-
-                if (location != SubpassAttachmentInfo::IGNORE_ATTACHMENT)
-                {
-                    subpassAttachments[location] = vk::AttachmentReference{attachment.attachmentIndex, layout};
-                }
-            }
-            attachmentIndex++;
+            subpassAttachments.emplace_back(attachment->attachmentIndex, attachment->attachment.subpassInfos[subpass].layout);
         }
 
         return subpassAttachments;
@@ -150,14 +142,14 @@ namespace ava
         {
             if (attachment.hasAttachmentType(subpass, subPassAttachment))
             {
-                auto location = attachment.attachment.subpassInfos[subpass].attachmentLocation;
-                if (location == SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX)
+                auto location = attachment.attachment.subpassInfos[subpass].attachmentOrder;
+                if (location == SubpassAttachmentInfo::AUTO_ATTACHMENT_ORDER)
                 {
                     location = attachmentIndex;
                 }
 
                 auto resolveLocation = attachment.attachment.subpassInfos[subpass].resolveAttachmentIndex;
-                if (resolveLocation == SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX)
+                if (resolveLocation == SubpassAttachmentInfo::AUTO_ATTACHMENT_ORDER)
                 {
                     resolveLocation = attachmentIndex;
                 }
@@ -342,12 +334,10 @@ namespace ava
         renderPass = nullptr;
     }
 
-    RenderPassAttachmentInfo createSimpleColorAttachmentInfo(const vk::Format colorFormat, const bool isFirst, const bool isFinal)
+    RenderPassAttachmentInfo createSimpleColorAttachmentInfo(const vk::Format colorFormat, const bool isFirst, const bool isFinal, const uint32_t subpasses)
     {
         RenderPassAttachmentInfo renderPassAttachmentInfo;
-        renderPassAttachmentInfo.subpassInfos = {
-            {SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX, vk::ImageLayout::eColorAttachmentOptimal, SubPassAttachmentTypeFlagBits::eColor}
-        };
+        renderPassAttachmentInfo.subpassInfos = std::vector<SubpassAttachmentInfo>(subpasses, {SubpassAttachmentInfo::AUTO_ATTACHMENT_ORDER, vk::ImageLayout::eColorAttachmentOptimal, SubPassAttachmentTypeFlagBits::eColor});
         renderPassAttachmentInfo.format = colorFormat;
         renderPassAttachmentInfo.sampleCount = vk::SampleCountFlagBits::e1;
         renderPassAttachmentInfo.initialLayout = vk::ImageLayout::eUndefined;
@@ -360,13 +350,11 @@ namespace ava
         return renderPassAttachmentInfo;
     }
 
-    RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(const vk::Format depthFormat, const bool isFirst)
+    RenderPassAttachmentInfo createSimpleDepthAttachmentInfo(const vk::Format depthFormat, const bool isFirst, const uint32_t subpasses)
     {
         const bool hasStencil = detail::vulkanFormatHasStencil(depthFormat);
         RenderPassAttachmentInfo renderPassAttachmentInfo;
-        renderPassAttachmentInfo.subpassInfos = {
-            {SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX, vk::ImageLayout::eDepthStencilAttachmentOptimal, SubPassAttachmentTypeFlagBits::eDepthStencil}
-        };
+        renderPassAttachmentInfo.subpassInfos = std::vector<SubpassAttachmentInfo>(subpasses, {SubpassAttachmentInfo::AUTO_ATTACHMENT_ORDER, vk::ImageLayout::eDepthStencilAttachmentOptimal, SubPassAttachmentTypeFlagBits::eDepthStencil});
         renderPassAttachmentInfo.format = depthFormat;
         renderPassAttachmentInfo.sampleCount = vk::SampleCountFlagBits::e1;
         renderPassAttachmentInfo.initialLayout = vk::ImageLayout::eUndefined;
@@ -379,12 +367,10 @@ namespace ava
         return renderPassAttachmentInfo;
     }
 
-    RenderPassAttachmentInfo createSimpleResolveAttachmentInfo(const vk::Format colorFormat, bool isFinal)
+    RenderPassAttachmentInfo createSimpleResolveAttachmentInfo(const vk::Format colorFormat, bool isFinal, const uint32_t subpasses)
     {
         RenderPassAttachmentInfo renderPassAttachmentInfo;
-        renderPassAttachmentInfo.subpassInfos = {
-            {SubpassAttachmentInfo::AUTO_ATTACHMENT_INDEX, vk::ImageLayout::eColorAttachmentOptimal, {}}
-        };
+        renderPassAttachmentInfo.subpassInfos = std::vector<SubpassAttachmentInfo>(subpasses, {SubpassAttachmentInfo::AUTO_ATTACHMENT_ORDER, vk::ImageLayout::eColorAttachmentOptimal, {}});
         renderPassAttachmentInfo.format = colorFormat;
         renderPassAttachmentInfo.sampleCount = vk::SampleCountFlagBits::e1;
         renderPassAttachmentInfo.initialLayout = vk::ImageLayout::eUndefined;

@@ -22,6 +22,11 @@ return; \
 } \
 }
 
+#ifndef AVA_WARN
+#define AVA_WARN(message) \
+    std::cout << "[AVA WARNING] "<< message << '\n';
+#endif
+
 namespace ava::detail
 {
 }
