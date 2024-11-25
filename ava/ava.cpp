@@ -35,4 +35,9 @@ namespace ava
     {
         return State.swapchainExtent;
     }
+
+    uint32_t getSwapchainImageCount()
+    {
+        return State.swapchainImageCount;
+    }
 }
