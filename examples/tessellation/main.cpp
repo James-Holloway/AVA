@@ -72,7 +72,7 @@ public:
         // Graphics pipeline
         {
             ava::GraphicsPipelineCreationInfo creationInfo{};
-            const std::vector shaders = {
+            const std::vector shaders{
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eTessellationControl, "hull"),
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eTessellationEvaluation, "domain"),

@@ -81,7 +81,7 @@ public:
         }
 
         {
-            std::vector shaders{
+            const std::vector shaders{
                 ava::raii::Shader::create("pushconstants.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
                 ava::raii::Shader::create("pushconstants.slang.spv", vk::ShaderStageFlagBits::eFragment, "fragment")
             };
