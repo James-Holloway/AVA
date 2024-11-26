@@ -100,7 +100,8 @@ namespace ava::detail
         {
             const auto& spirType = compiler.get_type(pushConstantResource.base_type_id);
             auto size = compiler.get_declared_struct_size(spirType);
-            info.pushConstants.emplace_back(stage, 0u, size); // TODO: reflect push constant offsets
+            auto offset = compiler.get_decoration(pushConstantResource.id, spv::DecorationOffset);
+            info.pushConstants.emplace_back(stage, offset, size);
         }
 
         return info;

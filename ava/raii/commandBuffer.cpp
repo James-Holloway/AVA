@@ -152,6 +152,11 @@ namespace ava::raii
         ava::transitionImageLayout(commandBuffer, image->image, newLayout, aspectFlags, srcStage, dstStage, subresourceRange);
     }
 
+    void CommandBuffer::pushConstants(const vk::ShaderStageFlags shaderStages, const void* data, const uint32_t size, const uint32_t offset) const
+    {
+        ava::pushConstants(commandBuffer, shaderStages, data, size, offset);
+    }
+
     Pointer<CommandBuffer> CommandBuffer::beginSingleTime(const vk::QueueFlagBits queueType)
     {
         return std::make_shared<CommandBuffer>(ava::beginSingleTimeCommands(queueType));

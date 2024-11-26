@@ -195,4 +195,14 @@ namespace ava
 
         commandBuffer->commandBuffer.drawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
+
+    void pushConstants(const ava::CommandBuffer& commandBuffer, const vk::ShaderStageFlags shaderStages, const void* data, const uint32_t size, const uint32_t offset)
+    {
+        AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot set push constant values with an invalid command buffer");
+        AVA_CHECK(commandBuffer->pipelineCurrentlyBound && commandBuffer->currentPipelineLayout, "Cannot set push constant values when a pipeline has not been bound");
+        AVA_CHECK(data != nullptr, "Cannot set push constant values with nullptr data");
+        AVA_CHECK(size > 0, "Cannot set push constant values with a size of 0");
+
+        commandBuffer->commandBuffer.pushConstants(commandBuffer->currentPipelineLayout, shaderStages, offset, size, data);
+    }
 }

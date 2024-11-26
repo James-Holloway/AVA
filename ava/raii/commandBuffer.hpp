@@ -51,6 +51,14 @@ namespace ava::raii
         void transitionImageLayout(const Pointer<Image>& image, vk::ImageLayout newLayout, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands,
                                    const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
 
+        void pushConstants(vk::ShaderStageFlags shaderStages, const void* data, uint32_t size = 0, uint32_t offset = 0) const;
+
+        template <typename T>
+        void pushConstants(vk::ShaderStageFlags shaderStages, const T& data, const uint32_t offset = 0) const
+        {
+            pushConstants(shaderStages, &data, sizeof(T), offset);
+        }
+
         static Pointer<CommandBuffer> beginSingleTime(vk::QueueFlagBits queueType);
     };
 }

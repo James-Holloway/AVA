@@ -24,6 +24,14 @@ namespace ava
     void draw(const CommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0);
     // indexCount of 0 means it will draw the number of indices in the currently bound IBO
     void drawIndexed(const CommandBuffer& commandBuffer, uint32_t indexCount = 0, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0);
+
+    void pushConstants(const CommandBuffer& commandBuffer, vk::ShaderStageFlags shaderStages, const void* data, uint32_t size = 0, uint32_t offset = 0);
+
+    template <typename T>
+    void pushConstants(const CommandBuffer& commandBuffer, const vk::ShaderStageFlags shaderStages, const T& data, const uint32_t offset = 0)
+    {
+        pushConstants(commandBuffer, shaderStages, &data, sizeof(T), offset);
+    }
 }
 
 #endif
