@@ -85,6 +85,14 @@ struct DSOut
     float2 uv : TEXCOORD1;
 };
 
+struct GSOut
+{
+    float4 position : SV_Position;
+    float3 normal : TEXCOORD0;
+    float2 uv : TEXCOORD1;
+    float3 barycentrics : TEXCOORD2;
+}
+
 // Vertex passthrough
 [shader("vertex")]
 VSOut vertex(VSIn input)
@@ -243,9 +251,29 @@ DSOut domain(ConstantsHSOut input, float3 tessCoord : SV_DomainLocation, const O
     return output;
 }
 
+// Geometry
+GSOut geometryVertex(DSOut input, float3 barycentrics)
+{
+    GSOut output;
+    output.position = input.position;
+    output.normal = input.normal;
+    output.uv = input.uv;
+    output.barycentrics = barycentrics;
+    return output;
+}
+
+[shader("geometry")]
+[maxvertexcount(3)]
+void geometry(triangle DSOut vertices[3], inout TriangleStream<GSOut> outStream, uint primitiveID : SV_PrimitiveID)
+{
+    outStream.Append(geometryVertex(vertices[0], float3(1,0,0)));
+    outStream.Append(geometryVertex(vertices[1], float3(0,1,0)));
+    outStream.Append(geometryVertex(vertices[2], float3(0,0,1)));
+}
+
 // Fragment
 [shader("fragment")]
-float4 fragment(DSOut input) : SV_Target
+float4 fragment(GSOut input) : SV_Target
 {
 	float4 color = float4(input.normal * 0.5 + 0.5, 1.0f);
 
@@ -256,6 +284,10 @@ float4 fragment(DSOut input) : SV_Target
     diffuse = clamp(diffuse, 0.2, 1.0);
 
     color.rgb *= diffuse * 1.45;
+
+    float minBary = min3(input.barycentrics.x, input.barycentrics.y, input.barycentrics.z);
+    minBary = smoothstep(0, fwidth(minBary), minBary);
+    color.rgb = lerp(float3(1.0, 1.0, 1.0), color.rgb, minBary);
 
 	return color;
 }

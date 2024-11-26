@@ -38,7 +38,7 @@ public:
 
     ava::raii::Buffer::Ptr ubo;
     ava::raii::VBO::Ptr model;
-    uint32_t vertexCount;
+    uint32_t vertexCount = 0;
 
     ava::raii::DescriptorPool::Ptr descriptorPool;
     ava::raii::DescriptorSet::Ptr set0;
@@ -50,6 +50,7 @@ public:
     {
         createInfo.deviceFeatures.tessellationShader = true;
         createInfo.deviceFeatures.fillModeNonSolid = true; // wireframe
+        createInfo.deviceFeatures.geometryShader = true;
     }
 
     void init() override
@@ -75,11 +76,12 @@ public:
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eVertex, "vertex"),
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eTessellationControl, "hull"),
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eTessellationEvaluation, "domain"),
+                ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eGeometry, "geometry"),
                 ava::raii::Shader::create("tessellation.slang.spv", vk::ShaderStageFlagBits::eFragment, "fragment"),
             };
 
             ava::raii::populateGraphicsPipelineCreationInfo(creationInfo, shaders, renderPass, 0, vao, true, true);
-            creationInfo.rasterizer.polygonMode = vk::PolygonMode::eLine; // Wireframe
+            // creationInfo.rasterizer.polygonMode = vk::PolygonMode::eLine; // Wireframe
             creationInfo.tessellation.patchControlPoints = 3; // We take in 3 patch control points (triangles)
             creationInfo.depthStencil.depthCompareOp = vk::CompareOp::eGreater; // reverse Z
             graphicsPipeline = ava::raii::GraphicsPipeline::create(creationInfo);
@@ -156,7 +158,7 @@ public:
 
     void update() override
     {
-        constexpr float revolutionsPerSecond = 0.0625f;
+        constexpr float revolutionsPerSecond = 0.05f;
         constexpr float tessLevelMax = 3.0f;
         constexpr float tessLevelChangeRate = 0.125f;
 
