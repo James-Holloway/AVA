@@ -8,6 +8,7 @@
 #include "graphics.hpp"
 #include "image.hpp"
 #include "sampler.hpp"
+#include "rayTracing.hpp"
 #include "ava/detail/detail.hpp"
 
 namespace ava::raii
@@ -130,5 +131,11 @@ namespace ava::raii
         AVA_CHECK(imageView != nullptr && imageView->imageView != nullptr, "Cannot bind image to a descriptor set when image view is invalid");
         AVA_CHECK(sampler != nullptr && sampler->sampler != nullptr, "Cannot bind image to a descriptor set when sampler is invalid");
         ava::bindImage(descriptorSet, binding, image->image, imageView->imageView, sampler->sampler, dstArrayElement);
+    }
+
+    void DescriptorSet::bindTLAS(const uint32_t binding, const Pointer<TLAS>& tlas, const uint32_t dstArrayElement) const
+    {
+        AVA_CHECK(tlas != nullptr && tlas->tlas, "Cannot bind TLAS to a descriptor set when TLAS is invalid");
+        ava::bindTLAS(descriptorSet, binding, tlas->tlas, dstArrayElement);
     }
 }

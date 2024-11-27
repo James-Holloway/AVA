@@ -35,8 +35,6 @@ public:
 
     void run()
     {
-        glfwInit();
-
         // Configure state
         ava::CreateInfo createInfo;
         createInfo.appName = appTitle;

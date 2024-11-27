@@ -27,7 +27,7 @@ namespace ava::raii
 
         void update(const void* data, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0) const;
         // Update buffer via a staging buffer
-        void update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, vk::DeviceSize offset = 0) const;
+        void update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, vk::DeviceSize offset = 0, vk::DeviceSize size = vk::WholeSize) const;
 
         template <typename T>
         void update(const T& data, const vk::DeviceSize offset = 0) const

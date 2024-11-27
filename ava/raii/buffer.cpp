@@ -46,7 +46,7 @@ namespace ava::raii
     {
         AVA_CHECK(buffer != nullptr, "Cannot get buffer size when buffer is invali");
 
-        return buffer->allocationInfo.size;
+        return buffer->size;
     }
 
     vk::BufferUsageFlags Buffer::getBufferUsage() const
@@ -61,10 +61,10 @@ namespace ava::raii
         ava::updateBuffer(buffer, data, size, offset);
     }
 
-    void Buffer::update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, const vk::DeviceSize offset) const
+    void Buffer::update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, const vk::DeviceSize offset, const vk::DeviceSize size) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot update buffer with staging buffer when command buffer is invalid");
-        ava::updateBuffer(buffer, commandBuffer->commandBuffer, stagingBuffer->buffer, offset);
+        ava::updateBuffer(buffer, commandBuffer->commandBuffer, stagingBuffer->buffer, offset, size);
     }
 
     Pointer<Buffer> Buffer::create(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, MemoryLocation bufferLocation, vk::DeviceSize alignment)

@@ -16,6 +16,7 @@ namespace ava::detail
         uint32_t indexCount;
         vk::DeviceSize vertexOffset;
         vk::DeviceSize indexOffset;
+        vk::PrimitiveTopology topology;
     };
 }
 

@@ -27,6 +27,7 @@ namespace ava
         outVBO->vertexCount = size / stride;
         outVBO->stride = stride;
         outVBO->binding = binding;
+        outVBO->topology = vao->topology;
         return outVBO;
     }
 

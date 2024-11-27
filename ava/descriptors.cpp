@@ -9,6 +9,7 @@
 #include "detail/buffer.hpp"
 #include "detail/commandBuffer.hpp"
 #include "detail/image.hpp"
+#include "detail/rayTracing.hpp"
 #include "detail/sampler.hpp"
 
 namespace ava
@@ -322,15 +323,14 @@ namespace ava
         AVA_CHECK(bufferSize > 0, "Cannot bind a buffer to a descriptor set with bufferSize of 0")
         if (bufferSize != vk::WholeSize)
         {
-            AVA_CHECK((bufferSize + bufferOffset) <= buffer->allocationInfo.size, "Cannot bind a buffer to a descriptor set when bufferSize + bufferOffset (" + std::to_string(bufferSize + bufferOffset) + ") is greater than buffer size (" + std::to_string(buffer->allocationInfo.size) + ")");
+            AVA_CHECK((bufferSize + bufferOffset) <= buffer->size, "Cannot bind a buffer to a descriptor set when bufferSize + bufferOffset (" + std::to_string(bufferSize + bufferOffset) + ") is greater than buffer size (" + std::to_string(buffer->size) + ")");
         }
         else
         {
-            AVA_CHECK(bufferOffset < buffer->allocationInfo.size, "Cannot bind a buffer to a descriptor set when bufferOffset (" + std::to_string(bufferOffset) +") is not less than buffer's size (" + std::to_string(buffer->allocationInfo.size) + ")");
+            AVA_CHECK(bufferOffset < buffer->size, "Cannot bind a buffer to a descriptor set when bufferOffset (" + std::to_string(bufferOffset) +") is not less than buffer's size (" + std::to_string(buffer->size) + ")");
         }
 
-        auto descriptorType = getDescriptorType(ds, binding);
-        // AVA_CHECK(descriptorType.has_value(), "Cannot bind a buffer to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+        const auto descriptorType = getDescriptorType(ds, binding);
         if (!descriptorType.has_value())
         {
             AVA_WARN("Could not bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
@@ -366,8 +366,7 @@ namespace ava
             AVA_CHECK(sampler->sampler, "Cannot bind an image to a descriptor set as the provided sampler was invalid");
         }
 
-        auto descriptorType = getDescriptorType(ds, binding);
-        // AVA_CHECK(descriptorType.has_value(), "Cannot bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+        const auto descriptorType = getDescriptorType(ds, binding);
         if (!descriptorType.has_value())
         {
             AVA_WARN("Could not bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
@@ -386,6 +385,38 @@ namespace ava
         wds.descriptorCount = 1;
         wds.descriptorType = descriptorType.value();
         wds.setImageInfo(imageInfo);
+
+        detail::State.device.updateDescriptorSets(wds, nullptr);
+    }
+
+    void bindTLAS(const DescriptorSet& descriptorSet, uint32_t binding, const TLAS& tlas, uint32_t dstArrayElement)
+    {
+        AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
+        AVA_CHECK(detail::State.rayTracingEnabled, "Cannot bind a TLAS to a descriptor set when ray tracing is not enabled");
+        AVA_CHECK(!descriptorSet.expired(), "Cannot bind a TLAS to an invalid descriptor set");
+        const auto ds = descriptorSet.lock();
+        AVA_CHECK(ds->descriptorSet, "Cannot bind a TLAS to an invalid descriptor set");
+        AVA_CHECK(tlas != nullptr, "Cannot bind an invalid TLAS to a descriptor set");
+        AVA_CHECK(tlas->built, "Cannot bind an un-built TLAS to a descriptor set");
+        AVA_CHECK(tlas->accelerationStructure, "Cannot bind a TLAS to a descriptor set when TLAS' acceleration structure is invalid");
+
+        const auto descriptorType = getDescriptorType(ds, binding);
+        if (!descriptorType.has_value())
+        {
+            AVA_WARN("Could not bind a TLAS to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            return; // If no binding type could be found then don't do any binding
+        }
+
+        vk::WriteDescriptorSetAccelerationStructureKHR accelerationStructureInfo{};
+        accelerationStructureInfo.setAccelerationStructures(tlas->accelerationStructure->accelerationStructure);
+
+        vk::WriteDescriptorSet wds;
+        wds.dstSet = ds->descriptorSet;
+        wds.dstBinding = binding;
+        wds.dstArrayElement = dstArrayElement;
+        wds.descriptorCount = 1;
+        wds.descriptorType = descriptorType.value();
+        wds.pNext = &accelerationStructureInfo;
 
         detail::State.device.updateDescriptorSets(wds, nullptr);
     }

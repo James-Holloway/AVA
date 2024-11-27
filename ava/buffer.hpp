@@ -28,7 +28,7 @@ namespace ava
     // Updates CpuToGpu buffers using mapped data, otherwise creates a single time command buffer and staging buffer to update GpuOnly data (requires TransferSrc)
     void updateBuffer(const Buffer& buffer, const void* data, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0);
     // Update buffer via a staging buffer
-    void updateBuffer(const Buffer& buffer, const CommandBuffer& commandBuffer, const Buffer& stagingBuffer, vk::DeviceSize offset = 0);
+    void updateBuffer(const Buffer& buffer, const CommandBuffer& commandBuffer, const Buffer& stagingBuffer, vk::DeviceSize offset = 0, vk::DeviceSize size = vk::WholeSize);
 
     template <typename T>
     void updateBuffer(const Buffer& buffer, const T& data, const vk::DeviceSize offset = 0)

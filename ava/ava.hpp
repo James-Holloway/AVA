@@ -17,6 +17,7 @@
 #include "descriptors.hpp"
 #include "ibo.hpp"
 #include "vbo.hpp"
+#include "rayTracing.hpp"
 
 namespace ava
 {

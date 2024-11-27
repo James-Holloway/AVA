@@ -71,6 +71,12 @@ namespace ava::detail
         std::atomic<uint32_t> descriptorPoolIndexCounter = 0;
 
         bool lazyGpuMemoryAvailable = false;
+        bool shaderDeviceAddressEnabled = false;
+
+        // Ray tracing
+        bool rayTracingQueried = false;
+        bool rayTracingEnabled = true;
+        vk::PhysicalDeviceAccelerationStructurePropertiesKHR accelerationStructureProperties;
     };
 
     inline State State;

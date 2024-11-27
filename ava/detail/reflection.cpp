@@ -94,6 +94,7 @@ namespace ava::detail
         updateResources(shaderResources.uniform_buffers, vk::DescriptorType::eUniformBuffer); // uniform UBO {}
         updateResources(shaderResources.storage_buffers, vk::DescriptorType::eStorageBuffer); // buffer SSBO {}
         updateResources(shaderResources.subpass_inputs, vk::DescriptorType::eInputAttachment); // subpass input
+        updateResources(shaderResources.acceleration_structures, vk::DescriptorType::eAccelerationStructureKHR);
 
         // Push constants
         for (const auto& pushConstantResource : shaderResources.push_constant_buffers)

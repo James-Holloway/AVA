@@ -14,6 +14,10 @@ namespace ava
 
     static void destroyState(bool destroyInstance);
 
+    extern std::vector<const char*> rayTracingDeviceExtensions;
+    extern std::vector<const char*> rayTracingPre13DeviceExtensions;
+    extern std::vector<const char*> rayTracingPre12DeviceExtensions;
+
     static CreateInfo createInfo;
 
     void configureState(const CreateInfo& ci)
@@ -83,6 +87,8 @@ namespace ava
         // Configure physical device
         vkb::PhysicalDeviceSelector physicalDeviceSelector{State.vkbInstance};
 
+        auto deviceFeatures = createInfo.deviceFeatures;
+
         // Ordered as 11, 12, [13]
         // 11, 12 are added if Vulkan >= 1.2 [13 is added if Vulkan >= 1.3]
 
@@ -92,22 +98,124 @@ namespace ava
         physicalDeviceFeatures11.pNext = &physicalDeviceFeatures12;
         physicalDeviceFeatures12.pNext = createInfo.physicalPNextChain;;
 
-        if (createInfo.apiVersion.major >= 1 && createInfo.apiVersion.minor >= 3)
+        if (createInfo.apiVersion.major > 1 || createInfo.apiVersion.minor >= 3)
         {
-            physicalDeviceFeatures11.pNext = &physicalDeviceFeatures13;
+            physicalDeviceFeatures12.pNext = &physicalDeviceFeatures13;
             physicalDeviceFeatures13.pNext = createInfo.physicalPNextChain;
         }
 
         physicalDeviceSelector
             .set_surface(surface)
             .set_minimum_version(createInfo.apiVersion.major, createInfo.apiVersion.minor)
-            .add_required_extensions(createInfo.extraDeviceExtensions)
-            .set_required_features(createInfo.deviceFeatures);
+            .add_required_extensions(createInfo.extraDeviceExtensions);
+
+        // If developer has requested buffer device address then enable buffer device address in vma allocator create flags
+        if (physicalDeviceFeatures12.bufferDeviceAddress)
+        {
+            // Add buffer device address to vma allocator create flags
+            createInfo.vmaAllocatorCreateFlags |= vma::AllocatorCreateFlagBits::eBufferDeviceAddress;
+            State.shaderDeviceAddressEnabled = true;
+        }
+
+        // Enable ray tracing features, vkb handles duplicate extension features
+        if (createInfo.enableRayTracing)
+        {
+            AVA_CHECK(createInfo.apiVersion.major == 1 && createInfo.apiVersion.minor >= 1, "Cannot enable ray tracing when ");
+            if (!State.rayTracingQueried)
+            {
+                AVA_WARN("Ray tracing enabled and State created without first querying ray tracing support");
+            }
+
+            deviceFeatures.shaderInt64 = true;
+
+            vk::PhysicalDeviceRayTracingPipelineFeaturesKHR pipelineFeatures{};
+            pipelineFeatures.rayTracingPipeline = true;
+
+            vk::PhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{};
+            accelerationStructureFeatures.accelerationStructure = true;
+            accelerationStructureFeatures.descriptorBindingAccelerationStructureUpdateAfterBind = true;
+
+            vk::PhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures{};
+            rayQueryFeatures.rayQuery = true;
+
+            // Add physical device extension features
+            physicalDeviceSelector.add_required_extension_features(pipelineFeatures);
+            physicalDeviceSelector.add_required_extension_features(accelerationStructureFeatures);
+            physicalDeviceSelector.add_required_extension_features(rayQueryFeatures);
+
+            // Vulkan 1.2 or greater
+            if (createInfo.apiVersion.major == 1 && createInfo.apiVersion.minor >= 2)
+            {
+                physicalDeviceFeatures12.bufferDeviceAddress = true;
+
+                // Descriptor indexing features
+                physicalDeviceFeatures12.descriptorIndexing = true;
+
+                physicalDeviceFeatures12.shaderSampledImageArrayNonUniformIndexing = true;
+                physicalDeviceFeatures12.shaderUniformBufferArrayNonUniformIndexing = true;
+                physicalDeviceFeatures12.shaderStorageBufferArrayNonUniformIndexing = true;
+                physicalDeviceFeatures12.descriptorBindingSampledImageUpdateAfterBind = true;
+                physicalDeviceFeatures12.descriptorBindingUniformBufferUpdateAfterBind = true;
+                physicalDeviceFeatures12.descriptorBindingStorageBufferUpdateAfterBind = true;
+                physicalDeviceFeatures12.descriptorBindingStorageTexelBufferUpdateAfterBind = true;
+                physicalDeviceFeatures12.descriptorBindingUniformTexelBufferUpdateAfterBind = true;
+                physicalDeviceFeatures12.runtimeDescriptorArray = true;
+            }
+            else // Vulkan 1.1
+            {
+                vk::PhysicalDeviceBufferDeviceAddressFeaturesKHR bufferDeviceAddressFeatures{};
+                bufferDeviceAddressFeatures.bufferDeviceAddress = true;
+
+                vk::PhysicalDeviceDescriptorIndexingFeaturesEXT descriptorIndexingFeatures{};
+                descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = true;
+                descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing = true;
+                descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing = true;
+                descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind = true;
+                descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind = true;
+                descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind = true;
+                descriptorIndexingFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind = true;
+                descriptorIndexingFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind = true;
+                descriptorIndexingFeatures.runtimeDescriptorArray = true;
+
+                physicalDeviceSelector.add_required_extension_features(bufferDeviceAddressFeatures);
+                physicalDeviceSelector.add_required_extension_features(descriptorIndexingFeatures);
+            }
+
+            // Add buffer device address to vma allocator create flags
+            createInfo.vmaAllocatorCreateFlags |= vma::AllocatorCreateFlagBits::eBufferDeviceAddress;
+            State.shaderDeviceAddressEnabled = true;
+
+            // Add device extensions
+            physicalDeviceSelector.add_required_extensions(rayTracingDeviceExtensions);
+            if (State.apiVersion.major == 1 && State.apiVersion.minor < 2) // if version is less than Vulkan 1.2 then add pre 1.2 requirements
+            {
+                physicalDeviceSelector.add_required_extensions(rayTracingPre12DeviceExtensions);
+            }
+            if (State.apiVersion.major == 1 && State.apiVersion.minor < 3) // if version is less than Vulkan 1.3 then add pre 1.3 requirements
+            {
+                physicalDeviceSelector.add_required_extensions(rayTracingPre13DeviceExtensions);
+            }
+
+// #define AVA_ALLOW_NV_RAYTRACING_VALIDATION
+#ifdef AVA_ALLOW_NV_RAYTRACING_VALIDATION
+            if (createInfo.debug)
+            {
+                physicalDeviceSelector.add_required_extension(vk::NVRayTracingValidationExtensionName);
+                vk::PhysicalDeviceRayTracingValidationFeaturesNV rayTracingValidationFeatures{};
+                rayTracingValidationFeatures.rayTracingValidation = true;
+                physicalDeviceSelector.add_required_extension_features(rayTracingValidationFeatures);
+            }
+#endif
+
+            State.rayTracingEnabled = true;
+        }
+
+        physicalDeviceSelector.set_required_features(deviceFeatures);
 
         // Only add the physicalDeviceFeatures11 if Vulkan >= 1.2
         // This means that physicalPNext can only be used when Vulkan 1.2 or higher is used, meaning extensions can only be used on Vulkan 1.2 and above
         // We can't use PhysicalDeviceFeatures2 because vk-bootstrap prevents us from using it
-        if (createInfo.apiVersion.major >= 1 && createInfo.apiVersion.minor >= 2)
+        if (createInfo.apiVersion.major == 1 && createInfo.apiVersion.minor >= 2)
         {
             physicalDeviceSelector.add_required_extension_features(physicalDeviceFeatures11);
         }
@@ -188,6 +296,13 @@ namespace ava
                 State.lazyGpuMemoryAvailable = true;
                 break;
             }
+        }
+
+        if (State.rayTracingEnabled)
+        {
+            vk::PhysicalDeviceProperties2 deviceProperties{};
+            deviceProperties.pNext = &State.accelerationStructureProperties;
+            State.physicalDevice.getProperties2(&deviceProperties);
         }
 
         State.stateCreated = true;
@@ -279,6 +394,8 @@ namespace ava
                 State.physicalDevice = nullptr;
             }
             State.resizeNeeded = true;
+            State.shaderDeviceAddressEnabled = false;
+            State.rayTracingEnabled = false;
             State.stateCreated = false;
         }
 
@@ -301,12 +418,10 @@ namespace ava
         }
     }
 
-
     void destroyState()
     {
         destroyState(true);
     }
-
 
     void createSwapchain(const vk::SurfaceKHR surface, const vk::Format desiredFormat, const vk::ColorSpaceKHR colorSpace, const vk::PresentModeKHR presentMode)
     {

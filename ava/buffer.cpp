@@ -20,6 +20,12 @@ namespace ava
         bufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
         bufferCreateInfo.usage = bufferUsage;
 
+        // If shader device address is enabled then every buffer allocation gets the flag
+        if (detail::State.shaderDeviceAddressEnabled)
+        {
+            bufferCreateInfo.usage |= vk::BufferUsageFlagBits::eShaderDeviceAddress;
+        }
+
         vma::AllocationCreateInfo allocationCreateInfo{};
         allocationCreateInfo.usage = getMemoryUsageFromBufferLocation(bufferLocation);
         vk::Buffer buffer;
@@ -52,6 +58,7 @@ namespace ava
         outBuffer->bufferLocation = bufferLocation;
         outBuffer->alignment = alignment;
         outBuffer->mapped = mapped;
+        outBuffer->size = size;
 
         return outBuffer;
     }
@@ -101,7 +108,7 @@ namespace ava
     void updateBuffer(const Buffer& buffer, const void* data, vk::DeviceSize size, const vk::DeviceSize offset)
     {
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot update an invalid buffer");
-        AVA_CHECK((size + offset) <= buffer->allocationInfo.size, "Cannot update buffer where size + offset (" + std::to_string((size + offset)) +") exceeds buffer size (" + std::to_string(buffer->allocationInfo.size) + ")");
+        AVA_CHECK((size + offset) <= buffer->size, "Cannot update buffer where size + offset (" + std::to_string((size + offset)) +") exceeds buffer size (" + std::to_string(buffer->size) + ")");
         AVA_CHECK(data != nullptr, "Cannot update buffer when buffer data is nullptr");
 
         // If CPU mapped then write to such mapped pointer
@@ -111,7 +118,7 @@ namespace ava
 
             if (size == vk::WholeSize)
             {
-                size = buffer->allocationInfo.size - offset;
+                size = buffer->size - offset;
             }
             std::memcpy(reinterpret_cast<void*>(reinterpret_cast<size_t>(buffer->mapped) + offset), data, size);
             detail::State.allocator.flushAllocation(buffer->allocation, offset, size);
@@ -126,21 +133,27 @@ namespace ava
 
         // Update via single time command-buffer buffer-copy
         auto commandBuffer = beginSingleTimeCommands(vk::QueueFlagBits::eTransfer);
-        updateBuffer(buffer, commandBuffer, stagingBuffer, offset);
+        updateBuffer(buffer, commandBuffer, stagingBuffer, offset, size);
         endSingleTimeCommands(commandBuffer);
 
         // Destroy staging buffer
         destroyBuffer(stagingBuffer);
     }
 
-    void updateBuffer(const Buffer& buffer, const CommandBuffer& commandBuffer, const Buffer& stagingBuffer, const vk::DeviceSize offset)
+    void updateBuffer(const Buffer& buffer, const CommandBuffer& commandBuffer, const Buffer& stagingBuffer, const vk::DeviceSize offset, vk::DeviceSize size)
     {
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot update an invalid buffer");
         AVA_CHECK(stagingBuffer != nullptr && stagingBuffer->buffer, "Cannot update a buffer with an invalid staging buffer");
-        AVA_CHECK((stagingBuffer->allocationInfo.size + offset) <= buffer->allocationInfo.size, "Cannot update buffer where size + offset (" + std::to_string(stagingBuffer->allocationInfo.size) + ") exceeds buffer size (" + std::to_string(buffer->allocationInfo.size) + ")");
+        AVA_CHECK((stagingBuffer->size + offset) <= buffer->size, "Cannot update buffer where size + offset (" + std::to_string(stagingBuffer->size) + ") exceeds buffer size (" + std::to_string(buffer->size) + ")");
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot update buffer with an invalid command buffer");
+        AVA_CHECK(size > 0, "Cannot update buffer when size is 0");
 
-        const vk::BufferCopy copyRegion{0, offset, stagingBuffer->allocationInfo.size};
+        if (size == vk::WholeSize)
+        {
+            size = stagingBuffer->size;
+        }
+
+        const vk::BufferCopy copyRegion{0, offset, size};
         commandBuffer->commandBuffer.copyBuffer(stagingBuffer->buffer, buffer->buffer, copyRegion);
     }
 

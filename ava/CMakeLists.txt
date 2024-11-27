@@ -96,6 +96,13 @@ add_library(ava STATIC
         raii/vibo.cpp
         raii/vibo.hpp
         memoryLocation.cpp
+        detail/rayTracing.hpp
+        rayTracing.cpp
+        rayTracing.hpp
+        detail/rayTracing.cpp
+        detail/buffer.cpp
+        raii/rayTracing.cpp
+        raii/rayTracing.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

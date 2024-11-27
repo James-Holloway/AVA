@@ -15,7 +15,10 @@ namespace ava::detail
         MemoryLocation bufferLocation;
         vk::DeviceSize alignment;
         void* mapped;
+        vk::DeviceSize size;
     };
+
+    vk::DeviceAddress getBufferDeviceAddress(const Buffer* buffer);
 }
 
 #endif

@@ -17,5 +17,6 @@
 #include "raii/renderPass.hpp"
 #include "raii/framebuffer.hpp"
 #include "raii/shaders.hpp"
+#include "raii/rayTracing.hpp"
 
 #endif

@@ -14,6 +14,7 @@ namespace ava
         Version apiVersion{1, 3, 0}; // Vulkan API version (recommended minimum 1.2 for full functionality such as Vulkan extension usage)
         Version appVersion{1, 0, 0}; // App version
         bool debug = false; // Create a debug context with validation layers
+        bool enableRayTracing = false; // Enables ray tracing if supported (query support first from ava/rayTracing.hpp) (requires at least Vulkan 1.1, at least 1.2 recommended)
         std::vector<const char*> extraLayers{}; // Extra instance layers to enable
         std::vector<const char*> extraInstanceExtensions{}; // Extra instance extensions
         std::vector<const char*> extraDeviceExtensions{}; // Extra device extensions

@@ -21,6 +21,8 @@ namespace ava
 
     void bindBuffer(const DescriptorSet& descriptorSet, uint32_t binding, const Buffer& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0);
     void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler = nullptr, uint32_t dstArrayElement = 0);
+    // Requires Ray Tracing to be enabled in State
+    void bindTLAS(const DescriptorSet& descriptorSet, uint32_t binding, const TLAS& tlas, uint32_t dstArrayElement = 0);
 }
 
 #endif

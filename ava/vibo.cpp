@@ -37,6 +37,7 @@ namespace ava
         outVIBO->vertexOffset = 0;
         outVIBO->indexOffset = vertexDataSize;
         outVIBO->indexType = indexType;
+        outVIBO->topology = vao->topology;
         return outVIBO;
     }
 

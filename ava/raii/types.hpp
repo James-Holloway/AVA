@@ -21,6 +21,9 @@ namespace ava::raii
     class RenderPass;
     class Framebuffer;
     class Shader;
+    class BLAS;
+    class BLASInstance;
+    class TLAS;
 
     template <typename T>
     using Pointer = std::shared_ptr<T>;

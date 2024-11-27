@@ -11,6 +11,7 @@ namespace ava::detail
         uint32_t vertexCount;
         uint32_t stride;
         uint32_t binding;
+        vk::PrimitiveTopology topology;
     };
 }
 
