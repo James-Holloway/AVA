@@ -193,8 +193,13 @@ namespace ava
         detail::destroyTopLevelAccelerationStructure(tlas);
     }
 
-    void rebuildTLAS(const TLAS tlas, const std::vector<BLASInstance>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags, vk::GeometryFlagsKHR geometryFlags)
+    void rebuildTLAS(const TLAS tlas, const std::vector<BLASInstance>& blasInstances, const vk::BuildAccelerationStructureFlagsKHR buildFlags, const vk::GeometryFlagsKHR geometryFlags)
     {
         detail::rebuildTLAS(tlas, blasInstances, buildFlags, geometryFlags);
+    }
+
+    bool updateTLAS(const TLAS tlas, const std::vector<BLASInstance>& blasInstances, const vk::BuildAccelerationStructureFlagsKHR buildFlags, const vk::GeometryFlagsKHR geometryFlags)
+    {
+        return detail::updateTLAS(tlas, blasInstances, buildFlags, geometryFlags);
     }
 }

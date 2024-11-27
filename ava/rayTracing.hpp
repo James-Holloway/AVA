@@ -31,7 +31,8 @@ namespace ava
     void destroyTopLevelAccelerationStructure(TLAS& tlas);
 
     // Builds one acceleration structure with a single time command and a scratch buffer
-    void rebuildTLAS(TLAS tlas, const std::vector<BLASInstance>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace, vk::GeometryFlagsKHR geometryFlags = {});
+    void rebuildTLAS(TLAS tlas, const std::vector<BLASInstance>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate, vk::GeometryFlagsKHR geometryFlags = {});
+    [[nodiscard]] bool updateTLAS(TLAS tlas, const std::vector<BLASInstance>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate, vk::GeometryFlagsKHR geometryFlags = {});
 }
 
 #endif

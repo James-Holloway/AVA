@@ -32,6 +32,7 @@ namespace ava::detail
         addressInfo.accelerationStructure = accelerationStructure;
         const auto asAddress = State.device.getAccelerationStructureAddressKHR(addressInfo, State.dispatchLoader);
 
+        // ReSharper disable once CppDFAMemoryLeak
         const auto outAccelerationStructure = new AccelerationStructure();
         outAccelerationStructure->buffer = buffer;
         outAccelerationStructure->accelerationStructure = accelerationStructure;
@@ -223,6 +224,7 @@ namespace ava::detail
         buildGeometryInfo.type = vk::AccelerationStructureTypeKHR::eBottomLevel;
         buildGeometryInfo.flags = buildFlags;
         buildGeometryInfo.setGeometries(geometry);
+        buildGeometryInfo.mode = vk::BuildAccelerationStructureModeKHR::eBuild;
 
         const auto buildSizesInfo = State.device.getAccelerationStructureBuildSizesKHR(vk::AccelerationStructureBuildTypeKHR::eHost, buildGeometryInfo, blas->instanceCount, State.dispatchLoader);
 
@@ -309,6 +311,8 @@ namespace ava::detail
     {
         AVA_CHECK(tlas != nullptr, "Cannot rebuild TLAS when TLAS is invalid");
 
+        uint64_t buildHash = 0;
+
         std::vector<VkAccelerationStructureInstanceKHR> instances;
         instances.reserve(blasInstances.size());
         for (size_t i = 0; i < blasInstances.size(); i++)
@@ -330,7 +334,11 @@ namespace ava::detail
             instance.instanceShaderBindingTableRecordOffset = blasInstance->instanceShaderBindingTableRecordOffset;
 
             instances.emplace_back(instance);
+
+            buildHash = (buildHash << 2) ^ std::hash<uint64_t>{}(instance.accelerationStructureReference) ^ (std::hash<uint64_t>{}(instance.flags) << 4) ^ (std::hash<uint64_t>{}(instance.instanceCustomIndex) << 7);
         }
+
+        buildHash ^= std::hash<uint64_t>{}(static_cast<vk::GeometryFlagsKHR::MaskType>(geometryFlags)) ^ std::hash<uint64_t>{}(instances.size());
 
         const auto instancesBufferSize = sizeof(VkAccelerationStructureInstanceKHR) * instances.size();
         auto instancesBuffer = ava::createBuffer(instancesBufferSize, vk::BufferUsageFlagBits::eAccelerationStructureBuildInputReadOnlyKHR, MemoryLocation::eCpuToGpu, 0);
@@ -350,6 +358,7 @@ namespace ava::detail
         buildGeometryInfo.type = vk::AccelerationStructureTypeKHR::eTopLevel;
         buildGeometryInfo.flags = buildFlags;
         buildGeometryInfo.setGeometries(geometry);
+        buildGeometryInfo.mode = vk::BuildAccelerationStructureModeKHR::eBuild;
 
         const auto buildSizesInfo = State.device.getAccelerationStructureBuildSizesKHR(vk::AccelerationStructureBuildTypeKHR::eDevice, buildGeometryInfo, instances.size(), State.dispatchLoader);
 
@@ -359,6 +368,7 @@ namespace ava::detail
             destroyAccelerationStructure(tlas->accelerationStructure);
         }
 
+        // ReSharper disable once CppDFAMemoryLeak
         tlas->accelerationStructure = createAccelerationStructure(vk::AccelerationStructureTypeKHR::eTopLevel, buildSizesInfo);
 
         auto scratchBuffer = ava::createBuffer(buildSizesInfo.buildScratchSize, vk::BufferUsageFlagBits::eStorageBuffer, MemoryLocation::eGpuOnly, State.accelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment);
@@ -366,6 +376,7 @@ namespace ava::detail
         buildGeometryInfo.type = vk::AccelerationStructureTypeKHR::eTopLevel;
         buildGeometryInfo.flags = buildFlags;
         buildGeometryInfo.setGeometries(geometry);
+        buildGeometryInfo.mode = vk::BuildAccelerationStructureModeKHR::eBuild;
         buildGeometryInfo.dstAccelerationStructure = tlas->accelerationStructure->accelerationStructure;
         buildGeometryInfo.scratchData.deviceAddress = getBufferDeviceAddress(scratchBuffer);
 
@@ -384,6 +395,97 @@ namespace ava::detail
         ava::destroyBuffer(scratchBuffer);
         ava::destroyBuffer(instancesBuffer);
 
+        tlas->lastBuildSizesInfo = buildSizesInfo;
+        tlas->lastBuildHash = buildHash;
+        tlas->lastBuildFlags = buildFlags;
         tlas->built = true;
+    }
+
+    bool updateTLAS(TLAS* tlas, const std::vector<BLASInstance*>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags, vk::GeometryFlagsKHR geometryFlags)
+    {
+        AVA_CHECK(tlas != nullptr, "Cannot update TLAS when TLAS is invalid");
+        AVA_CHECK(tlas->built, "Cannot update an un-built TLAS");
+        AVA_CHECK((tlas->lastBuildFlags & vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate) != vk::BuildAccelerationStructureFlagsKHR{}, "Cannot update a TLAS that was not previously built with build flags containing eAllowUpdate");
+
+        uint64_t buildHash = 0;
+
+        std::vector<VkAccelerationStructureInstanceKHR> instances;
+        instances.reserve(blasInstances.size());
+        for (size_t i = 0; i < blasInstances.size(); i++)
+        {
+            const auto blasInstance = blasInstances[i];
+            if (blasInstance == nullptr || blasInstance->blas == nullptr) continue;
+            if (!blasInstance->blas->built)
+            {
+                AVA_WARN("Attempted to build TLAS when BLAS instance's BLAS is not built");
+                continue;
+            }
+
+            VkAccelerationStructureInstanceKHR instance{};
+            instance.accelerationStructureReference = blasInstance->blas->accelerationStructure->accelerationStructureAddress;
+            instance.flags = static_cast<VkGeometryInstanceFlagsKHR>(blasInstance->geometryInstanceFlags);
+            instance.instanceCustomIndex = (blasInstance->instanceCustomIndex < 0) ? i : blasInstance->instanceCustomIndex; // if negative use i rather than explicit value
+            instance.mask = blasInstance->mask;
+            instance.transform = blasInstance->transformMatrix;
+            instance.instanceShaderBindingTableRecordOffset = blasInstance->instanceShaderBindingTableRecordOffset;
+
+            instances.emplace_back(instance);
+            buildHash = (buildHash << 2) ^ std::hash<uint64_t>{}(instance.accelerationStructureReference) ^ (std::hash<uint64_t>{}(instance.flags) << 4) ^ (std::hash<uint64_t>{}(instance.instanceCustomIndex) << 7);
+        }
+
+        buildHash ^= std::hash<uint64_t>{}(static_cast<vk::GeometryFlagsKHR::MaskType>(geometryFlags)) ^ std::hash<uint64_t>{}(instances.size());
+
+        if (buildHash != tlas->lastBuildHash)
+        {
+            return false;
+        }
+
+        const auto instancesBufferSize = sizeof(VkAccelerationStructureInstanceKHR) * instances.size();
+        auto instancesBuffer = ava::createBuffer(instancesBufferSize, vk::BufferUsageFlagBits::eAccelerationStructureBuildInputReadOnlyKHR, MemoryLocation::eCpuToGpu, 0);
+        updateBuffer(instancesBuffer, instances);
+
+        vk::DeviceOrHostAddressConstKHR instanceDataDeviceAddress;
+        instanceDataDeviceAddress.deviceAddress = getBufferDeviceAddress(instancesBuffer);
+
+        vk::AccelerationStructureGeometryKHR geometry{};
+        geometry.flags = geometryFlags;
+        geometry.geometryType = vk::GeometryTypeKHR::eInstances;
+        geometry.geometry.instances.sType = vk::StructureType::eAccelerationStructureGeometryInstancesDataKHR;
+        geometry.geometry.instances.arrayOfPointers = false;
+        geometry.geometry.instances.data = instanceDataDeviceAddress;
+
+        const auto buildSizesInfo = tlas->lastBuildSizesInfo;
+
+        auto scratchBuffer = ava::createBuffer(buildSizesInfo.updateScratchSize, vk::BufferUsageFlagBits::eStorageBuffer, MemoryLocation::eGpuOnly, State.accelerationStructureProperties.minAccelerationStructureScratchOffsetAlignment);
+
+        auto newAccelerationStructure = createAccelerationStructure(vk::AccelerationStructureTypeKHR::eTopLevel, buildSizesInfo);
+
+        vk::AccelerationStructureBuildGeometryInfoKHR buildGeometryInfo{};
+        buildGeometryInfo.type = vk::AccelerationStructureTypeKHR::eTopLevel;
+        buildGeometryInfo.flags = buildFlags;
+        buildGeometryInfo.setGeometries(geometry);
+        buildGeometryInfo.mode = vk::BuildAccelerationStructureModeKHR::eUpdate;
+        buildGeometryInfo.srcAccelerationStructure = tlas->accelerationStructure->accelerationStructure;
+        buildGeometryInfo.dstAccelerationStructure = newAccelerationStructure->accelerationStructure;
+        buildGeometryInfo.scratchData.deviceAddress = getBufferDeviceAddress(scratchBuffer);
+
+        vk::AccelerationStructureBuildRangeInfoKHR buildRangeInfo{};
+        buildRangeInfo.primitiveCount = instances.size();
+        buildRangeInfo.primitiveOffset = 0;
+        buildRangeInfo.firstVertex = 0;
+        buildRangeInfo.transformOffset = 0;
+
+        const std::vector buildRangeInfos = {&buildRangeInfo};
+
+        auto commandBuffer = beginSingleTimeCommands(vk::QueueFlagBits::eGraphics);
+        commandBuffer->commandBuffer.buildAccelerationStructuresKHR(buildGeometryInfo, buildRangeInfos, State.dispatchLoader);
+        endSingleTimeCommands(commandBuffer);
+
+        destroyAccelerationStructure(tlas->accelerationStructure);
+        tlas->accelerationStructure = newAccelerationStructure;
+
+        ava::destroyBuffer(scratchBuffer);
+        ava::destroyBuffer(instancesBuffer);
+        return true;
     }
 }

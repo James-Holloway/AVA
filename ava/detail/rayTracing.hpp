@@ -50,6 +50,9 @@ namespace ava::detail
     {
         AccelerationStructure* accelerationStructure;
         bool built;
+        vk::AccelerationStructureBuildSizesInfoKHR lastBuildSizesInfo;
+        uint64_t lastBuildHash;
+        vk::BuildAccelerationStructureFlagsKHR lastBuildFlags;
     };
 
     AccelerationStructure* createAccelerationStructure(vk::AccelerationStructureTypeKHR type, const vk::AccelerationStructureBuildSizesInfoKHR& buildSizeInfo);
@@ -72,7 +75,9 @@ namespace ava::detail
     void destroyTopLevelAccelerationStructure(TLAS*& tlas);
 
     // Builds one acceleration structure with a single time command and a scratch buffer
-    void rebuildTLAS(TLAS* tlas, const std::vector<BLASInstance*>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace, vk::GeometryFlagsKHR geometryFlags = {});
+    void rebuildTLAS(TLAS* tlas, const std::vector<BLASInstance*>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate, vk::GeometryFlagsKHR geometryFlags = {});
+    // Returns false if function could not update the TLAS
+    [[nodiscard]] bool updateTLAS(TLAS* tlas, const std::vector<BLASInstance*>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate, vk::GeometryFlagsKHR geometryFlags = {});
 }
 
 #endif

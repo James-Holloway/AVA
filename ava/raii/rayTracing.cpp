@@ -152,7 +152,7 @@ namespace ava::raii
     {
         auto avaBlasInstances = std::vector<ava::BLASInstance>();
         avaBlasInstances.reserve(blasInstances.size());
-        for (auto blasInstance : blasInstances)
+        for (const auto& blasInstance : blasInstances)
         {
             if (blasInstance != nullptr && blasInstance->blasInstance != nullptr)
             {
@@ -161,6 +161,21 @@ namespace ava::raii
         }
 
         ava::rebuildTLAS(tlas, avaBlasInstances, buildFlags, geometryFlags);
+    }
+
+    bool TLAS::update(const std::vector<Pointer<BLASInstance>>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags, vk::GeometryFlagsKHR geometryFlags) const
+    {
+        auto avaBlasInstances = std::vector<ava::BLASInstance>();
+        avaBlasInstances.reserve(blasInstances.size());
+        for (const auto& blasInstance : blasInstances)
+        {
+            if (blasInstance != nullptr && blasInstance->blasInstance != nullptr)
+            {
+                avaBlasInstances.push_back(blasInstance->blasInstance);
+            }
+        }
+
+        return ava::updateTLAS(tlas, avaBlasInstances, buildFlags, geometryFlags);
     }
 
     Pointer<TLAS> TLAS::create()

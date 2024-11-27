@@ -1,4 +1,5 @@
 #include <framework.hpp>
+#include <iostream>
 
 struct Vertex
 {
@@ -176,9 +177,12 @@ public:
                 cubeInstances.push_back(cubeBLAS->createInstance());
             }
 
+            auto blasInstances = cubeInstances;
+            blasInstances.push_back(planeInstance);
             for (int i = 0; i < ava::getFramesInFlight(); i++)
             {
                 tlases.push_back(ava::raii::TLAS::create());
+                tlases.back()->rebuild(blasInstances);
             }
         }
     }
@@ -226,7 +230,11 @@ public:
         blasInstances.push_back(planeInstance);
 
         const auto currentFrame = ava::getCurrentFrame();
-        tlases[currentFrame]->rebuild(blasInstances);
+        if (!tlases[currentFrame]->update(blasInstances))
+        {
+            std::cerr << "Failed to update TLAS, rebuilding\n";
+            tlases[currentFrame]->rebuild(blasInstances);
+        }
 
         for (int i = 0; i < cubeCount; i++)
         {

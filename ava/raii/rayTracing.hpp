@@ -63,7 +63,8 @@ namespace ava::raii
         TLAS(TLAS&& other) noexcept;
         TLAS& operator=(TLAS&& other) noexcept;
 
-        void rebuild(const std::vector<Pointer<BLASInstance>>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace, vk::GeometryFlagsKHR geometryFlags = {}) const;
+        void rebuild(const std::vector<Pointer<BLASInstance>>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate, vk::GeometryFlagsKHR geometryFlags = {}) const;
+        [[nodiscard]] bool update(const std::vector<Pointer<BLASInstance>>& blasInstances, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate, vk::GeometryFlagsKHR geometryFlags = {}) const;
 
         static Pointer<TLAS> create();
     };
