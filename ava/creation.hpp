@@ -34,7 +34,7 @@ namespace ava
     void destroyState();
 
     // Also used for recreation of swapchain
-    void createSwapchain(vk::SurfaceKHR surface, vk::Format desiredFormat = vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR colorSpace = vk::ColorSpaceKHR::eSrgbNonlinear, vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo);
+    void createSwapchain(vk::SurfaceKHR surface, vk::Extent2D extent, vk::Format desiredFormat = vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR colorSpace = vk::ColorSpaceKHR::eSrgbNonlinear, vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo);
 }
 
 #endif

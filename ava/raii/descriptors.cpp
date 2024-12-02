@@ -9,6 +9,7 @@
 #include "image.hpp"
 #include "sampler.hpp"
 #include "rayTracing.hpp"
+#include "rayTracingPipeline.hpp"
 #include "ava/detail/detail.hpp"
 
 namespace ava::raii
@@ -72,6 +73,12 @@ namespace ava::raii
         return std::make_shared<DescriptorPool>(ava::createDescriptorPool(computePipeline->pipeline, maxSetsMultiplier));
     }
 
+    Pointer<DescriptorPool> DescriptorPool::create(const Pointer<RayTracingPipeline>& rayTracingPipeline, const uint32_t maxSetsMultiplier)
+    {
+        AVA_CHECK(rayTracingPipeline != nullptr && rayTracingPipeline->pipeline, "Cannot create a descriptor pool from an invalid ray tracing pipeline");
+        return std::make_shared<DescriptorPool>(ava::createDescriptorPool(rayTracingPipeline->pipeline, maxSetsMultiplier));
+    }
+
     DescriptorSet::DescriptorSet(const Pointer<DescriptorPool>& poolAllocatedFrom, const ava::DescriptorSet& existingSet)
     {
         AVA_CHECK(!existingSet.expired(), "Cannot create a RAII descriptor set from an invalid descriptor set");
@@ -125,12 +132,15 @@ namespace ava::raii
         ava::bindBuffer(descriptorSet, binding, buffer->buffer, bufferSize, bufferOffset, dstArrayElement);
     }
 
-    void DescriptorSet::bindImage(const uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler, uint32_t dstArrayElement) const
+    void DescriptorSet::bindImage(const uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler, const std::optional<vk::ImageLayout> imageLayout, const uint32_t dstArrayElement) const
     {
         AVA_CHECK(image != nullptr && image->image, "Cannot bind image to a descriptor set when image is invalid");
         AVA_CHECK(imageView != nullptr && imageView->imageView != nullptr, "Cannot bind image to a descriptor set when image view is invalid");
-        AVA_CHECK(sampler != nullptr && sampler->sampler != nullptr, "Cannot bind image to a descriptor set when sampler is invalid");
-        ava::bindImage(descriptorSet, binding, image->image, imageView->imageView, sampler->sampler, dstArrayElement);
+        if (sampler != nullptr)
+        {
+            AVA_CHECK(sampler->sampler != nullptr, "Cannot bind image to a descriptor set when provided sampler is invalid");
+        }
+        ava::bindImage(descriptorSet, binding, image->image, imageView->imageView, sampler != nullptr ? sampler->sampler : nullptr, imageLayout, dstArrayElement);
     }
 
     void DescriptorSet::bindTLAS(const uint32_t binding, const Pointer<TLAS>& tlas, const uint32_t dstArrayElement) const

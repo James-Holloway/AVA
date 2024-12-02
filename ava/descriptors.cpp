@@ -10,6 +10,7 @@
 #include "detail/commandBuffer.hpp"
 #include "detail/image.hpp"
 #include "detail/rayTracing.hpp"
+#include "detail/rayTracingPipeline.hpp"
 #include "detail/sampler.hpp"
 
 namespace ava
@@ -65,6 +66,14 @@ namespace ava
         AVA_CHECK(maxSetsMultiplier > 0, "Cannot create a descriptor pool with a max sets multiplier of 0");
 
         return createDescriptorPoolMain(computePipeline, maxSetsMultiplier);
+    }
+
+    DescriptorPool createDescriptorPool(const RayTracingPipeline& rayTracingPipeline, uint32_t maxSetsMultiplier)
+    {
+        AVA_CHECK(rayTracingPipeline != nullptr && rayTracingPipeline->layout, "Cannot create descriptor pool from an invalid ray tracing pipeline");
+        AVA_CHECK(maxSetsMultiplier > 0, "Cannot create a descriptor pool with a max sets multiplier of 0");
+
+        return createDescriptorPoolMain(rayTracingPipeline, maxSetsMultiplier);
     }
 
     void resetDescriptorPool(const DescriptorPool& descriptorPool)
@@ -333,7 +342,7 @@ namespace ava
         const auto descriptorType = getDescriptorType(ds, binding);
         if (!descriptorType.has_value())
         {
-            AVA_WARN("Could not bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            AVA_WARN("Could not bind a buffer to a descriptor set, binding " + std::to_string(binding) + " when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
             return; // If no binding type could be found then don't do any binding
         }
 
@@ -353,7 +362,7 @@ namespace ava
         detail::State.device.updateDescriptorSets(wds, nullptr);
     }
 
-    void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler, const uint32_t dstArrayElement)
+    void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler, std::optional<vk::ImageLayout> imageLayout, const uint32_t dstArrayElement)
     {
         AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
         AVA_CHECK(!descriptorSet.expired(), "Cannot bind an image to an invalid descriptor set");
@@ -369,13 +378,13 @@ namespace ava
         const auto descriptorType = getDescriptorType(ds, binding);
         if (!descriptorType.has_value())
         {
-            AVA_WARN("Could not bind an image to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            AVA_WARN("Could not bind an image to a descriptor set, binding " + std::to_string(binding) + " when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
             return; // If no binding type could be found then don't do any binding
         }
 
         vk::DescriptorImageInfo imageInfo{};
         imageInfo.sampler = sampler != nullptr ? sampler->sampler : nullptr;
-        imageInfo.imageLayout = image->imageLayout;
+        imageInfo.imageLayout = imageLayout.value_or(image->imageLayout);
         imageInfo.imageView = imageView->imageView;
 
         vk::WriteDescriptorSet wds{};
@@ -403,7 +412,7 @@ namespace ava
         const auto descriptorType = getDescriptorType(ds, binding);
         if (!descriptorType.has_value())
         {
-            AVA_WARN("Could not bind a TLAS to a descriptor set when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            AVA_WARN("Could not bind a TLAS to a descriptor set, binding " + std::to_string(binding) + " when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
             return; // If no binding type could be found then don't do any binding
         }
 

@@ -25,6 +25,10 @@ namespace ava::raii
         void rebuild(vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace, vk::GeometryFlagsKHR geometryFlags = vk::GeometryFlagBitsKHR::eOpaque) const;
         Pointer<BLASInstance> createInstance(int32_t instanceCustomIndex = -1, uint8_t mask = 0xFF) const;
 
+        vk::DeviceAddress getVertexBufferAddress() const;
+        vk::DeviceAddress getIndexBufferAddress() const;
+        vk::IndexType getIndexBufferType() const;
+
         static Pointer<BLAS> create(const Pointer<VIBO>& meshBuffer);
         static Pointer<BLAS> create(const Pointer<VBO>& vbo, const Pointer<IBO>& ibo = nullptr);
     };

@@ -27,6 +27,7 @@ namespace ava
         struct BLAS;
         struct BLASInstance;
         struct TLAS;
+        struct RayTracingPipeline;
     }
 
     using CommandBuffer = std::shared_ptr<detail::CommandBuffer>;
@@ -48,6 +49,7 @@ namespace ava
     using BLAS = detail::BLAS*;
     using BLASInstance = detail::BLASInstance*;
     using TLAS = detail::TLAS*;
+    using RayTracingPipeline = detail::RayTracingPipeline*;
 }
 
 #endif

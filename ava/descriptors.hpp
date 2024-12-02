@@ -8,6 +8,7 @@ namespace ava
     // Descriptor pools
     [[nodiscard]] DescriptorPool createDescriptorPool(const GraphicsPipeline& graphicsPipeline, uint32_t maxSetsMultiplier = 32);
     [[nodiscard]] DescriptorPool createDescriptorPool(const ComputePipeline& computePipeline, uint32_t maxSetsMultiplier = 32);
+    [[nodiscard]] DescriptorPool createDescriptorPool(const RayTracingPipeline& rayTracingPipeline, uint32_t maxSetsMultiplier = 32);
     void resetDescriptorPool(const DescriptorPool& descriptorPool);
     void destroyDescriptorPool(DescriptorPool& descriptorPool);
 
@@ -20,7 +21,7 @@ namespace ava
     void bindDescriptorSet(const CommandBuffer& commandBuffer, const DescriptorSet& set);
 
     void bindBuffer(const DescriptorSet& descriptorSet, uint32_t binding, const Buffer& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0);
-    void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler = nullptr, uint32_t dstArrayElement = 0);
+    void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler = nullptr, std::optional<vk::ImageLayout> imageLayout = {}, uint32_t dstArrayElement = 0);
     // Requires Ray Tracing to be enabled in State
     void bindTLAS(const DescriptorSet& descriptorSet, uint32_t binding, const TLAS& tlas, uint32_t dstArrayElement = 0);
 }

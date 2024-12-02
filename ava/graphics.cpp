@@ -11,7 +11,7 @@
 
 namespace ava
 {
-    static std::vector<uint32_t> getShaderIndicesFromType(const std::vector<Shader>& shaders, const vk::ShaderStageFlagBits stage)
+    std::vector<uint32_t> getShaderIndicesFromType(const std::vector<Shader>& shaders, const vk::ShaderStageFlagBits stage)
     {
         std::vector<uint32_t> shaderIndices;
         for (uint32_t i = 0; i < shaders.size(); i++)
@@ -26,7 +26,7 @@ namespace ava
     }
 
     // ReSharper disable once CppDFAConstantParameter
-    static bool hasShaderType(const std::vector<Shader>& shaders, const vk::ShaderStageFlagBits stage)
+    bool hasShaderType(const std::vector<Shader>& shaders, const vk::ShaderStageFlagBits stage)
     {
         for (const auto& shader : shaders)
         {

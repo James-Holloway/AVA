@@ -25,6 +25,7 @@ namespace ava::raii
 
         static Pointer<DescriptorPool> create(const Pointer<GraphicsPipeline>& graphicsPipeline, uint32_t maxSetsMultiplier = 32);
         static Pointer<DescriptorPool> create(const Pointer<ComputePipeline>& computePipeline, uint32_t maxSetsMultiplier = 32);
+        static Pointer<DescriptorPool> create(const Pointer<RayTracingPipeline>& rayTracingPipeline, uint32_t maxSetsMultiplier = 32);
     };
 
     class DescriptorSet
@@ -46,7 +47,7 @@ namespace ava::raii
         void bindDescriptorSet(const Pointer<CommandBuffer>& commandBuffer) const;
 
         void bindBuffer(uint32_t binding, const Pointer<Buffer>& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0) const;
-        void bindImage(uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler = nullptr, uint32_t dstArrayElement = 0) const;
+        void bindImage(uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler = nullptr, std::optional<vk::ImageLayout> imageLayout = {}, uint32_t dstArrayElement = 0) const;
         void bindTLAS(uint32_t binding, const Pointer<TLAS>& tlas, uint32_t dstArrayElement = 0) const;
     };
 }

@@ -24,6 +24,7 @@ namespace ava::raii
     class BLAS;
     class BLASInstance;
     class TLAS;
+    class RayTracingPipeline;
 
     template <typename T>
     using Pointer = std::shared_ptr<T>;

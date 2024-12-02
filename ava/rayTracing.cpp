@@ -164,6 +164,24 @@ namespace ava
         return detail::rebuildBLAS(blas, buildFlags, geometryFlags);
     }
 
+    vk::DeviceAddress getVertexBufferAddress(const BLAS blas)
+    {
+        AVA_CHECK(blas != nullptr && blas->meshBuffer != nullptr, "Cannot get vertex buffer address from an invalid BLAS");
+        return blas->vertexDeviceAddress;
+    }
+
+    vk::DeviceAddress getIndexBufferAddress(const BLAS blas)
+    {
+        AVA_CHECK(blas != nullptr && blas->meshBuffer != nullptr, "Cannot get index buffer address from an invalid BLAS");
+        return blas->indexDeviceAddress;
+    }
+
+    vk::IndexType getIndexBufferType(const BLAS blas)
+    {
+        AVA_CHECK(blas != nullptr && blas->meshBuffer != nullptr, "Cannot get index type from an invalid BLAS");
+        return blas->indexType;
+    }
+
     BLASInstance createBLASInstance(const BLAS blas, const int32_t instanceCustomIndex, const uint8_t mask)
     {
         auto outBlasInstance = detail::createBLASInstance(blas);

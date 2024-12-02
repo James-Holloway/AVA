@@ -20,6 +20,7 @@ function(compile_shaders_slang TARGET_NAME BINRELOUTDIR)
             -matrix-layout-column-major
             -fvk-use-entrypoint-name # don't emit main as entrypoint but instead use named entrypoints
             -g3 # Debug level 3
+            -O0 # Default optimization breaks pointers?
     )
 
     foreach (SHADER_SOURCE IN LISTS SHADER_SOURCE_FILES)

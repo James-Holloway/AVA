@@ -11,6 +11,7 @@ if (NOT VULKAN_FOUND)
     message(FATAL_ERROR "Vulkan installation required")
 endif ()
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+find_package(VulkanMemoryAllocator-Hpp CONFIG REQUIRED)
 FetchContent_Declare(
         fetch_vk_bootstrap
         GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap

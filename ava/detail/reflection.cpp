@@ -90,7 +90,7 @@ namespace ava::detail
         updateResources(shaderResources.sampled_images, vk::DescriptorType::eCombinedImageSampler); // sampler2D
         updateResources(shaderResources.separate_samplers, vk::DescriptorType::eSampler); // sampler/samplerShadow
         updateResources(shaderResources.separate_images, vk::DescriptorType::eCombinedImageSampler, vk::DescriptorType::eUniformTexelBuffer); // texture2D, samplerBuffer
-        updateResources(shaderResources.storage_images, vk::DescriptorType::eStorageBuffer, vk::DescriptorType::eStorageTexelBuffer); // image2D, imageBuffer
+        updateResources(shaderResources.storage_images, vk::DescriptorType::eStorageImage, vk::DescriptorType::eStorageTexelBuffer); // image2D, imageBuffer
         updateResources(shaderResources.uniform_buffers, vk::DescriptorType::eUniformBuffer); // uniform UBO {}
         updateResources(shaderResources.storage_buffers, vk::DescriptorType::eStorageBuffer); // buffer SSBO {}
         updateResources(shaderResources.subpass_inputs, vk::DescriptorType::eInputAttachment); // subpass input

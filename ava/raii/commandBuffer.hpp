@@ -59,6 +59,9 @@ namespace ava::raii
             pushConstants(shaderStages, &data, sizeof(T), offset);
         }
 
+        void bindRayTracingPipeline(const Pointer<RayTracingPipeline>& rayTracingPipeline) const;
+        void traceRays(uint32_t width, uint32_t height, uint32_t depth = 1) const;
+
         static Pointer<CommandBuffer> beginSingleTime(vk::QueueFlagBits queueType);
     };
 }

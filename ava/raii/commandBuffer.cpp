@@ -9,6 +9,7 @@
 #include "image.hpp"
 #include "vbo.hpp"
 #include "ibo.hpp"
+#include "rayTracingPipeline.hpp"
 #include "renderPass.hpp"
 #include "vibo.hpp"
 #include "ava/compute.hpp"
@@ -155,6 +156,18 @@ namespace ava::raii
     void CommandBuffer::pushConstants(const vk::ShaderStageFlags shaderStages, const void* data, const uint32_t size, const uint32_t offset) const
     {
         ava::pushConstants(commandBuffer, shaderStages, data, size, offset);
+    }
+
+    void CommandBuffer::bindRayTracingPipeline(const Pointer<RayTracingPipeline>& rayTracingPipeline) const
+    {
+        AVA_CHECK(rayTracingPipeline != nullptr && rayTracingPipeline->pipeline != nullptr, "Cannot bind invalid ray tracing pipeline");
+
+        ava::bindRayTracingPipeline(commandBuffer, rayTracingPipeline->pipeline);
+    }
+
+    void CommandBuffer::traceRays(const uint32_t width, const uint32_t height, const uint32_t depth) const
+    {
+        ava::traceRays(commandBuffer, width, height, depth);
     }
 
     Pointer<CommandBuffer> CommandBuffer::beginSingleTime(const vk::QueueFlagBits queueType)

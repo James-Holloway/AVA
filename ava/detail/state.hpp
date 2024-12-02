@@ -77,6 +77,7 @@ namespace ava::detail
         bool rayTracingQueried = false;
         bool rayTracingEnabled = true;
         vk::PhysicalDeviceAccelerationStructurePropertiesKHR accelerationStructureProperties;
+        vk::PhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingPipelineProperties;
     };
 
     inline State State;

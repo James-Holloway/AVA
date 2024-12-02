@@ -240,11 +240,11 @@ public:
         {
             if (textures[i] != nullptr)
             {
-                deferredSet0->bindImage(1, textures[i], textureViews[i], sampler, i);
+                deferredSet0->bindImage(1, textures[i], textureViews[i], sampler, {}, i);
             }
             else
             {
-                deferredSet0->bindImage(1, whitePixel, whitePixelImageView, sampler, i);
+                deferredSet0->bindImage(1, whitePixel, whitePixelImageView, sampler, {}, i);
             }
         }
         finalSet0->bindBuffer(0, ubo);

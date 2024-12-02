@@ -22,6 +22,10 @@ namespace ava
     // Builds one acceleration structure with a single time command and a scratch buffer
     void rebuildBLAS(BLAS blas, vk::BuildAccelerationStructureFlagsKHR buildFlags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace, vk::GeometryFlagsKHR geometryFlags = vk::GeometryFlagBitsKHR::eOpaque);
 
+    vk::DeviceAddress getVertexBufferAddress(BLAS blas);
+    vk::DeviceAddress getIndexBufferAddress(BLAS blas);
+    vk::IndexType getIndexBufferType(BLAS blas);
+
     BLASInstance createBLASInstance(BLAS blas, int32_t instanceCustomIndex = -1, uint8_t mask = 0xFF);
     void destroyBLASInstance(BLASInstance& blasInstance);
 

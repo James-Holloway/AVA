@@ -50,7 +50,12 @@ int main()
             // Create swapchain
             constexpr vk::Format surfaceFormat = vk::Format::eB8G8R8A8Unorm;
             constexpr bool vsync = true;
-            auto recreateSwapchain = [&] { ava::createSwapchain(surface, surfaceFormat, vk::ColorSpaceKHR::eSrgbNonlinear, vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate); };
+            auto recreateSwapchain = [&]
+            {
+                int width, height;
+                glfwGetFramebufferSize(window, &width, &height);
+                ava::createSwapchain(surface, {static_cast<uint32_t>(width), static_cast<uint32_t>(height)},surfaceFormat, vk::ColorSpaceKHR::eSrgbNonlinear, vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate);
+            };
             recreateSwapchain();
 
             // Create render pass and framebuffer

@@ -81,7 +81,11 @@ public:
 
             uint32_t currentFrame, imageIndex;
             // Recreate swapchain and framebuffer if a resize is needed
-            if (ava::resizeNeeded())
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+            const auto extent = ava::getSwapchainExtent();
+
+            if (ava::resizeNeeded() || extent.width != width || extent.height != height)
             {
                 ava::deviceWaitIdle();
                 resize();
@@ -138,7 +142,9 @@ public:
 
     virtual void recreateSwapchain()
     {
-        ava::createSwapchain(surface, surfaceFormat, vk::ColorSpaceKHR::eSrgbNonlinear, vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate);
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        ava::createSwapchain(surface, {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}, surfaceFormat, vk::ColorSpaceKHR::eSrgbNonlinear, vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate);
     }
 };
 

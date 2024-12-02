@@ -63,6 +63,21 @@ namespace ava::raii
         return std::make_shared<BLASInstance>(ava::createBLASInstance(blas, instanceCustomIndex, mask));
     }
 
+    vk::DeviceAddress BLAS::getVertexBufferAddress() const
+    {
+        return ava::getVertexBufferAddress(blas);
+    }
+
+    vk::DeviceAddress BLAS::getIndexBufferAddress() const
+    {
+        return ava::getIndexBufferAddress(blas);
+    }
+
+    vk::IndexType BLAS::getIndexBufferType() const
+    {
+        return ava::getIndexBufferType(blas);
+    }
+
     Pointer<BLAS> BLAS::create(const Pointer<VIBO>& meshBuffer)
     {
         return std::make_shared<BLAS>(meshBuffer);

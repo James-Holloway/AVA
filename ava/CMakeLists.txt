@@ -103,6 +103,11 @@ add_library(ava STATIC
         detail/buffer.cpp
         raii/rayTracing.cpp
         raii/rayTracing.hpp
+        detail/rayTracingPipeline.hpp
+        rayTracingPipeline.cpp
+        rayTracingPipeline.hpp
+        raii/rayTracingPipeline.cpp
+        raii/rayTracingPipeline.hpp
 )
 target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})

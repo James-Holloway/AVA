@@ -196,7 +196,7 @@ namespace ava
                 physicalDeviceSelector.add_required_extensions(rayTracingPre13DeviceExtensions);
             }
 
-// #define AVA_ALLOW_NV_RAYTRACING_VALIDATION
+            // #define AVA_ALLOW_NV_RAYTRACING_VALIDATION
 #ifdef AVA_ALLOW_NV_RAYTRACING_VALIDATION
             if (createInfo.debug)
             {
@@ -302,6 +302,9 @@ namespace ava
         {
             vk::PhysicalDeviceProperties2 deviceProperties{};
             deviceProperties.pNext = &State.accelerationStructureProperties;
+            State.physicalDevice.getProperties2(&deviceProperties);
+
+            deviceProperties.pNext = &State.rayTracingPipelineProperties;
             State.physicalDevice.getProperties2(&deviceProperties);
         }
 
@@ -423,7 +426,7 @@ namespace ava
         destroyState(true);
     }
 
-    void createSwapchain(const vk::SurfaceKHR surface, const vk::Format desiredFormat, const vk::ColorSpaceKHR colorSpace, const vk::PresentModeKHR presentMode)
+    void createSwapchain(const vk::SurfaceKHR surface, const vk::Extent2D extent, const vk::Format desiredFormat, const vk::ColorSpaceKHR colorSpace, const vk::PresentModeKHR presentMode)
     {
         for (auto& imageView : State.swapchainImageViews)
         {
@@ -445,7 +448,8 @@ namespace ava
         vk::SurfaceFormatKHR surfaceFormat{desiredFormat, colorSpace};
         swapchainBuilder
             .set_desired_format(surfaceFormat)
-            .set_desired_present_mode(static_cast<VkPresentModeKHR>(presentMode));
+            .set_desired_present_mode(static_cast<VkPresentModeKHR>(presentMode))
+            .set_desired_extent(extent.width, extent.height);
         if (State.vkbSwapchain)
         {
             swapchainBuilder.set_old_swapchain(State.vkbSwapchain);

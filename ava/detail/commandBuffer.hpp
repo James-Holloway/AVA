@@ -2,6 +2,7 @@
 #define AVA_DETAIL_COMMANDBUFFER_HPP
 
 #include "./vulkan.hpp"
+#include "../types.hpp"
 #include <memory>
 
 namespace ava::detail
@@ -26,6 +27,8 @@ namespace ava::detail
 
         // Track objects internally rather than in RAII wrapper
         std::vector<std::shared_ptr<void>> trackedObjects;
+        // Ray tracing specific
+        ava::RayTracingPipeline lastRayTracingPipeline;
     };
 
     using CommandBufferPtr = std::shared_ptr<CommandBuffer>;
