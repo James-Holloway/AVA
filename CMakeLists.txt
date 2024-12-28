@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.30)
 # AVA - Another Vulkan Abstraction
-project(ava)
+project(ava LANGUAGES CXX VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
+
+set(VK_BOOTSTRAP_INSTALL ON)
 
 include(FetchContent)
 # Vulkan, VulkanMemoryAllocator, vk-bootstrap, SPIRV-Cross
@@ -31,4 +33,8 @@ include(cmake/shaders_slang.cmake)
 # AVA itself
 add_subdirectory(ava)
 # Examples
-add_subdirectory(examples)
+add_subdirectory(examples EXCLUDE_FROM_ALL)
+
+# Installation
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)

@@ -9,6 +9,7 @@ FetchContent_Declare(
         fetch_tinyobjloader
         GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
         GIT_TAG v2.0.0rc13
+        EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(fetch_tinyobjloader)
 add_subdirectory(imgui)
