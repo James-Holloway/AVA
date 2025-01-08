@@ -10,7 +10,7 @@
 namespace ava
 {
     template <typename Ti>
-    VIBO createVIBOMain(const VAO vao, const void* vertexData, const size_t vertexDataSize, Ti* indices, const uint32_t indexCount, const uint32_t vertexBinding, vk::IndexType indexType)
+    VIBO createVIBOMain(const VAO vao, const void* vertexData, const size_t vertexDataSize, const Ti* indices, const uint32_t indexCount, const uint32_t vertexBinding, vk::IndexType indexType)
     {
         AVA_CHECK(vao != nullptr && !vao->strides.empty(), "Cannot create VIBO from invalid VAO")
         AVA_CHECK(vertexData != nullptr, "Cannot create VIBO when data is nullptr")
@@ -41,12 +41,12 @@ namespace ava
         return outVIBO;
     }
 
-    VIBO createVIBO(const VAO vao, const void* vertexData, const size_t vertexDataSize, uint16_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
+    VIBO createVIBO(const VAO vao, const void* vertexData, const size_t vertexDataSize, const uint16_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
     {
         return createVIBOMain(vao, vertexData, vertexDataSize, indices, indexCount, vertexBinding, vk::IndexType::eUint16);
     }
 
-    VIBO createVIBO(const VAO vao, const void* vertexData, const size_t vertexDataSize, uint32_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
+    VIBO createVIBO(const VAO vao, const void* vertexData, const size_t vertexDataSize, const uint32_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
     {
         return createVIBOMain(vao, vertexData, vertexDataSize, indices, indexCount, vertexBinding, vk::IndexType::eUint32);
     }

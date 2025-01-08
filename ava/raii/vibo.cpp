@@ -48,14 +48,14 @@ namespace ava::raii
         ava::bindVIBO(commandBuffer->commandBuffer, vibo);
     }
 
-    Pointer<VIBO> VIBO::create(const Pointer<VAO>& vao, const void* vertexData, const size_t vertexDataSize, uint16_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
+    Pointer<VIBO> VIBO::create(const Pointer<VAO>& vao, const void* vertexData, const size_t vertexDataSize, const uint16_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
     {
         AVA_CHECK(vao != nullptr && vao->vao != nullptr, "Cannot create a VIBO with an invalid VAO");
 
         return std::make_shared<VIBO>(ava::createVIBO(vao->vao, vertexData, vertexDataSize, indices, indexCount, vertexBinding));
     }
 
-    Pointer<VIBO> VIBO::create(const Pointer<VAO>& vao, const void* vertexData, const size_t vertexDataSize, uint32_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
+    Pointer<VIBO> VIBO::create(const Pointer<VAO>& vao, const void* vertexData, const size_t vertexDataSize, const uint32_t* indices, const uint32_t indexCount, const uint32_t vertexBinding)
     {
         AVA_CHECK(vao != nullptr && vao->vao != nullptr, "Cannot create a VIBO with an invalid VAO");
 

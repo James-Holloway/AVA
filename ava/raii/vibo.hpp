@@ -22,8 +22,8 @@ namespace ava::raii
 
         void bind(const Pointer<CommandBuffer>& commandBuffer) const;
 
-        static Pointer<VIBO> create(const Pointer<VAO>& vao, const void* vertexData, size_t vertexDataSize, uint16_t* indices, uint32_t indexCount, uint32_t vertexBinding = 0);
-        static Pointer<VIBO> create(const Pointer<VAO>& vao, const void* vertexData, size_t vertexDataSize, uint32_t* indices, uint32_t indexCount, uint32_t vertexBinding = 0);
+        static Pointer<VIBO> create(const Pointer<VAO>& vao, const void* vertexData, size_t vertexDataSize, const uint16_t* indices, uint32_t indexCount, uint32_t vertexBinding = 0);
+        static Pointer<VIBO> create(const Pointer<VAO>& vao, const void* vertexData, size_t vertexDataSize, const uint32_t* indices, uint32_t indexCount, uint32_t vertexBinding = 0);
 
         template <typename T>
         static Pointer<VIBO> create(const Pointer<VAO>& vao, std::span<T> vertexData, std::span<uint16_t> indices, const uint32_t vertexBinding = 0)
