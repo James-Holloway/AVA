@@ -1,5 +1,6 @@
 #include "image.hpp"
 
+#include <cmath>
 #include "detail/image.hpp"
 #include "detail/buffer.hpp"
 #include "detail/commandBuffer.hpp"
@@ -324,6 +325,9 @@ namespace ava
         region.bufferRowLength = 0;
         region.bufferImageHeight = 0;
         region.imageExtent = image->creationInfo.extent;
+        region.imageExtent.width = std::max(1u, static_cast<uint32_t>(region.imageExtent.width / std::pow(2, subresourceLayers.value().mipLevel)));
+        region.imageExtent.height = std::max(1u, static_cast<uint32_t>(region.imageExtent.height / std::pow(2, subresourceLayers.value().mipLevel)));
+        region.imageExtent.depth = std::max(1u, static_cast<uint32_t>(region.imageExtent.depth / std::pow(2, subresourceLayers.value().mipLevel)));
         region.imageOffset = vk::Offset3D{0, 0, 0};
         region.imageSubresource = subresourceLayers.value();
 
