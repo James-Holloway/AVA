@@ -71,7 +71,7 @@ namespace ava
 
         // Create dispatch loader
         auto getInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(State.instance.getProcAddr("vkGetInstanceProcAddr"));
-        State.dispatchLoader = vk::DispatchLoaderDynamic(State.instance, getInstanceProcAddr);
+        State.dispatchLoader = vk::detail::DispatchLoaderDynamic(State.instance, getInstanceProcAddr);
 
         State.stateConfigured = true;
     }
@@ -89,12 +89,13 @@ namespace ava
 
         auto deviceFeatures = createInfo.deviceFeatures;
 
-        // Ordered as 11, 12, [13]
-        // 11, 12 are added if Vulkan >= 1.2 [13 is added if Vulkan >= 1.3]
+        // Ordered as 11, 12, [13], [14]
+        // 11, 12 are added if Vulkan >= 1.2 [13 is added if Vulkan >= 1.3], [14 is added if Vulkan >= 1.4]
 
         auto physicalDeviceFeatures11 = createInfo.deviceVulkan11Features;
         auto physicalDeviceFeatures12 = createInfo.deviceVulkan12Features;
         auto physicalDeviceFeatures13 = createInfo.deviceVulkan13Features;
+        auto physicalDeviceFeatures14 = createInfo.deviceVulkan14Features;
         physicalDeviceFeatures11.pNext = &physicalDeviceFeatures12;
         physicalDeviceFeatures12.pNext = createInfo.physicalPNextChain;;
 
@@ -102,6 +103,12 @@ namespace ava
         {
             physicalDeviceFeatures12.pNext = &physicalDeviceFeatures13;
             physicalDeviceFeatures13.pNext = createInfo.physicalPNextChain;
+
+            if (createInfo.apiVersion.minor >= 4)
+            {
+                physicalDeviceFeatures13.pNext = &physicalDeviceFeatures14;
+                physicalDeviceFeatures14.pNext = createInfo.physicalPNextChain;
+            }
         }
 
         physicalDeviceSelector

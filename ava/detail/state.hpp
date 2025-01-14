@@ -42,7 +42,7 @@ namespace ava::detail
 
         vma::Allocator allocator;
 
-        vk::DispatchLoaderDynamic dispatchLoader;
+        vk::detail::DispatchLoaderDynamic dispatchLoader;
 
         uint32_t framesInFlight = 2;
         uint32_t currentFrame = 0;

@@ -22,6 +22,7 @@ namespace ava
         vk::PhysicalDeviceVulkan11Features deviceVulkan11Features{}; // Set desired Vulkan 1.1 features (Requires Vulkan 1.2! (not a typo))
         vk::PhysicalDeviceVulkan12Features deviceVulkan12Features{}; // Set desired Vulkan 1.2 features (Requires Vulkan 1.2!)
         vk::PhysicalDeviceVulkan13Features deviceVulkan13Features{}; // Set desired Vulkan 1.3 features (Requires Vulkan 1.3!)
+        vk::PhysicalDeviceVulkan14Features deviceVulkan14Features{}; // Set desired Vulkan 1.4 features (Requires Vulkan 1.4!)
         void* physicalPNextChain = nullptr; // Requires Vulkan 1.2 due to the implementation conflicts with vk-bootstrap
         vma::AllocatorCreateFlags vmaAllocatorCreateFlags = {}; // Configure the VMA allocator with these flags. Set these if you are using features like BufferDeviceAddress
     };

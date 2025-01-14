@@ -1,7 +1,7 @@
 #include "reflection.hpp"
 
 #include <set>
-#include "spirv_cross.hpp"
+#include "spirv_cross/spirv_cross.hpp"
 
 namespace ava::detail
 {

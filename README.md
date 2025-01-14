@@ -39,9 +39,9 @@ You will still need to provide a windowing system, input and main game loop (unl
 
 AVA requirements:
 
-* [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) (tested with 1.3.296.0)
-* [VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) (should be included with the Vulkan SDK)
-* [VulkanMemoryAllocator-Hpp](https://github.com/YaaZ/VulkanMemoryAllocator-Hpp)
+* [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) (tested with 1.4.304.0). AVA uses the following included in the SDK:
+  * SPIRV-Cross
+  * VulkanMemoryAllocator
 
 AVA Example requirements:
 
@@ -50,8 +50,8 @@ AVA Example requirements:
 
 Libraries fetched with CMake:
 
+* [VulkanMemoryAllocator-Hpp](https://github.com/YaaZ/VulkanMemoryAllocator-Hpp)
 * [vk-bootstrap](https://github.com/charles-lunarg/vk-bootstrap)
-* [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)
 
 Other libraries used by AVA examples:
 
@@ -109,7 +109,6 @@ Otherwise, link with `libava.a` (on Linux) and include the header directory (`/u
 ## How To Use AVA
 
 See the examples for a more code-based example. `tessellation` is one of the most complete examples, featuring depth attachments, .OBJ loading, UBOs, descriptor pools & sets, and all shaders of the classic rasterization pipeline (vert/hull/domain/geometry/fragment).
-
 
 ### Main Loop
 

@@ -14,7 +14,7 @@ target_sources(ava
         PUBLIC FILE_SET raii_headers TYPE HEADERS FILES ${RAII_HEADERS}
 )
 
-target_link_libraries(ava PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap spirv-cross-core)
+target_link_libraries(ava PUBLIC Vulkan::Vulkan VulkanMemoryAllocator-Hpp::VulkanMemoryAllocator-Hpp vk-bootstrap::vk-bootstrap spirv-cross-core)
 if (${UNIX})
     target_link_libraries(ava PUBLIC ${CMAKE_DL_LIBS})
 endif ()
@@ -25,27 +25,3 @@ target_include_directories(ava PUBLIC
 )
 # Precompile vulkan.hpp
 target_precompile_headers(ava PUBLIC "${Vulkan_INCLUDE_DIR}/vulkan/vulkan.hpp")
-
-install(TARGETS ava
-        EXPORT ava
-        ARCHIVE DESTINATION lib
-        FILE_SET top_headers DESTINATION include/ava
-        FILE_SET detail_headers DESTINATION include/ava/
-        FILE_SET raii_headers DESTINATION include/ava/
-)
-install(EXPORT ava
-        FILE avaTargets.cmake
-        NAMESPACE ava::
-        DESTINATION lib/cmake/ava
-)
-
-write_basic_package_version_file(
-        "avaConfigVersion.cmake"
-        VERSION ${ava_VERSION}
-        COMPATIBILITY AnyNewerVersion
-)
-install(FILES
-        "cmake/avaConfig.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/avaConfigVersion.cmake"
-        DESTINATION lib/cmake/ava
-)

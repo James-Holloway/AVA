@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <VkBootstrap.h>
+#include <vma/vk_mem_alloc.h>
 #include <vk_mem_alloc.hpp>
 #include <optional>
 
