@@ -47,8 +47,11 @@ namespace ava::raii
         void bindDescriptorSet(const Pointer<CommandBuffer>& commandBuffer) const;
 
         void bindBuffer(uint32_t binding, const Pointer<Buffer>& buffer, vk::DeviceSize bufferSize = vk::WholeSize, vk::DeviceSize bufferOffset = 0, uint32_t dstArrayElement = 0) const;
+        void bindNullBuffer(uint32_t binding, uint32_t dstArrayElement = 0) const;
         void bindImage(uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler = nullptr, std::optional<vk::ImageLayout> imageLayout = {}, uint32_t dstArrayElement = 0) const;
+        void bindNullImage(uint32_t binding, uint32_t dstArrayElement = 0) const;
         void bindTLAS(uint32_t binding, const Pointer<TLAS>& tlas, uint32_t dstArrayElement = 0) const;
+        void bindNullTLAS(uint32_t binding, uint32_t dstArrayElement = 0) const;
     };
 }
 

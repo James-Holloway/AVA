@@ -94,6 +94,21 @@ namespace ava
         {
             return VertexAttribute{vk::Format::eR8G8B8A8Unorm, location, offset, binding};
         }
+
+        constexpr static VertexAttribute CreateIVec2(const uint32_t location = AUTO_LOCATION, const uint32_t offset = AUTO_OFFSET, const uint32_t binding = 0)
+        {
+            return VertexAttribute{vk::Format::eR32G32Sint, location, offset, binding};
+        }
+
+        constexpr static VertexAttribute CreateIVec3(const uint32_t location = AUTO_LOCATION, const uint32_t offset = AUTO_OFFSET, const uint32_t binding = 0)
+        {
+            return VertexAttribute{vk::Format::eR32G32B32Sint, location, offset, binding};
+        }
+
+        constexpr static VertexAttribute CreateIVec4(const uint32_t location = AUTO_LOCATION, const uint32_t offset = AUTO_OFFSET, const uint32_t binding = 0)
+        {
+            return VertexAttribute{vk::Format::eR32G32B32A32Sint, location, offset, binding};
+        }
     };
 }
 

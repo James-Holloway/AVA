@@ -132,6 +132,11 @@ namespace ava::raii
         ava::bindBuffer(descriptorSet, binding, buffer->buffer, bufferSize, bufferOffset, dstArrayElement);
     }
 
+    void DescriptorSet::bindNullBuffer(const uint32_t binding, const uint32_t dstArrayElement) const
+    {
+        ava::bindNullBuffer(descriptorSet, binding, dstArrayElement);
+    }
+
     void DescriptorSet::bindImage(const uint32_t binding, const Pointer<Image>& image, const Pointer<ImageView>& imageView, const Pointer<Sampler>& sampler, const std::optional<vk::ImageLayout> imageLayout, const uint32_t dstArrayElement) const
     {
         AVA_CHECK(image != nullptr && image->image, "Cannot bind image to a descriptor set when image is invalid");
@@ -143,9 +148,19 @@ namespace ava::raii
         ava::bindImage(descriptorSet, binding, image->image, imageView->imageView, sampler != nullptr ? sampler->sampler : nullptr, imageLayout, dstArrayElement);
     }
 
+    void DescriptorSet::bindNullImage(const uint32_t binding, const uint32_t dstArrayElement) const
+    {
+        ava::bindNullImage(descriptorSet, binding, dstArrayElement);
+    }
+
     void DescriptorSet::bindTLAS(const uint32_t binding, const Pointer<TLAS>& tlas, const uint32_t dstArrayElement) const
     {
         AVA_CHECK(tlas != nullptr && tlas->tlas, "Cannot bind TLAS to a descriptor set when TLAS is invalid");
         ava::bindTLAS(descriptorSet, binding, tlas->tlas, dstArrayElement);
+    }
+
+    void DescriptorSet::bindNullTLAS(const uint32_t binding, const uint32_t dstArrayElement) const
+    {
+        ava::bindNullTLAS(descriptorSet, binding, dstArrayElement);
     }
 }

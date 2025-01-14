@@ -362,6 +362,36 @@ namespace ava
         detail::State.device.updateDescriptorSets(wds, nullptr);
     }
 
+    void bindNullBuffer(const DescriptorSet& descriptorSet, const uint32_t binding, const uint32_t dstArrayElement)
+    {
+        AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
+        AVA_CHECK(!descriptorSet.expired(), "Cannot bind an image to an invalid descriptor set");
+        const auto ds = descriptorSet.lock();
+        AVA_CHECK(ds->descriptorSet, "Cannot bind an image to an invalid descriptor set");
+
+        const auto descriptorType = getDescriptorType(ds, binding);
+        if (!descriptorType.has_value())
+        {
+            AVA_WARN("Could not bind a buffer to a descriptor set, binding " + std::to_string(binding) + " when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            return; // If no binding type could be found then don't do any binding
+        }
+
+        vk::DescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = nullptr;
+        bufferInfo.offset = 0;
+        bufferInfo.range = 0;
+
+        vk::WriteDescriptorSet wds{};
+        wds.dstSet = ds->descriptorSet;
+        wds.dstBinding = binding;
+        wds.dstArrayElement = dstArrayElement;
+        wds.descriptorCount = 1;
+        wds.descriptorType = descriptorType.value();
+        wds.setBufferInfo(bufferInfo);
+
+        detail::State.device.updateDescriptorSets(wds, nullptr);
+    }
+
     void bindImage(const DescriptorSet& descriptorSet, uint32_t binding, const Image& image, const ImageView& imageView, const Sampler& sampler, std::optional<vk::ImageLayout> imageLayout, const uint32_t dstArrayElement)
     {
         AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
@@ -398,6 +428,36 @@ namespace ava
         detail::State.device.updateDescriptorSets(wds, nullptr);
     }
 
+    void bindNullImage(const DescriptorSet& descriptorSet, uint32_t binding, uint32_t dstArrayElement)
+    {
+        AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
+        AVA_CHECK(!descriptorSet.expired(), "Cannot bind an image to an invalid descriptor set");
+        const auto ds = descriptorSet.lock();
+        AVA_CHECK(ds->descriptorSet, "Cannot bind an image to an invalid descriptor set");
+
+        const auto descriptorType = getDescriptorType(ds, binding);
+        if (!descriptorType.has_value())
+        {
+            AVA_WARN("Could not bind an image to a descriptor set, binding " + std::to_string(binding) + " when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            return; // If no binding type could be found then don't do any binding
+        }
+
+        vk::DescriptorImageInfo imageInfo{};
+        imageInfo.sampler = nullptr;
+        imageInfo.imageLayout = vk::ImageLayout::eUndefined;
+        imageInfo.imageView = nullptr;
+
+        vk::WriteDescriptorSet wds{};
+        wds.dstSet = ds->descriptorSet;
+        wds.dstBinding = binding;
+        wds.dstArrayElement = dstArrayElement;
+        wds.descriptorCount = 1;
+        wds.descriptorType = descriptorType.value();
+        wds.setImageInfo(imageInfo);
+
+        detail::State.device.updateDescriptorSets(wds, nullptr);
+    }
+
     void bindTLAS(const DescriptorSet& descriptorSet, uint32_t binding, const TLAS& tlas, uint32_t dstArrayElement)
     {
         AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
@@ -418,6 +478,35 @@ namespace ava
 
         vk::WriteDescriptorSetAccelerationStructureKHR accelerationStructureInfo{};
         accelerationStructureInfo.setAccelerationStructures(tlas->accelerationStructure->accelerationStructure);
+
+        vk::WriteDescriptorSet wds;
+        wds.dstSet = ds->descriptorSet;
+        wds.dstBinding = binding;
+        wds.dstArrayElement = dstArrayElement;
+        wds.descriptorCount = 1;
+        wds.descriptorType = descriptorType.value();
+        wds.pNext = &accelerationStructureInfo;
+
+        detail::State.device.updateDescriptorSets(wds, nullptr);
+    }
+
+    void bindNullTLAS(const DescriptorSet& descriptorSet, uint32_t binding, uint32_t dstArrayElement)
+    {
+        AVA_CHECK(detail::State.device, "Cannot bind an image to a descriptor set when State's device is invalid");
+        AVA_CHECK(detail::State.rayTracingEnabled, "Cannot bind a TLAS to a descriptor set when ray tracing is not enabled");
+        AVA_CHECK(!descriptorSet.expired(), "Cannot bind a TLAS to an invalid descriptor set");
+        const auto ds = descriptorSet.lock();
+        AVA_CHECK(ds->descriptorSet, "Cannot bind a TLAS to an invalid descriptor set");
+
+        const auto descriptorType = getDescriptorType(ds, binding);
+        if (!descriptorType.has_value())
+        {
+            AVA_WARN("Could not bind a TLAS to a descriptor set, binding " + std::to_string(binding) + " when the descriptor type could not be found from the layout bindings (does the binding exist in the shader?)");
+            return; // If no binding type could be found then don't do any binding
+        }
+
+        vk::WriteDescriptorSetAccelerationStructureKHR accelerationStructureInfo{};
+        accelerationStructureInfo.setAccelerationStructures(nullptr);
 
         vk::WriteDescriptorSet wds;
         wds.dstSet = ds->descriptorSet;

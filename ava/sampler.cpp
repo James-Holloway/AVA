@@ -23,12 +23,12 @@ ava::Sampler ava::createSampler(vk::Filter minMagFilter, vk::SamplerMipmapMode m
     samplerInfo.mipmapMode = mipFilter;
     samplerInfo.addressModeU = samplerInfo.addressModeV = samplerInfo.addressModeW = repeat;
     samplerInfo.maxAnisotropy = maxAnisotropy;
-    samplerInfo.anisotropyEnable = maxAnisotropy > 0;
+    samplerInfo.anisotropyEnable = maxAnisotropy > 0.0f;
     samplerInfo.compareEnable = compareOp.has_value();
     samplerInfo.compareOp = compareOp.value_or(vk::CompareOp::eAlways);
     samplerInfo.mipLodBias = 0.0f;
     samplerInfo.minLod = 0.0f;
-    samplerInfo.maxLod = 0.0f;
+    samplerInfo.maxLod = vk::LodClampNone;
     samplerInfo.unnormalizedCoordinates = false;
 
     const auto sampler = detail::State.device.createSampler(samplerInfo);
