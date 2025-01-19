@@ -12,6 +12,7 @@ namespace ava
     vk::Device getVulkanDevice();
     vk::SwapchainKHR getVulkanSwapchain();
     vk::Queue getVulkanQueue(vk::QueueFlagBits queueType);
+    vk::CommandPool getVulkanCommandPool(vk::QueueFlagBits queueType);
 }
 
 #endif

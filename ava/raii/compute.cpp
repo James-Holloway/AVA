@@ -2,6 +2,7 @@
 #include "ava/compute.hpp"
 
 #include "commandBuffer.hpp"
+#include "shaders.hpp"
 #include "ava/detail/detail.hpp"
 #include "ava/detail/shaders.hpp"
 
@@ -47,5 +48,10 @@ namespace ava::raii
     Pointer<ComputePipeline> ComputePipeline::create(const ComputePipelineCreationInfo& creationInfo)
     {
         return std::make_shared<ComputePipeline>(ava::createComputePipeline(creationInfo));
+    }
+
+    void populateComputePipelineCreationInfo(ComputePipelineCreationInfo& pipelineCreationInfo, const Pointer<Shader>& shader)
+    {
+        pipelineCreationInfo.shader = shader != nullptr ? shader->shader : nullptr;
     }
 }

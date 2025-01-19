@@ -249,38 +249,41 @@ namespace ava
             colorAttachmentCounts[subpass] = getSubpassColorAttachmentCount(intermediateSubpasses[subpass].colorAttachments);
         }
 
-        std::vector<vk::SubpassDependency> subpassDependencies;
-        subpassDependencies.resize(createInfo.subPasses + 1);
-
-        auto& firstDependency = subpassDependencies[0];
-        firstDependency.srcSubpass = vk::SubpassExternal;
-        firstDependency.dstSubpass = 0;
-        firstDependency.srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-        firstDependency.dstStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
-        firstDependency.srcAccessMask = vk::AccessFlagBits::eNone;
-        firstDependency.dstAccessMask = vk::AccessFlagBits::eNone;
-        firstDependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;
-
-        for (uint32_t subpass = 0; subpass < createInfo.subPasses - 1; subpass++)
+        std::vector<vk::SubpassDependency> subpassDependencies = createInfo.subpassDependencies;
+        if (subpassDependencies.empty())
         {
-            auto& subpassDependency = subpassDependencies[subpass + 1];
-            subpassDependency.srcSubpass = subpass;
-            subpassDependency.dstSubpass = subpass + 1;
-            subpassDependency.srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-            subpassDependency.dstStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
-            subpassDependency.srcAccessMask = vk::AccessFlagBits::eNone;
-            subpassDependency.dstAccessMask = vk::AccessFlagBits::eNone;
-            subpassDependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;
-        }
+            subpassDependencies.resize(createInfo.subPasses + 1);
 
-        auto& lastDependency = subpassDependencies[subpassDependencies.size() - 1];
-        lastDependency.srcSubpass = createInfo.subPasses - 1;
-        lastDependency.dstSubpass = vk::SubpassExternal;
-        lastDependency.srcStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
-        lastDependency.dstStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-        lastDependency.srcAccessMask = vk::AccessFlagBits::eNone;
-        lastDependency.dstAccessMask = vk::AccessFlagBits::eMemoryRead;
-        lastDependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;
+            auto& firstDependency = subpassDependencies[0];
+            firstDependency.srcSubpass = vk::SubpassExternal;
+            firstDependency.dstSubpass = 0;
+            firstDependency.srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+            firstDependency.dstStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
+            firstDependency.srcAccessMask = vk::AccessFlagBits::eMemoryWrite;
+            firstDependency.dstAccessMask = vk::AccessFlagBits::eNone;
+            firstDependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;
+
+            for (uint32_t subpass = 0; subpass < createInfo.subPasses - 1; subpass++)
+            {
+                auto& subpassDependency = subpassDependencies[subpass + 1];
+                subpassDependency.srcSubpass = subpass;
+                subpassDependency.dstSubpass = subpass + 1;
+                subpassDependency.srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+                subpassDependency.dstStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
+                subpassDependency.srcAccessMask = vk::AccessFlagBits::eNone;
+                subpassDependency.dstAccessMask = vk::AccessFlagBits::eNone;
+                subpassDependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;
+            }
+
+            auto& lastDependency = subpassDependencies[subpassDependencies.size() - 1];
+            lastDependency.srcSubpass = createInfo.subPasses - 1;
+            lastDependency.dstSubpass = vk::SubpassExternal;
+            lastDependency.srcStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
+            lastDependency.dstStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+            lastDependency.srcAccessMask = vk::AccessFlagBits::eNone;
+            lastDependency.dstAccessMask = vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite;
+            lastDependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;
+        }
 
         vk::RenderPassCreateInfo renderPassCreateInfo{};
         renderPassCreateInfo.flags = {};

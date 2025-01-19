@@ -2,6 +2,7 @@
 #include "ava/commandBuffer.hpp"
 #include "ava/detail/commandBuffer.hpp"
 
+#include "buffer.hpp"
 #include "compute.hpp"
 #include "descriptors.hpp"
 #include "framebuffer.hpp"
@@ -12,6 +13,7 @@
 #include "rayTracingPipeline.hpp"
 #include "renderPass.hpp"
 #include "vibo.hpp"
+#include "ava/buffer.hpp"
 #include "ava/compute.hpp"
 #include "ava/descriptors.hpp"
 #include "ava/vbo.hpp"
@@ -41,6 +43,13 @@ namespace ava::raii
     {
         commandBuffer = std::move(other.commandBuffer);
         return *this;
+    }
+
+    vk::CommandBuffer CommandBuffer::getCommandBuffer() const
+    {
+        if (commandBuffer == nullptr)
+            return nullptr;
+        return commandBuffer->commandBuffer;
     }
 
     void CommandBuffer::start(const vk::CommandBufferUsageFlags usageFlags) const
@@ -151,6 +160,12 @@ namespace ava::raii
     {
         AVA_CHECK(image != nullptr && image->image, "Cannot transition image layout when image is invalid");
         ava::transitionImageLayout(commandBuffer, image->image, newLayout, aspectFlags, srcStage, dstStage, subresourceRange);
+    }
+
+    void CommandBuffer::insertBufferMemoryBarrier(const Pointer<Buffer>& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlagBits dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size, vk::DeviceSize offset) const
+    {
+        AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot insert memory barrier when buffer is invalid");
+        ava::insertBufferMemoryBarrier(commandBuffer, buffer->buffer, srcStage, dstStage, srcAccessMask, dstAccessMask, size, offset);
     }
 
     void CommandBuffer::pushConstants(const vk::ShaderStageFlags shaderStages, const void* data, const uint32_t size, const uint32_t offset) const

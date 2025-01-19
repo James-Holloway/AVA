@@ -21,6 +21,8 @@ namespace ava::raii
         CommandBuffer(CommandBuffer&& other) noexcept;
         CommandBuffer& operator=(CommandBuffer&& other) noexcept;
 
+        [[nodiscard]] vk::CommandBuffer getCommandBuffer() const;
+
         void start(vk::CommandBufferUsageFlags usageFlags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit) const;
         void end() const;
         void endSingleTime() const;
@@ -50,6 +52,8 @@ namespace ava::raii
                                       vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands, const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
         void transitionImageLayout(const Pointer<Image>& image, vk::ImageLayout newLayout, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands,
                                    const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
+
+        void insertBufferMemoryBarrier(const Pointer<Buffer>& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlagBits dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0) const;
 
         void pushConstants(vk::ShaderStageFlags shaderStages, const void* data, uint32_t size = 0, uint32_t offset = 0) const;
 

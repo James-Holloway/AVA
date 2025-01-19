@@ -32,6 +32,7 @@ namespace ava
                                   vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands, std::optional<vk::ImageSubresourceRange> subresourceRange = {});
     void transitionImageLayout(const CommandBuffer& commandBuffer, const Image& image, vk::ImageLayout newLayout, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands,
                                std::optional<vk::ImageSubresourceRange> subresourceRange = {});
+    void overrideOldImageLayout(const Image& image, vk::ImageLayout imageLayout);
 
     // Update whole image using a buffer image copy
     void updateImage(const CommandBuffer& commandBuffer, const Image& image, const Buffer& stagingBuffer, const vk::BufferImageCopy& bufferImageCopy, std::optional<vk::ImageSubresourceRange> subresourceRange = {});

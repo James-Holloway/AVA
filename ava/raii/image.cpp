@@ -52,6 +52,11 @@ namespace ava::raii
         ava::transitionImageLayout(commandBuffer->commandBuffer, image, newLayout, aspectFlags, srcStage, dstStage, subresourceRange);
     }
 
+    void Image::overrideOldImageLayout(const vk::ImageLayout oldImageLayout) const
+    {
+        ava::overrideOldImageLayout(image, oldImageLayout);
+    }
+
     void Image::update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, const vk::BufferImageCopy& bufferImageCopy, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot update image with an invalid command buffer");

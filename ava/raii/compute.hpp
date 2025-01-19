@@ -10,7 +10,7 @@ namespace ava::raii
     {
     public:
         using Ptr = Pointer<ComputePipeline>;
-        
+
         explicit ComputePipeline(const ava::ComputePipeline& existingPipeline);
         ~ComputePipeline();
 
@@ -25,6 +25,8 @@ namespace ava::raii
 
         static Pointer<ComputePipeline> create(const ComputePipelineCreationInfo& creationInfo);
     };
+
+    void populateComputePipelineCreationInfo(ComputePipelineCreationInfo& pipelineCreationInfo, const Pointer<Shader>& shader);
 }
 
 #endif

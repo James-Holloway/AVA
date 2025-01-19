@@ -11,15 +11,21 @@ namespace ava::detail
         const auto severity = vkb::to_string_message_severity(messageSeverity);
         const auto type = vkb::to_string_message_type(messageType);
         static volatile char breakpoint;
+        std::string message = std::format("[{}: {}] {}", severity, type, pCallbackData->pMessage);
 
-        if (messageSeverity < VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+        if (messageSeverity < VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
         {
-            std::cout << "[" << severity << ": " << type << "] " << pCallbackData->pMessage << '\n';
+            std::cout << message << std::endl;
+            (void)breakpoint;
+        }
+        else if (messageSeverity < VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) //NOLINTNEXTLINE(*-branch-clone)
+        {
+            std::cerr << message << std::endl;
             (void)breakpoint;
         }
         else
         {
-            std::cerr << "[" << severity << ": " << type << "] " << pCallbackData->pMessage << '\n';
+            std::cerr << message << std::endl;
             (void)breakpoint;
         }
 

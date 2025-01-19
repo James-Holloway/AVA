@@ -39,4 +39,18 @@ namespace ava
             throw std::runtime_error("Unhandled queue type");
         }
     }
+
+    vk::CommandPool getVulkanCommandPool(const vk::QueueFlagBits queueType)
+    {
+        switch (queueType)
+        {
+        case vk::QueueFlagBits::eGraphics:
+        case vk::QueueFlagBits::eTransfer:
+            return State.graphicsCommandPool;
+        case vk::QueueFlagBits::eCompute:
+            return State.computeCommandPool;
+        default:
+            throw std::runtime_error("Unhandled queue type");
+        }
+    }
 }

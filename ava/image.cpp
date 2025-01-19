@@ -228,6 +228,7 @@ namespace ava
             barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
             break;
 
+        case vk::ImageLayout::eShaderReadOnlyOptimal:
         case vk::ImageLayout::eReadOnlyOptimal:
             // Image is read by a shader
             // Make sure any shader reads from the image have been finished
@@ -268,6 +269,7 @@ namespace ava
             break;
 
         case vk::ImageLayout::eReadOnlyOptimal:
+        case vk::ImageLayout::eShaderReadOnlyOptimal:
             // Image will be read in a shader (sampler, input attachment)
             // Make sure any writes to the image have been finished
             if (barrier.srcAccessMask == vk::AccessFlagBits::eNone)
@@ -286,6 +288,12 @@ namespace ava
         commandBuffer->commandBuffer.pipelineBarrier(srcStage, dstStage, dependencyFlags, nullptr, nullptr, barrier);
 
         image->imageLayout = newLayout;
+    }
+
+    void overrideOldImageLayout(const Image& image, vk::ImageLayout imageLayout)
+    {
+        AVA_CHECK(image != nullptr && image->image != nullptr, "Cannot override old image layout when image is invalid");
+        image->imageLayout = imageLayout;
     }
 
     void updateImage(const CommandBuffer& commandBuffer, const Image& image, const Buffer& stagingBuffer, const vk::BufferImageCopy& bufferImageCopy, std::optional<vk::ImageSubresourceRange> subresourceRange)

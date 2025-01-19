@@ -58,8 +58,9 @@ namespace ava
     struct RenderPassCreationInfo
     {
         // Attachments
-        std::vector<RenderPassAttachmentInfo> attachments;
+        std::vector<RenderPassAttachmentInfo> attachments{};
         uint32_t subPasses = 1;
+        std::vector<vk::SubpassDependency> subpassDependencies{}; // Optional, will use defaults if empty
     };
 
     [[nodiscard]] RenderPass createRenderPass(const RenderPassCreationInfo& createInfo);

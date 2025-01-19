@@ -7,7 +7,7 @@ namespace ava
 {
     struct ComputePipelineCreationInfo
     {
-        Shader shader;
+        Shader shader = nullptr;
     };
 
     [[nodiscard]] ComputePipeline createComputePipeline(const ComputePipelineCreationInfo& pipelineCreationInfo);

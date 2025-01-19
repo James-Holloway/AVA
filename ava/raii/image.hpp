@@ -25,6 +25,7 @@ namespace ava::raii
                                       vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands, const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
         void transitionImageLayout(const Pointer<CommandBuffer>& commandBuffer, vk::ImageLayout newLayout, vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor, vk::PipelineStageFlags srcStage = vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlags dstStage = vk::PipelineStageFlagBits::eAllCommands,
                                    const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
+        void overrideOldImageLayout(vk::ImageLayout oldImageLayout) const;
 
         // Update whole image using a buffer image copy
         void update(const Pointer<CommandBuffer>& commandBuffer, const Pointer<Buffer>& stagingBuffer, const vk::BufferImageCopy& bufferImageCopy, const std::optional<vk::ImageSubresourceRange>& subresourceRange = {}) const;
