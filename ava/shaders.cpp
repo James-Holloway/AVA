@@ -31,6 +31,11 @@ namespace ava
         return outShader;
     }
 
+    Shader createShader(const std::vector<uint8_t>& shaderSpirv, vk::ShaderStageFlagBits stage, const std::string& entry)
+    {
+        return createShader(std::vector<char>(reinterpret_cast<const char*>(shaderSpirv.data()), reinterpret_cast<const char*>(shaderSpirv.data()) + shaderSpirv.size()), stage, entry);
+    }
+
     void destroyShader(Shader& shader)
     {
         AVA_CHECK_NO_EXCEPT_RETURN(shader != nullptr, "Cannot destroy an invalid shader");

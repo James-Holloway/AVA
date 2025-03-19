@@ -48,7 +48,7 @@ namespace ava
         updateBuffer(buffer, reinterpret_cast<const void*>(data.data()), data.size() * sizeof(T), offset);
     }
 
-    void insertBufferMemoryBarrier(const CommandBuffer& commandBuffer, const Buffer& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlagBits dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0);
+    void insertBufferMemoryBarrier(const CommandBuffer& commandBuffer, const Buffer& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlags dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size = vk::WholeSize, vk::DeviceSize offset = 0);
 }
 
 #endif

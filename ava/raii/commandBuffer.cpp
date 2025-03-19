@@ -149,11 +149,11 @@ namespace ava::raii
         ava::bindDescriptorSet(commandBuffer, set->descriptorSet);
     }
 
-    void CommandBuffer::insertImageMemoryBarrier(const Pointer<Image>& image, const vk::ImageLayout newLayout, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage,
+    void CommandBuffer::insertImageMemoryBarrier(const Pointer<Image>& image, const vk::ImageLayout newLayout, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask,
                                                  const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
     {
         AVA_CHECK(image != nullptr && image->image, "Cannot insert memory barrier when image is invalid");
-        ava::insertImageMemoryBarrier(commandBuffer, image->image, newLayout, srcAccessMask, dstAccessMask, aspectFlags, srcStage, dstStage, subresourceRange);
+        ava::insertImageMemoryBarrier(commandBuffer, image->image, newLayout,aspectFlags, srcStage, dstStage,  srcAccessMask, dstAccessMask, subresourceRange);
     }
 
     void CommandBuffer::transitionImageLayout(const Pointer<Image>& image, const vk::ImageLayout newLayout, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
@@ -162,7 +162,7 @@ namespace ava::raii
         ava::transitionImageLayout(commandBuffer, image->image, newLayout, aspectFlags, srcStage, dstStage, subresourceRange);
     }
 
-    void CommandBuffer::insertBufferMemoryBarrier(const Pointer<Buffer>& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlagBits dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size, vk::DeviceSize offset) const
+    void CommandBuffer::insertBufferMemoryBarrier(const Pointer<Buffer>& buffer, vk::PipelineStageFlags srcStage, vk::PipelineStageFlags dstStage, vk::AccessFlags srcAccessMask, vk::AccessFlags dstAccessMask, vk::DeviceSize size, vk::DeviceSize offset) const
     {
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot insert memory barrier when buffer is invalid");
         ava::insertBufferMemoryBarrier(commandBuffer, buffer->buffer, srcStage, dstStage, srcAccessMask, dstAccessMask, size, offset);

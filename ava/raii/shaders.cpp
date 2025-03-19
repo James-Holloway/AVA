@@ -50,4 +50,9 @@ namespace ava::raii
     {
         return std::make_shared<Shader>(ava::createShader(shaderSpirv, stage, entry));
     }
+
+    Pointer<Shader> Shader::create(const std::vector<uint8_t>& shaderSpirv, vk::ShaderStageFlagBits stage, const std::string& entry)
+    {
+        return std::make_shared<Shader>(ava::createShader(shaderSpirv, stage, entry));
+    }
 }

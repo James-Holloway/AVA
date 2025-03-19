@@ -39,11 +39,11 @@ namespace ava::raii
         return *this;
     }
 
-    void Image::insertImageMemoryBarrier(const Pointer<CommandBuffer>& commandBuffer, const vk::ImageLayout newLayout, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage,
+    void Image::insertImageMemoryBarrier(const Pointer<CommandBuffer>& commandBuffer, const vk::ImageLayout newLayout, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask,
                                          const std::optional<vk::ImageSubresourceRange>& subresourceRange) const
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer != nullptr, "Cannot insert an image memory barrier when command buffer is invalid");
-        ava::insertImageMemoryBarrier(commandBuffer->commandBuffer, image, newLayout, srcAccessMask, dstAccessMask, aspectFlags, srcStage, dstStage, subresourceRange);
+        ava::insertImageMemoryBarrier(commandBuffer->commandBuffer, image, newLayout, aspectFlags, srcStage, dstStage, srcAccessMask, dstAccessMask, subresourceRange);
     }
 
     void Image::transitionImageLayout(const Pointer<CommandBuffer>& commandBuffer, const vk::ImageLayout newLayout, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const std::optional<vk::ImageSubresourceRange>& subresourceRange) const

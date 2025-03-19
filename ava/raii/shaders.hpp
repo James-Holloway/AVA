@@ -25,6 +25,7 @@ namespace ava::raii
 
         static Pointer<Shader> create(const std::string& shaderPath, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
         static Pointer<Shader> create(const std::vector<char>& shaderSpirv, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
+        static Pointer<Shader> create(const std::vector<uint8_t>& shaderSpirv, vk::ShaderStageFlagBits stage, const std::string& entry = "main");
     };
 }
 #endif

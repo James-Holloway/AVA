@@ -129,7 +129,7 @@ namespace ava
         return imageView->imageView;
     }
 
-    void insertImageMemoryBarrier(const CommandBuffer& commandBuffer, const Image& image, const vk::ImageLayout newLayout, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage,
+    void insertImageMemoryBarrier(const CommandBuffer& commandBuffer, const Image& image, const vk::ImageLayout newLayout, const vk::ImageAspectFlags aspectFlags, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask,
                                   std::optional<vk::ImageSubresourceRange> subresourceRange)
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot insert image memory barrier when command buffer is invalid");
@@ -212,8 +212,16 @@ namespace ava
         case vk::ImageLayout::eDepthStencilAttachmentOptimal:
         case vk::ImageLayout::eDepthAttachmentOptimal:
             // Image is a depth/stencil attachment
-            // Make sure any writes to the depth/stencil buffer have been finished
-            barrier.srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+            // Make sure any reads and writes to the depth/stencil buffer have been finished
+            barrier.srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+            break;
+
+        case vk::ImageLayout::eDepthReadOnlyOptimal:
+        case vk::ImageLayout::eStencilReadOnlyOptimal:
+        case vk::ImageLayout::eDepthStencilReadOnlyOptimal:
+            // Image is a depth/stencil read only attachment
+            // Make sure any reads to the depth/stencil buffer have been finished
+            barrier.srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead;
             break;
 
         case vk::ImageLayout::eTransferSrcOptimal:
@@ -263,9 +271,12 @@ namespace ava
 
         case vk::ImageLayout::eDepthAttachmentOptimal:
         case vk::ImageLayout::eDepthStencilAttachmentOptimal:
+        case vk::ImageLayout::eDepthReadOnlyOptimal:
+        case vk::ImageLayout::eStencilReadOnlyOptimal:
+        case vk::ImageLayout::eDepthStencilReadOnlyOptimal:
             // Image layout will be used as a depth/stencil attachment
-            // Make sure any writes to depth/stencil buffer have been finished
-            barrier.dstAccessMask = barrier.dstAccessMask | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+            // Make sure any reads/writes to depth/stencil buffer have been finished
+            barrier.dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
             break;
 
         case vk::ImageLayout::eReadOnlyOptimal:

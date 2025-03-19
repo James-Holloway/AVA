@@ -157,7 +157,7 @@ namespace ava
         commandBuffer->commandBuffer.copyBuffer(stagingBuffer->buffer, buffer->buffer, copyRegion);
     }
 
-    void insertBufferMemoryBarrier(const CommandBuffer& commandBuffer, const Buffer& buffer, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlagBits dstStage, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::DeviceSize size, const vk::DeviceSize offset)
+    void insertBufferMemoryBarrier(const CommandBuffer& commandBuffer, const Buffer& buffer, const vk::PipelineStageFlags srcStage, const vk::PipelineStageFlags dstStage, const vk::AccessFlags srcAccessMask, const vk::AccessFlags dstAccessMask, const vk::DeviceSize size, const vk::DeviceSize offset)
     {
         AVA_CHECK(commandBuffer != nullptr && commandBuffer->commandBuffer, "Cannot insert buffer memory barrier when command buffer is invalid")
         AVA_CHECK(buffer != nullptr && buffer->buffer, "Cannot insert buffer memory barrier when buffer is invalid")
